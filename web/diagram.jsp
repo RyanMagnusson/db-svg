@@ -25,8 +25,7 @@
 <%@page import="DBViewer.objects.model.*" %>
 <%@page import="DBViewer.objects.view.*" %>
 <%@page import="DBViewer.controllers.*" %>
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
-   "http://www.w3.org/TR/html4/loose.dtd">
+<!DOCTYPE HTML>
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
@@ -54,6 +53,11 @@ var currentDragy;
         pageid = (String)request.getSession().getAttribute("pageid");
     }
     
+    String schemaUrlData = "?dbi="+dbi;
+    if (pageid !=null){
+        schemaUrlData = "?dbi="+dbi+"&pageid="+pageid;
+    }
+    
     SortedSchema currentSchema = (SortedSchema)request.getSession().getAttribute("CurrentSchema");
     SchemaPage sPage = (SchemaPage)request.getSession().getAttribute("CurrentPage");
     
@@ -64,7 +68,7 @@ var currentDragy;
 
 $(function() {
 
-      svg = $('#svgwindow').svg({loadURL: 'schema.svg.jsp'});
+svg = $('#svgwindow').svg({loadURL: 'schema.svg.jsp<%=schemaUrlData%>'});
 
       svg.mousemove(function (e){
            if (onTable) {
@@ -78,7 +82,7 @@ $(function() {
           } 
       });
       $('#saver').click(function(){
-           $.post("Model", { "m": "save" },
+           $.post("Diagram", { "m": "save" },
            function(data){
              alert(data);
            });
@@ -86,7 +90,7 @@ $(function() {
       });
 
       $('#sorter').click(function(){
-           $.post("Model", { "m": "refresh" },
+           $.post("Diagram", { "m": "refresh" },
            function(data){
             // alert("Data Loaded: " + data);
             location.reload(true);
@@ -102,7 +106,7 @@ $(function() {
     
     function tableUp(evt) {
         onTable = false;
-        $.post("Model", { "m": "setTablePosition", "name": evt.id, "x": currentDragx, "y": currentDragy },
+        $.post("Diagram", { "m": "setTablePosition", "name": evt.id, "x": currentDragx, "y": currentDragy },
            function(data){
             // alert("Data Loaded: " + data);
             location.reload(true);
@@ -151,7 +155,7 @@ $(function() {
 <a href="#"><div class="tab"><%= p.getTitle() %></div></a><% } %>
         </div><% } %>
         <div class="menu">
-            <a href="Menu">Back to Menu</a><a href="Setup?dbi=<%= dbi %>">Setup</a><a id="sorter" href="#Model?m=refresh">Re-sort</a><a id="saver" href="#Model?m=save">Save</a><a href="schema.svg.jsp" target="_blank">Download</a><span class="coord" id="coord" style="display:none">x,y</span>
+            <a href="Menu">Back to Menu</a><a href="Setup?dbi=<%= dbi %>">Setup</a><a id="sorter" href="#Diagram?m=refresh">Re-sort</a><a id="saver" href="#Diagram?m=save">Save</a><a href="schema.svg.jsp<%=schemaUrlData%>" target="_blank">Download</a><span class="coord" id="coord" style="display:none">x,y</span>
         </div>
         <div class="svgwrapper" style="width:<%= sPage.getWidth() %>px;height:<%= sPage.getHeight() %>px;">
             <div id="svgwindow" class="svgwindow"></div>

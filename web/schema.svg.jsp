@@ -28,19 +28,29 @@
 <%@page import="DBViewer.controllers.*" %>
 <%@page import="java.util.*" %>
 <%
-String dbi = (String)request.getSession().getAttribute("CurrentDBI");
-String pageid = (String)request.getSession().getAttribute("pageid");
+String dbi = request.getParameter("dbi");
+String pageid = request.getParameter("pageid");
 
-if (dbi!=null) {
+if (dbi == null) {
+    dbi = (String)request.getSession().getAttribute("CurrentDBI");
+}
+if (pageid == null) {
+    pageid = (String)request.getSession().getAttribute("pageid");
+}
+
+if (dbi != null) {
 
     SortedSchema currentSchema = new SortedSchema();
-    if (request.getSession().getAttribute("CurrentSchema")==null || request.getSession().getAttribute("CurrentSchema").getClass()!=currentSchema.getClass()) {
-        request.getSession().setAttribute("CurrentSchema",currentSchema);
+    if (request.getSession().getAttribute("CurrentSchema")==null || 
+            request.getSession().getAttribute("CurrentSchema").getClass()!=currentSchema.getClass() ||
+            !((SortedSchema)request.getSession().getAttribute("CurrentSchema")).getDbi().equals(dbi) ) {
+        
+        currentSchema.setDbi(dbi);
+        request.getSession().setAttribute("CurrentSchema", currentSchema);
     } else {
         currentSchema = (SortedSchema)request.getSession().getAttribute("CurrentSchema");
     }
-    SchemaController sc = SchemaController.getInstance();
-    SchemaPage sPage = sc.prepareSchema(currentSchema,request.getSession(), dbi, pageid);
+    SchemaPage sPage = SchemaController.prepareSchema(currentSchema, dbi, pageid);
 
     List<TableView> tableViews = sPage.getTableViews();
     
@@ -63,6 +73,11 @@ if (dbi!=null) {
    version="1.0"
    sodipodi:docname="template.svg"
    onload="init();" >
+<style type="text/css" >
+<![CDATA[
+<jsp:include page="css/diagramstyle.css" ></jsp:include>
+]]>
+</style>
 <svg:g id="<%= sPage.getId() %>"
    transform="translate(<%= sPage.getTransx() %>,<%= sPage.getTransy() %>)">
 <%
@@ -87,11 +102,11 @@ List<LinkLine> lines = sPage.getLines();
         <%
             }
           } else { %>
-          <svg:g>
-            <svg:rect width="350" height="50" x="20" y="90" fill="#9a564c"></svg:rect>
-            <svg:text x="40" y="120" fill="white" font-weight="bold"> 
-              No Schema Loaded</svg:text>
-          </svg:g>
+          <g>
+            <rect width="350" height="50" x="20" y="90" fill="#9a564c"></rect>
+            <text x="40" y="120" fill="white" font-weight="bold"> 
+              No Schema Loaded</text>
+          </g>
        <% } %>
        </svg:g>
    </svg>

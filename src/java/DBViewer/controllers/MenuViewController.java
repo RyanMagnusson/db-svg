@@ -20,45 +20,50 @@
  */
 package DBViewer.controllers;
 
+import DBViewer.ServiceLocator.ProdServiceLocator;
+import DBViewer.ServiceLocator.ServiceLocator;
 import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import DBViewer.models.*;
-import DBViewer.objects.view.SortedSchema;
 import java.io.PrintWriter;
 import java.util.*;
-import javax.naming.Context;
-import javax.naming.InitialContext;
 import java.sql.*;
 
 /**
  *
  * @author horizon
  */
-public class MenuViewController extends HttpServlet {
+public class MenuViewController extends AbstractViewController {
 
     /** 
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code> methods.
      *
-     * creates a the main menu page for the application.  Reads the settings for the dbs.xml config file,
-     * as well as the path to the internal database.  If the initial context values are not correct, it
-     * tries the failover values.
+     * creates a the main menu page for the application.  
+     * 
      * @param request servlet request
      * @param response servlet response
      * @throws ServletException if a servlet-specific error occurs
      * @throws IOException if an I/O error occurs
      */
+    @Override
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
+        // collect available parameters and initialize/retrieve objects
+        super.processRequest(request, response);
+        
+        sLocator = ProdServiceLocator.getInstance();
+        Connection conn = null;
+        InternalDataDAO iDAO = sLocator.getIDAO();
 
         String m = request.getParameter("m");
 
-// ----------------------------------->   ADD CONNECTION ACTION
+        // ----------------------------------->   ADD CONNECTION ACTION
         if (m != null && m.equals("addConnection")) {
-            InternalDataDAO iDAO = (InternalDataDAO) request.getSession().getAttribute("iDAO");
 
             String title = request.getParameter("title");
             String url = request.getParameter("url");
@@ -86,12 +91,13 @@ public class MenuViewController extends HttpServlet {
                     cw.setDriver(driver);
                     cw.setUsername(username);
                     cw.setPassword(password);
-                    Connection conn = null;
                     try {
                         conn = iDAO.getConnection();
                         iDAO.saveConnectionWrapperNewID(cw, conn);
+                        sLocator.getProgramCache().putConnection(Integer.toString(cw.getId()), cw);
                         out.println(cw.getId());
                     } catch (Exception e) {
+                        Logger.getLogger(MenuViewController.class.getName()).log(Level.SEVERE, e.getMessage(), e);
                         e.printStackTrace();
                         out.println("0");
                     } finally {
@@ -99,6 +105,7 @@ public class MenuViewController extends HttpServlet {
                             conn.close();
                         } catch (Exception ex) {
                             // It's probably already closed or never opened but we'll trace it anyway
+                            Logger.getLogger(MenuViewController.class.getName()).log(Level.SEVERE, ex.getMessage(), ex);
                             ex.printStackTrace();
                         }
                     }
@@ -107,9 +114,8 @@ public class MenuViewController extends HttpServlet {
             } finally {
                 out.close();
             }
-// ----------------------------------->   SAVE EXISTING CONNECTION ACTION
+            // ----------------------------------->   SAVE EXISTING CONNECTION ACTION
         } else if (m != null && m.equals("saveConnection")) {
-            InternalDataDAO iDAO = (InternalDataDAO) request.getSession().getAttribute("iDAO");
 
             String dbi = request.getParameter("dbi");
             String title = request.getParameter("title");
@@ -132,31 +138,23 @@ public class MenuViewController extends HttpServlet {
                 if (!isValid) {
                     out.println("0");
                 } else {
-                     Object dbc = request.getSession().getAttribute("DB-Connections");
-                    Map<String, ConnectionWrapper> cwmap = new HashMap<String, ConnectionWrapper>();
-
                     ConnectionWrapper cw = new ConnectionWrapper();
+                    cw = sLocator.getProgramCache().getConnection(dbi);
 
-                    if (dbc != null && dbc.getClass() == cwmap.getClass()) {
-                        cwmap = (Map<String, ConnectionWrapper>) dbc;
-                        cw = cwmap.get(dbi);
-                        request.getSession().setAttribute("CurrentConn", cw);
-                    }
                     cw.setId(Integer.parseInt(dbi));
                     cw.setTitle(title);
                     cw.setUrl(url);
                     cw.setDriver(driver);
                     cw.setUsername(username);
                     cw.setPassword(password);
-                    Connection conn = null;
 
                     try {
                         conn = iDAO.getConnection();
                         iDAO.saveConnectionWrapper(cw, conn);
-                        SortedSchema currentSchema = (SortedSchema)request.getSession().getAttribute("CurrentSchema");
-                        currentSchema.setName(title);
+                        sLocator.getProgramCache().putConnection(Integer.toString(cw.getId()), cw);
                         out.println("1");
                     } catch (Exception e) {
+                        Logger.getLogger(MenuViewController.class.getName()).log(Level.SEVERE, e.getMessage(), e);
                         e.printStackTrace();
                         out.println("0");
                     } finally {
@@ -164,6 +162,7 @@ public class MenuViewController extends HttpServlet {
                             conn.close();
                         } catch (Exception ex) {
                             // It's probably already closed or never opened but we'll trace it anyway
+                            Logger.getLogger(MenuViewController.class.getName()).log(Level.SEVERE, ex.getMessage(), ex);
                             ex.printStackTrace();
                         }
                     }
@@ -172,9 +171,8 @@ public class MenuViewController extends HttpServlet {
             } finally {
                 out.close();
             }
-// ----------------------------------->   REMOVE CONNECTION ACTION
+            // ----------------------------------->   REMOVE CONNECTION ACTION
         } else if (m != null && m.equals("removeConnection")) {
-            InternalDataDAO iDAO = (InternalDataDAO) request.getSession().getAttribute("iDAO");
 
             String id = request.getParameter("id");
 
@@ -182,66 +180,54 @@ public class MenuViewController extends HttpServlet {
             response.setContentType("text/html;charset=UTF-8");
             PrintWriter out = response.getWriter();
             try {
-                    Connection conn = null;
+                try {
+                    conn = iDAO.getConnection();
+                    iDAO.deleteConnectionWrapper(id, conn);
+                    Map<String, ConnectionWrapper> prefs = new HashMap();
+                    prefs = iDAO.readAllConnectionWrappers(conn);
+                    sLocator.getProgramCache().setAllConnections(prefs);
+                    out.println(id);
+                } catch (Exception e) {
+                    Logger.getLogger(MenuViewController.class.getName()).log(Level.SEVERE, e.getMessage(), e);
+                    e.printStackTrace();
+                    out.println("0");
+                } finally {
                     try {
-                        conn = iDAO.getConnection();
-                        iDAO.deleteConnectionWrapper(id, conn);
-                        Map<String, ConnectionWrapper> prefs = new HashMap();
-                        prefs = iDAO.readAllConnectionWrappers(conn);
-                        request.getSession().setAttribute("DB-Connections", prefs);
-                        out.println(id);
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                        out.println("0");
-                    } finally {
-                        try {
-                            conn.close();
-                        } catch (Exception ex) {
-                            // It's probably already closed or never opened but well trace it anyway
-                            ex.printStackTrace();
-                        }
+                        conn.close();
+                    } catch (Exception ex) {
+                        // It's probably already closed or never opened but we'll trace it anyway
+                        Logger.getLogger(MenuViewController.class.getName()).log(Level.SEVERE, ex.getMessage(), ex);
+                        ex.printStackTrace();
                     }
+                }
 
             } finally {
                 out.close();
             }
 
-// ----------------------------------->   MAIN MENU ACTION
+            // ----------------------------------->   MAIN MENU ACTION
         } else {
-
-            Connection conn = null;
             try {
-                Context env = (Context) new InitialContext().lookup("java:comp/env");
-
-                String iDAOpath = (String) env.lookup("AppDBLocation");
-
-                InternalDataDAO iDAO = InternalDataDAO.getInstance(iDAOpath);
-                try {
-                    conn = iDAO.getConnection();
-                } catch (SQLException e) {
-                    System.out.println("Attempting Second DB path.");
-                    iDAOpath = (String) env.lookup("AppDBLocation2");
-                    iDAO.setPath(iDAOpath);
-                    conn = iDAO.getConnection();
-                }
-                request.getSession().setAttribute("iDAO", iDAO);
+                
+                conn = iDAO.getConnection();
                 iDAO.setUpInternalDB(conn);
 
                 Map<String, ConnectionWrapper> prefs = new HashMap();
                 prefs = iDAO.readAllConnectionWrappers(conn);
-                request.getSession().setAttribute("DB-Connections", prefs);
-
+                sLocator.getProgramCache().setAllConnections(prefs);
 
                 getServletConfig().getServletContext().getRequestDispatcher(
                         "/menu.jsp").forward(request, response);
 
             } catch (Exception e) {
+                Logger.getLogger(MenuViewController.class.getName()).log(Level.SEVERE, e.getMessage(), e);
                 e.printStackTrace();
             } finally {
                 try {
                     conn.close();
                 } catch (Exception ex) {
-                    // It's probably already closed or never opened but well trace it anyway
+                    // It's probably already closed or never opened but we'll trace it anyway
+                    Logger.getLogger(MenuViewController.class.getName()).log(Level.SEVERE, ex.getMessage(), ex);
                     ex.printStackTrace();
                 }
             }

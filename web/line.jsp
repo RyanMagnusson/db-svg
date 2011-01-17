@@ -36,11 +36,12 @@ double ya3 = l.getYa3();
 
 %>
 <g
+    class="svgTableLine"
      id="line-<%=l.getStartingTable().getName()+"->"+l.getForeignkey().getReferencedTable() %>">
     <path
        d="M <%=x1 %>,<%=y1 %> L <%=x2 %>,<%=y2 %>"
-       style="fill:none;fill-rule:evenodd;stroke:#666666;stroke-width:2.2px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:.8" />
+       class="lineShaft" />
     <path
        d="M <%=xa1 %>,<%=ya1 %> L <%=xa2 %>,<%=ya2 %> L <%=xa3 %>,<%=ya3 %> L <%=xa1 %>,<%=ya1 %> z"
-       style="fill:#5c6f6c;fill-opacity:.99;fill-rule:evenodd;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+       class="arrowHead" />
   </g>

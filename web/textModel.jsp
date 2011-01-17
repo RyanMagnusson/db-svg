@@ -74,8 +74,7 @@ Shows a text representation of the database.
         // if a schema is found, load it from the session.
         currentSchema = (SortedSchema)request.getSession().getAttribute("CurrentSchema");
     }
-    SchemaController sc = SchemaController.getInstance();
-    sc.prepareSchema(currentSchema,request.getSession(), dbi, pageid);
+    SchemaController.prepareSchema(currentSchema, dbi, pageid);
 
           for (Table t : currentSchema.getTables().values()) {
              out.println("<h3 class=\"ui-widget-header ui-corner-all\">"+t.getName()+"</h3><ul>");

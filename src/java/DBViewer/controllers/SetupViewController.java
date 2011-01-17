@@ -21,6 +21,7 @@
 
 package DBViewer.controllers;
 
+import DBViewer.ServiceLocator.ProdServiceLocator;
 import DBViewer.models.ConnectionWrapper;
 import DBViewer.objects.view.SchemaPage;
 import DBViewer.objects.view.SortedSchema;
@@ -36,7 +37,7 @@ import javax.servlet.http.HttpServletResponse;
  *
  * @author horizon
  */
-public class SetupViewController extends HttpServlet {
+public class SetupViewController extends AbstractViewController {
    
     /** 
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code> methods.
@@ -45,39 +46,14 @@ public class SetupViewController extends HttpServlet {
      * @throws ServletException if a servlet-specific error occurs
      * @throws IOException if an I/O error occurs
      */
+    @Override
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
     throws ServletException, IOException {
 
         // collect available parameters and initialize/retrieve objects
-        String dbi = request.getParameter("dbi");
-        String pageid = request.getParameter("page");
-        if (pageid == null) {
-            pageid = (String) request.getSession().getAttribute("pageid");
-        }
-        SortedSchema currentSchema = new SortedSchema();
-        if (request.getSession().getAttribute("CurrentSchema") == null || request.getSession().getAttribute("CurrentSchema").getClass() != currentSchema.getClass()) {
-            // if no schema loaded, save the new one to the session
-            request.getSession().setAttribute("CurrentSchema", currentSchema);
-        } else {
-            // if a schema is found, load it from the session.
-            currentSchema = (SortedSchema) request.getSession().getAttribute("CurrentSchema");
-        }
-        SchemaController sc = SchemaController.getInstance();
-        // prepare the requested page of the schema for display.
-        SchemaPage sPage = sc.prepareSchema(currentSchema, request.getSession(), dbi, pageid);
-
-        request.getSession().setAttribute("CurrentPage", sPage);
-
-        Object dbc = request.getSession().getAttribute("DB-Connections");
-        Map<String, ConnectionWrapper> cwmap = new HashMap<String, ConnectionWrapper>();
-
-        if (dbc != null && dbc.getClass() == cwmap.getClass()) {
-            cwmap = (Map<String, ConnectionWrapper>) dbc;
-            ConnectionWrapper cw = cwmap.get(dbi);
-            request.getSession().setAttribute("CurrentConn", cw);
-        }
-
-
+        super.processRequest(request, response);
+        sLocator = ProdServiceLocator.getInstance();
+        
         String m = request.getParameter("m");
 
 // ----------------------------------->   SETUP INFO ACTION
@@ -135,7 +111,7 @@ public class SetupViewController extends HttpServlet {
      */
     @Override
     public String getServletInfo() {
-        return "Short description";
+        return "Displays the setup page for a DB ";
     }// </editor-fold>
 
 }

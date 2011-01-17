@@ -23,6 +23,7 @@ package DBViewer.objects.view;
 import java.util.*;
 import java.io.Serializable;
 import DBViewer.objects.model.*;
+import DBViewer.services.*;
 /**
  *
  * @author horizon
@@ -39,6 +40,8 @@ public class SchemaPage implements Comparable<SchemaPage>,Serializable{
     int transy = 0;
     SortedSchema schema;
     List<LinkLine> lines = new ArrayList();
+    ITablePageSorter pageSorter;
+    Boolean sorted = false;
 
     public SchemaPage(){
         this.id = UUID.randomUUID();
@@ -92,6 +95,7 @@ public class SchemaPage implements Comparable<SchemaPage>,Serializable{
 
     public void setTableViews(List<TableView> tableViews) {
         this.tableViews = tableViews;
+        sorted = false;
     }
 
     public UUID getId() {
@@ -202,6 +206,14 @@ public class SchemaPage implements Comparable<SchemaPage>,Serializable{
                 if (tv.getTable().getId().compareTo(t.getId())==0) return true;
             }
         return false;
+    }
+
+    public Boolean isSorted() {
+        return sorted;
+    }
+
+    public void setSorted(Boolean sorted) {
+        this.sorted = sorted;
     }
     
 

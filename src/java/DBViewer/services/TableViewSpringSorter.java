@@ -18,7 +18,7 @@
  *
  *
  */
-package DBViewer.controllers;
+package DBViewer.services;
 
 import java.util.*;
 import DBViewer.objects.view.*;
@@ -63,7 +63,7 @@ import java.io.Serializable;
  *
  * @author horizon
  */
-public class TableViewSorter implements Serializable {
+public class TableViewSpringSorter implements Serializable, ITablePageSorter {
 
     private double[][] relativeAttraction;
     InternalDataDAO iDAO;
@@ -83,35 +83,35 @@ public class TableViewSorter implements Serializable {
     private static int CENTER_Y = 100;
 
     ///////////////////  Singletoning it  ///////////////////
-   private static TableViewSorter instance = null;
+   private static TableViewSpringSorter instance = null;
 
    /**
     * private constructor
     */
-   private TableViewSorter(InternalDataDAO iDAO) {
+   public TableViewSpringSorter(InternalDataDAO iDAO) {
         this.iDAO = iDAO;
     }
-
-//Was causing the program to load an incorrenct internal DAO database
+//
+////Was causing the program to load an incorrenct internal DAO database
+////   /**
+////    * private constructor
+////    */
+////   private TableViewSorter() {
+////       this.iDAO = iDAO.getInstance("/test.db");
+////    }
+//
 //   /**
-//    * private constructor
+//    * returns an instance of the Controller.
+//    * @return
 //    */
-//   private TableViewSorter() {
-//       this.iDAO = iDAO.getInstance("/test.db");
-//    }
-
-   /**
-    * returns an instance of the Controller.
-    * @return
-    */
-   public static TableViewSorter getInstance(InternalDataDAO iDAO) {
-      if (instance == null) {
-         instance = new TableViewSorter(iDAO);
-      } else {
-          instance.setIDAO(iDAO);
-      }
-      return instance;
-   }
+//   public static TableViewSpringSorter getInstance(InternalDataDAO iDAO) {
+//      if (instance == null) {
+//         instance = new TableViewSpringSorter(iDAO);
+//      } else {
+//          instance.setIDAO(iDAO);
+//      }
+//      return instance;
+//   }
 
 //    Was causing the program to load an incorrenct internal DAO database
 //    /**
@@ -130,7 +130,7 @@ public class TableViewSorter implements Serializable {
      * @param tables
      * @return
      */
-    public List<TableView> SortAction(SchemaPage currentPage, boolean resort) {
+    public List<TableView> SortPage(SchemaPage currentPage, boolean resort) {
         int i = 0;
         relativeAttraction = new double[currentPage.getTableViews().size()][currentPage.getTableViews().size()];
         List<TableView> tableViewswDirtyValues = new ArrayList();
@@ -239,6 +239,7 @@ public class TableViewSorter implements Serializable {
         /* PLAN: Spring algorithm
          *
          */
+        currentPage.setSorted(true);
         return tableViews;
     }
 

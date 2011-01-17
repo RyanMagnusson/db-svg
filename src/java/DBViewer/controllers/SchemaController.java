@@ -20,14 +20,14 @@
  */
 package DBViewer.controllers;
 
+import DBViewer.ServiceLocator.ProdServiceLocator;
+import DBViewer.ServiceLocator.ServiceLocator;
 import java.util.*;
 import java.sql.*;
-import javax.servlet.http.*;
 import DBViewer.objects.model.*;
 import DBViewer.objects.view.*;
 import DBViewer.models.*;
-import javax.naming.Context;
-import javax.naming.InitialContext;
+import DBViewer.services.ITablePageSorter;
 
 /**
  * Controller in charge of reading, saving, and sorting a schema.
@@ -35,32 +35,14 @@ import javax.naming.InitialContext;
  */
 public class SchemaController {
 
-    MainDAO dao = MainDAO.getInstance();
-    TableViewSorter tvSorter;
-    InternalDataDAO iDAO;
+    private static IMainDAO dao;
+    private static ITablePageSorter tvSorter;
+    private static InternalDataDAO iDAO;
+    private static ServiceLocator sLocator;
     // So that the Databases can be given a default page to start out with.
     // This page will be generated when no page is found, but the user can
     // rename it to whatever they want.
-    public static String DB_SVG_DEFAULT_NAMESPACE = "DB-SVG_DEFAULT";
-///////////////////  Singletoning it  ///////////////////
-    private static SchemaController instance = null;
-
-    /**
-     * private constructor
-     */
-    private SchemaController() {
-    }
-
-    /**
-     * returns an instance of the Controller.
-     * @return
-     */
-    public static SchemaController getInstance() {
-        if (instance == null) {
-            instance = new SchemaController();
-        }
-        return instance;
-    }
+    public static String DB_SVG_DEFAULT_NAMESPACE = "DBSVG_DEFAULT";
 
     /**
      * Contains Logic for preparing a schema's tables.
@@ -71,32 +53,23 @@ public class SchemaController {
      * @param session
      * @param dbi
      */
-    public SchemaPage prepareSchema(SortedSchema schema, HttpSession session, String dbi, String pageid) {
+    public static SchemaPage prepareSchema(SortedSchema schema, String dbi, String pageid) {
+        sLocator = ProdServiceLocator.getInstance();
+        dao = sLocator.getMainDAO();
+        iDAO = sLocator.getIDAO();
         SchemaPage page;
-        try {
-            //attempt to get the Internal Database
-            iDAO = (InternalDataDAO) session.getAttribute("iDAO");
-            if (iDAO == null) {
-                throw new Exception("Error Retreiving internal Database");
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-            try {
-                Context env = (Context) new InitialContext().lookup("java:comp/env");
-                String iDAOpath = (String) env.lookup("AppDBLocation");
-                iDAO = InternalDataDAO.getInstance(iDAOpath);
-            } catch (Exception ex) {
-                ex.printStackTrace();
-            }
-        }
+
         //get the table sorting object
-        tvSorter = TableViewSorter.getInstance(iDAO);
+        tvSorter = sLocator.getTableSorter();
         boolean isNewTables = false;
         if (dbi != null) {
-            isNewTables = readTables(schema, session, dbi);
+            ConnectionWrapper cw = sLocator.getProgramCache().getConnection(dbi);
+            if (cw != null) {
+                isNewTables = readTables(schema, cw);
+            }
         }
 
-        if ((pageid != null && !pageid.equals("")) && schema.getPages().get(UUID.fromString(pageid)) != null) {
+        if ((pageid != null && !pageid.equals("") && !pageid.equals("null")) && schema.getPages().get(UUID.fromString(pageid)) != null) {
             try {
                 UUID pid = UUID.fromString(pageid);
                 page = schema.getPages().get(pid);
@@ -109,74 +82,64 @@ public class SchemaController {
             page = schema.getFirstPage();
             prepareTableViews(page, isNewTables);
         }
-        session.setAttribute("pageid", page.getId().toString());
         return page;
     }
 
     /**
-     * Reads the table objects from the database based on the DBI session variable
+     * Reads the table objects from the database based on the Connection Wrapper
      * @param session
      * @param dbi
      */
-    private boolean readTables(SortedSchema schema, HttpSession session, String dbi) {
+    private static boolean readTables(SortedSchema schema, ConnectionWrapper cw) {
         boolean newTables = false;
-        if (session.getAttribute("CurrentDBI") == null
-                || (session.getAttribute("CurrentDBI") != null && !session.getAttribute("CurrentDBI").equals(dbi))) {
-
-            Object dbc = session.getAttribute("DB-Connections");
-            Map<String, ConnectionWrapper> cwmap = new HashMap<String, ConnectionWrapper>();
-
-            if (dbc != null && dbc.getClass() == cwmap.getClass()) {
-                cwmap = (Map<String, ConnectionWrapper>) dbc;
-                Connection conn = null;
-                
+        Connection conn = null;
+        if (schema.getNumTables() < 1) {
+            try {
+                conn = cw.getConnection();
+                schema.setTables(dao.getTables(conn, cw.getTitle()));
+                schema.setName(cw.getTitle());
+                newTables = true;
+                readSchemaPages(schema);
+            } catch (Exception e) {
+                System.out.println("Unable to Connect to Database");
+                e.printStackTrace();
+                Connection iconn = null;
                 try {
-                    conn = cwmap.get(dbi).getConnection();
-                    schema.setTables(dao.getTables(conn, cwmap.get(dbi).getTitle()));
-                    schema.setName(cwmap.get(dbi).getTitle());
-                    session.setAttribute("CurrentDBI", dbi);
+                    //TODO: save tables and read from internal DB if no connection found
+                    //if the table exists in the internal database already, just read it from there.
+                    //iconn= iDAO.getConnection();
+                    //schema.setTables(iDAO.makeAllTablesForSchema(cwmap.get(dbi).getTitle(), iconn));
+                    Table t = new Table();
+                    t.setName("Unable to Connect");
+                    t.setSchemaName(cw.getTitle());
+                    Column c = new ColumnObject();
+                    c.setName(e.toString());
+                    t.getColumns().put(c.getName(), c);
+                    Map<String, Table> tables = new HashMap();
+                    tables.put(t.getName(), t);
+                    schema.setTables(tables);
                     newTables = true;
                     readSchemaPages(schema);
-                    // maybe set defaultpage here?
-                } catch (Exception e) {
-                    System.out.println("Unable to Connect to MySQL Database");
-                    e.printStackTrace();
-                    Connection iconn = null;
-                    try {
-                        //TODO: save tables and read from internal DB if no connection found
-                        //if the table exists in the internal database already, just read it from there.
-                        //iconn= iDAO.getConnection();
-                        //schema.setTables(iDAO.makeAllTablesForSchema(cwmap.get(dbi).getTitle(), iconn));
-                        Table t = new Table();
-                        t.setName("Unable to Connect");
-                        t.setSchemaName(cwmap.get(dbi).getTitle());
-                        Column c = new ColumnObject();
-                        c.setName(e.toString());
-                        t.getColumns().put(c.getName(), c);
-                        Map<String, Table> tables = new HashMap();
-                        tables.put(t.getName(), t);
-                        schema.setTables(tables);
-                        newTables = true;
-                        readSchemaPages(schema);
-                        
-                    } catch (Exception ie) {
-                        System.out.println("Error Reading Internal Database");
-                        ie.printStackTrace();
-                    } finally {
-                        try {
-                            iconn.close();
-                        } catch (Exception fe) {
-                        System.out.println("Error Closing Internal Database");
-                            fe.printStackTrace();
-                        }
-                    }
+
+                } catch (Exception ie) {
+                    System.out.println("Error Reading Internal Database");
+                    ie.printStackTrace();
                 } finally {
                     try {
-                        conn.close();
-                    } catch (Exception e) {
-                    System.out.println("Error Closing Database");
-                        e.printStackTrace();
+                    if (iconn!=null)
+                            iconn.close();
+                    } catch (Exception fe) {
+                        System.out.println("Error Closing Internal Database");
+                        fe.printStackTrace();
                     }
+                }
+            } finally {
+                try {
+                    if (conn!=null)
+                        conn.close();
+                } catch (Exception e) {
+                    System.out.println("Error Closing Database");
+                    e.printStackTrace();
                 }
             }
         }
@@ -189,7 +152,7 @@ public class SchemaController {
      *
      * @param isNewTables
      */
-    private void prepareTableViews(SchemaPage page, boolean isNewTables) {
+    private static void prepareTableViews(SchemaPage page, boolean isNewTables) {
         List<LinkLine> lines = page.getLines();
         if (!page.areTableViewsClean() || isNewTables) {
             int numDirty = 0;
@@ -198,7 +161,7 @@ public class SchemaController {
                     numDirty++;
                 }
             }
-            tvSorter.SortAction(page, numDirty == page.getTableViews().size());
+            tvSorter.SortPage(page, numDirty == page.getTableViews().size());
             tvSorter.calcLines(page);
         } else {
             List<TableView> tablesToClean = new ArrayList();
@@ -218,7 +181,7 @@ public class SchemaController {
      *
      * @throws java.lang.Exception
      */
-    private void readSchemaPages(SortedSchema schema) throws Exception {
+    private static void readSchemaPages(SortedSchema schema) throws Exception {
         if (schema.getTables().size() > 0) {
             Connection conn = iDAO.getConnection();
             Map<UUID, SchemaPage> pages = iDAO.readSchemaPages(schema, conn);
@@ -248,7 +211,9 @@ public class SchemaController {
      * Saves the positions in the already populated table views
      * @throws java.lang.Exception
      */
-    public void saveTablePositions(SchemaPage page) throws Exception {
+    public static void saveTablePositions(SchemaPage page) throws Exception {
+        sLocator = ProdServiceLocator.getInstance();
+        iDAO = sLocator.getIDAO();
         Connection conn = iDAO.getConnection();
         iDAO.verifySchema(page.getSchema().getName(), conn);
         iDAO.saveSchemaPage(page, conn);
@@ -263,13 +228,17 @@ public class SchemaController {
      * public access method
      * @param resort
      */
-    public void resortTableViews(SchemaPage currentPage) {
-        tvSorter.SortAction(currentPage, true);
+    public static void resortTableViews(SchemaPage currentPage) {
+        sLocator = ProdServiceLocator.getInstance();
+        tvSorter = sLocator.getTableSorter();
+        tvSorter.SortPage(currentPage, true);
         tvSorter.calcLines(currentPage);
         currentPage.calcDimensions();
     }
 
-    public void saveTableViews(SchemaPage currentPage) {
+    public static void saveTableViews(SchemaPage currentPage) {
+        sLocator = ProdServiceLocator.getInstance();
+        iDAO = sLocator.getIDAO();
         try {
             Connection conn = iDAO.getConnection();
             iDAO.saveSchemaPage(currentPage, conn);

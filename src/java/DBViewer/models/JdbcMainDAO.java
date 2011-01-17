@@ -29,7 +29,7 @@ import java.io.Serializable;
  *
  * @author Derrick Bowen <derrickbowen@gmail.com>
  */
-public class MainDAO implements Serializable{
+public class JdbcMainDAO implements Serializable, IMainDAO{
 
     private static int CHAR_WIDTH = 6;
     private static int PAD_WIDTH = 15;
@@ -38,24 +38,24 @@ public class MainDAO implements Serializable{
 
 
 ///////////////////  Singletoning it  ///////////////////
-   private static MainDAO instance = null;
+//   private static MainDAO instance = null;
 
    /**
     * private constructor
     */
-   private MainDAO() {
+   public JdbcMainDAO() {
    }
 
-   /**
-    * returns an instance of the DAO.
-    * @return
-    */
-   public static MainDAO getInstance() {
-      if (instance == null) {
-         instance = new MainDAO();
-      }
-      return instance;
-   }
+//   /**
+//    * returns an instance of the DAO.
+//    * @return
+//    */
+//   public static MainDAO getInstance() {
+//      if (instance == null) {
+//         instance = new MainDAO();
+//      }
+//      return instance;
+//   }
 /////////////////////////////////////////////////////////
    
 

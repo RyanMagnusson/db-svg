@@ -28,8 +28,11 @@
 <%@page import="DBViewer.objects.model.*" %>
 <%@page import="DBViewer.objects.view.*" %>
 <%@page import="DBViewer.controllers.*" %>
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
-    "http://www.w3.org/TR/html4/loose.dtd">
+<%@page import="DBViewer.ServiceLocator.*" %>
+<%  
+ServiceLocator sLocator = ProdServiceLocator.getInstance();
+%>
+<!DOCTYPE HTML>
 
 <html>
     <head>
@@ -54,7 +57,7 @@
                 $("#loadDialog").dialog({
                     autoOpen: false,
                     resizable: false,
-                    height:80,
+                    height:170,
                     modal: true
                 });
                 $("#removeDialog").dialog({
@@ -103,7 +106,7 @@
                                         alert("Unable to add connection.");
                                     } else {
                                         $(".frontmenuadd").remove();
-                                        $(".frontmenulist").append('<li id="conn' + data + '"><a href="Model?dbi=' + data + '" onclick="showLoading();" >' + title.val() + '</a><span class="frontmenusetup"><a href="Setup?dbi=' + data + '" onclick="showLoading();" ><img src="images/document-properties.png\" alt=\"Setup\" border=0></a></span><span class="frontmenuremove"><a href="#Remove' + data + '" onclick=\"showRemove(' + data + ',\'' + title.val() + '\');" ><img src="images/edit-delete.png" alt="Remove" border=0></a></span></li>');
+                                        $(".frontmenulist").append('<li id="conn' + data + '"><a href="Diagram?dbi=' + data + '" onclick="showLoading();" >' + title.val() + '</a><span class="frontmenusetup"><a href="Setup?dbi=' + data + '" onclick="showLoading();" ><img src="images/document-properties.png\" alt=\"Setup\" border=0></a></span><span class="frontmenuremove"><a href="#Remove' + data + '" onclick=\"showRemove(' + data + ',\'' + title.val() + '\');" ><img src="images/edit-delete.png" alt="Remove" border=0></a></span></li>');
                                         $(".frontmenulist").append('<li class="frontmenuadd"><a href="#" onclick="showAdd();" >+ Add Connection</a></li>');
                                         resetFields();
                                     }
@@ -168,14 +171,14 @@
         <div id="content" class="contentBoxMenu">
             <h2>Exploreable Databases:</h2>
             <ul class="frontmenulist">
-                <%
-                          Map<String, ConnectionWrapper> prefs = (Map<String, ConnectionWrapper>) request.getSession().getAttribute("DB-Connections");
+                <% 
+                          Map<String, ConnectionWrapper> prefs = sLocator.getProgramCache().getAllConnections();
                           List<ConnectionWrapper> connections = new ArrayList();
                           connections.addAll(prefs.values());
                           Collections.sort(connections);
 
                           for (ConnectionWrapper cw : connections) {
-                              out.println("<li id=\"conn" + cw.getId() + "\"><a href=\"Model?dbi=" + cw.getId() + "\" onclick=\"showLoading();\" >" + cw.getTitle() + "</a><span class=\"frontmenusetup\"><a href=\"Setup?dbi=" + cw.getId() + "\" onclick=\"showLoading();\" ><img src=\"images/document-properties.png\" alt=\"Setup\" border=0></a></span><span class=\"frontmenuremove\"><a href=\"#Remove" + cw.getId() + "\" onclick=\"showRemove(" + cw.getId() + ",'" + cw.getTitle() + "');\" ><img src=\"images/edit-delete.png\" alt=\"Remove\" border=0></a></span></li>");
+                              out.println("<li id=\"conn" + cw.getId() + "\"><a href=\"Diagram?dbi=" + cw.getId() + "\" onclick=\"showLoading();\" >" + cw.getTitle() + "</a><span class=\"frontmenusetup\"><a href=\"Setup?dbi=" + cw.getId() + "\" onclick=\"showLoading();\" ><img src=\"images/document-properties.png\" alt=\"Setup\" border=0></a></span><span class=\"frontmenuremove\"><a href=\"#Remove" + cw.getId() + "\" onclick=\"showRemove(" + cw.getId() + ",'" + cw.getTitle() + "');\" ><img src=\"images/edit-delete.png\" alt=\"Remove\" border=0></a></span></li>");
                           }
                 %>
                 <li class="frontmenuadd"><a href="#" onclick="showAdd();" >+ Add Connection</a></li>

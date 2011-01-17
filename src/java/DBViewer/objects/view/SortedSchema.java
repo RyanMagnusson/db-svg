@@ -25,7 +25,7 @@ import DBViewer.objects.model.*;
 import java.io.Serializable;
 
 /**
- * A View object that represents all of the tables in a schema (possibly
+ * An Object Graph / View object that represents all of the tables in a schema (possibly
  * divided into multiple pages) and the lines connecting them.
  * 
  * @author horizon
@@ -39,9 +39,16 @@ public class SortedSchema implements Serializable{
     Map<UUID,SchemaPage> pages = new LinkedHashMap();
     Map<String, Table> tables = new HashMap<String, Table>();
     String name = "";
+    String dbi;
 
     boolean tablesSorted = false;
 
+    /**
+     * 
+     */
+    public SortedSchema() {
+    }
+    
 /**
  * Convenience method.
  * @param i
@@ -110,6 +117,22 @@ public class SortedSchema implements Serializable{
         this.name = name;
     }
 
+    /**
+     * Menu Database Index
+     * @return 
+     */
+    public String getDbi() {
+        return dbi;
+    }
+    
+    /**
+     * Menu Database Index
+     * @return 
+     */
+    public void setDbi(String dbi) {
+        this.dbi = dbi;
+    }
+
     public Map<UUID, SchemaPage> getPages() {
         return pages;
     }
@@ -132,6 +155,10 @@ public class SortedSchema implements Serializable{
 
     public void setTablesSorted(boolean tablesSorted) {
         this.tablesSorted = tablesSorted;
+    }
+    
+    public int getNumTables() {
+        return tables.size();
     }
 
 }

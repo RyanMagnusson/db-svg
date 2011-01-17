@@ -11,13 +11,13 @@
         <servlet-class>DBViewer.controllers.SetupViewController</servlet-class>
     </servlet>
     <servlet>
-        <servlet-name>ModelViewController</servlet-name>
-        <servlet-class>DBViewer.controllers.ModelViewController</servlet-class>
+        <servlet-name>DiagramViewController</servlet-name>
+        <servlet-class>DBViewer.controllers.DiagramViewController</servlet-class>
     </servlet>
     <servlet-mapping>
-        <servlet-name>ModelViewController</servlet-name>
-        <url-pattern>/Model</url-pattern>
-        <url-pattern>/model</url-pattern>
+        <servlet-name>DiagramViewController</servlet-name>
+        <url-pattern>/Diagram</url-pattern>
+        <url-pattern>/diagram</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>SetupViewController</servlet-name>
