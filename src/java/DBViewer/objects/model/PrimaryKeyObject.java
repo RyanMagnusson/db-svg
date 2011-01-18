@@ -25,7 +25,7 @@ package DBViewer.objects.model;
  * @author Derrick Bowen <derrickbowen@gmail.com>
  */
 public class PrimaryKeyObject extends ColumnObject implements PrimaryKey {
-
+ boolean autoIncrement;
 
    /**
     * 
@@ -39,6 +39,22 @@ public class PrimaryKeyObject extends ColumnObject implements PrimaryKey {
     */
    public PrimaryKeyObject(String name) {
       super.name = name;
+   }
+   
+   /**
+    * 
+    * @return
+    */
+   public boolean isAutoIncrement() {
+      return autoIncrement;
+   }
+
+   /**
+    * 
+    * @param autoIncrement
+    */
+   public void setAutoIncrement(boolean autoIncrement) {
+      this.autoIncrement = autoIncrement;
    }
    
    public PrimaryKey cloneTo(PrimaryKey pk) {

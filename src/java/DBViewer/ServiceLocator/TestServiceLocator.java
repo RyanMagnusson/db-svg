@@ -11,7 +11,6 @@ import DBViewer.services.DBViewerMinimalCache;
 import DBViewer.services.IDBViewerCache;
 import DBViewer.services.ITablePageSorter;
 import DBViewer.services.TableViewSpringSorter;
-import java.util.Set;
 
 /**
  *

@@ -42,18 +42,7 @@ public class SQLiteInternalDataDAO implements Serializable, InternalDataDAO {
         this.path = path;
         System.out.println("INFO: Initializing Internal DAO with path: "+path);
     }
-
-//    /**
-//     * returns an instance of the DAO.
-//     * @return
-//     */
-//    public static SQLiteInternalDataDAO getInstance(String path) {
-//        if (instance == null) {
-//            instance = new SQLiteInternalDataDAO(path);
-//        }
-//        return instance;
-//    }
-
+    
     /**
      * Generates a connection from the internal DB based on the initialized path.
      *
@@ -455,19 +444,6 @@ public class SQLiteInternalDataDAO implements Serializable, InternalDataDAO {
             e.printStackTrace();
         }
         return pages;
-    }
-
-    /**
-     * test method, creates a SQLite DB with the proper tables.
-     *
-     * @param args
-     * @throws java.lang.Exception
-     */
-    public static void main(String[] args) throws Exception {
-        InternalDataDAO iDAO =  new SQLiteInternalDataDAO("/DB-SVG/DB-SVG-2.db");
-        Connection conn = iDAO.getConnection();
-        iDAO.setUpInternalDB(conn);
-
     }
 
     public String getPath() {

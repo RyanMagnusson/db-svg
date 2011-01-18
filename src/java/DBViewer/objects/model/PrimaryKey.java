@@ -26,4 +26,6 @@ package DBViewer.objects.model;
  */
 public interface PrimaryKey extends Column {
 
+   public boolean isAutoIncrement();
+   public void setAutoIncrement(boolean autoIncrement);
 }

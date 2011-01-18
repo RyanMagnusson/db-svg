@@ -22,21 +22,21 @@ package DBViewer.models;
 
 import java.sql.*;
 import javax.sql.ConnectionEventListener;
-import javax.sql.PooledConnection;
 import javax.sql.StatementEventListener;
 
 /**
  *
  * @author Derrick Bowen <derrickbowen@gmail.com>
  * 
- * supposed to extend java.sql.ConnectionPool, but it was throwing errors
+ * A basic class for getting a connection.  Intended to be expaned to a full pool
+ * when the need arises.
  */
 public class ConnectionPool {
 
     private static String url = "jdbc:mysql://localhost:3306/movelib";
     private static String driver = "com.mysql.jdbc.Driver";
     private static String username = "test";
-    private static String password = "zarahemla";
+    private static String password = "test";
     
     public ConnectionPool(){
     }
