@@ -23,10 +23,8 @@
 <%
 TableView t = (TableView)request.getSession().getAttribute("CurrentTableView");
 
-double charWidth = 1.18;
-
 int height = (int)(t.getTable().getHeight());
-int width = (int)(charWidth*t.getTable().getWidth());
+int width = (int)(t.getTable().getWidth());
 %>
   <g
      id="Table-<%= t.getId() %>"

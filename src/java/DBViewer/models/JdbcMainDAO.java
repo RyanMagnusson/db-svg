@@ -31,7 +31,7 @@ import java.io.Serializable;
  */
 public class JdbcMainDAO implements Serializable, IMainDAO{
 
-    private static int CHAR_WIDTH = 6;
+    private static int CHAR_WIDTH = 7;
     private static int PAD_WIDTH = 15;
     private static int CHAR_HEIGHT = 15;
     private static int PAD_HEIGHT = 45;
