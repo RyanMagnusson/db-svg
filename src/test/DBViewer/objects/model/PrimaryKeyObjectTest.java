@@ -5,68 +5,57 @@
 
 package DBViewer.objects.model;
 
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
+import static org.junit.Assert.assertEquals;
+
+import org.junit.Before;
 import org.junit.Test;
-import static org.junit.Assert.*;
 
 /**
- *
+ * 
  * @author derrick.bowen
  */
 public class PrimaryKeyObjectTest {
 
-    public PrimaryKeyObjectTest() {
-    }
+	PrimaryKeyObject instance;
 
-    @BeforeClass
-    public static void setUpClass() throws Exception {
-    }
+	@Before
+	public void setUp() throws Exception {
+		instance = new PrimaryKeyObject();
+	}
 
-    @AfterClass
-    public static void tearDownClass() throws Exception {
-    }
+	/**
+	 * Test of isAutoIncrement method, of class PrimaryKeyObject.
+	 */
+	@Test
+	public void testIsAutoIncrement() {
+		boolean expResult = false;
+		boolean result = instance.isAutoIncrement();
+		assertEquals(expResult, result);
+	}
 
-    /**
-     * Test of isAutoIncrement method, of class PrimaryKeyObject.
-     */
-    @Test
-    public void testIsAutoIncrement() {
-        System.out.println("isAutoIncrement");
-        PrimaryKeyObject instance = new PrimaryKeyObject();
-        boolean expResult = false;
-        boolean result = instance.isAutoIncrement();
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
-    }
+	/**
+	 * Test of setAutoIncrement method, of class PrimaryKeyObject.
+	 */
+	@Test
+	public void testSetAutoIncrement() {
+		boolean autoIncrement = true;
+		instance.setAutoIncrement(autoIncrement);
+		assertEquals(autoIncrement, instance.isAutoIncrement());
+	}
 
-    /**
-     * Test of setAutoIncrement method, of class PrimaryKeyObject.
-     */
-    @Test
-    public void testSetAutoIncrement() {
-        System.out.println("setAutoIncrement");
-        boolean autoIncrement = false;
-        PrimaryKeyObject instance = new PrimaryKeyObject();
-        instance.setAutoIncrement(autoIncrement);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
-    }
-
-    /**
-     * Test of cloneTo method, of class PrimaryKeyObject.
-     */
-    @Test
-    public void testCloneTo() {
-        System.out.println("cloneTo");
-        PrimaryKey pk = null;
-        PrimaryKeyObject instance = new PrimaryKeyObject();
-        PrimaryKey expResult = null;
-        PrimaryKey result = instance.cloneTo(pk);
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
-    }
+	// /**
+	// * Test of cloneTo method, of class PrimaryKeyObject.
+	// */
+	// @Test
+	// public void testCloneTo() {
+	// PrimaryKey pk = null;
+	// PrimaryKeyObject instance = new PrimaryKeyObject();
+	// PrimaryKey expResult = null;
+	// PrimaryKey result = instance.cloneTo(pk);
+	// assertEquals(expResult, result);
+	// // TODO review the generated test code and remove the default call to
+	// // fail.
+	// fail("The test case is a prototype.");
+	// }
 
 }

@@ -5,87 +5,86 @@
 
 package DBViewer.services;
 
-import DBViewer.models.InternalDataDAO;
-import DBViewer.objects.view.SchemaPage;
-import java.util.List;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
+import static org.junit.Assert.assertEquals;
+
+import org.junit.Before;
 import org.junit.Test;
-import static org.junit.Assert.*;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
+
+import DBViewer.models.InternalDataDAO;
 
 /**
- *
+ * 
  * @author derrick.bowen
  */
 public class TableViewSpringSorterTest {
 
-    public TableViewSpringSorterTest() {
-    }
+	TableViewSpringSorter instance;
 
-    @BeforeClass
-    public static void setUpClass() throws Exception {
-    }
+	@Mock
+	InternalDataDAO iDAO;
 
-    @AfterClass
-    public static void tearDownClass() throws Exception {
-    }
+	@Before
+	public void setUp() {
+		MockitoAnnotations.initMocks(this);
+		instance = new TableViewSpringSorter(iDAO);
+	}
 
-    /**
-     * Test of SortPage method, of class TableViewSpringSorter.
-     */
-    @Test
-    public void testSortPage() {
-        System.out.println("SortPage");
-        SchemaPage currentPage = null;
-        boolean resort = false;
-        TableViewSpringSorter instance = null;
-        List expResult = null;
-        List result = instance.SortPage(currentPage, resort);
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
-    }
+	/**
+	 * Test of getIDAO method, of class TableViewSpringSorter.
+	 */
+	@Test
+	public void testGetIDAO() {
+		InternalDataDAO result = instance.getIDAO();
+		assertEquals(iDAO, result);
+	}
 
-    /**
-     * Test of calcLines method, of class TableViewSpringSorter.
-     */
-    @Test
-    public void testCalcLines() {
-        System.out.println("calcLines");
-        SchemaPage page = null;
-        TableViewSpringSorter instance = null;
-        List expResult = null;
-        List result = instance.calcLines(page);
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
-    }
+	// /**
+	// * Test of SortPage method, of class TableViewSpringSorter.
+	// */
+	// @Test
+	// public void testSortPage() {
+	// System.out.println("SortPage");
+	// SchemaPage currentPage = null;
+	// boolean resort = false;
+	// TableViewSpringSorter instance = null;
+	// List expResult = null;
+	// List result = instance.SortPage(currentPage, resort);
+	// assertEquals(expResult, result);
+	// // TODO review the generated test code and remove the default call to
+	// // fail.
+	// fail("The test case is a prototype.");
+	// }
+	//
+	// /**
+	// * Test of calcLines method, of class TableViewSpringSorter.
+	// */
+	// @Test
+	// public void testCalcLines() {
+	// System.out.println("calcLines");
+	// SchemaPage page = null;
+	// TableViewSpringSorter instance = null;
+	// List expResult = null;
+	// List result = instance.calcLines(page);
+	// assertEquals(expResult, result);
+	// // TODO review the generated test code and remove the default call to
+	// // fail.
+	// fail("The test case is a prototype.");
+	// }
 
-    /**
-     * Test of getIDAO method, of class TableViewSpringSorter.
-     */
-    @Test
-    public void testGetIDAO() {
-        System.out.println("getIDAO");
-        TableViewSpringSorter instance = null;
-        InternalDataDAO expResult = null;
-        InternalDataDAO result = instance.getIDAO();
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
-    }
-
-    /**
-     * Test of setIDAO method, of class TableViewSpringSorter.
-     */
-    @Test
-    public void testSetIDAO() {
-        System.out.println("setIDAO");
-        InternalDataDAO iDAO = null;
-        TableViewSpringSorter instance = null;
-        instance.setIDAO(iDAO);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
-    }
+	// /**
+	// * Test of setIDAO method, of class TableViewSpringSorter.
+	// */
+	// @Test
+	// public void testSetIDAO() {
+	// System.out.println("setIDAO");
+	// InternalDataDAO iDAO = null;
+	// TableViewSpringSorter instance = null;
+	// instance.setIDAO(iDAO);
+	// // TODO review the generated test code and remove the default call to
+	// // fail.
+	// fail("The test case is a prototype.");
+	// }
 
 }

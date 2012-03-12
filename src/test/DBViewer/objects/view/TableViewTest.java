@@ -5,520 +5,533 @@
 
 package DBViewer.objects.view;
 
-import DBViewer.objects.model.Table;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.when;
+
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
+import java.util.Map;
+import java.util.UUID;
+
+import org.junit.Before;
 import org.junit.Test;
-import static org.junit.Assert.*;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
+
+import DBViewer.objects.model.Column;
+import DBViewer.objects.model.ForeignKey;
+import DBViewer.objects.model.Table;
 
 /**
- *
+ * 
  * @author derrick.bowen
  */
 public class TableViewTest {
 
-    public TableViewTest() {
-    }
+	@Mock
+	Table table;
 
-    @BeforeClass
-    public static void setUpClass() throws Exception {
-    }
+	@Mock
+	Table table_ref_by;
+	@Mock
+	Table table_ref_to;
 
-    @AfterClass
-    public static void tearDownClass() throws Exception {
-    }
+	@Mock
+	ForeignKey fk;
 
-    /**
-     * Test of calcLinksAndRadius method, of class TableView.
-     */
-    @Test
-    public void testCalcLinksAndRadius() {
-        System.out.println("calcLinksAndRadius");
-        TableView instance = null;
-        instance.calcLinksAndRadius();
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
-    }
+	@Mock
+	Column fkColumn;
 
-    /**
-     * Test of calcDistance method, of class TableView.
-     */
-    @Test
-    public void testCalcDistance_TableView() {
-        System.out.println("calcDistance");
-        TableView o = null;
-        TableView instance = null;
-        double expResult = 0.0;
-        double result = instance.calcDistance(o);
-        assertEquals(expResult, result, 0.0);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
-    }
+	@Mock
+	SchemaPage page;
+	UUID pageId = UUID.randomUUID();
 
-    /**
-     * Test of calcDistance method, of class TableView.
-     */
-    @Test
-    public void testCalcDistance_int_int() {
-        System.out.println("calcDistance");
-        int x = 0;
-        int y = 0;
-        TableView instance = null;
-        double expResult = 0.0;
-        double result = instance.calcDistance(x, y);
-        assertEquals(expResult, result, 0.0);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
-    }
+	@Mock
+	SchemaPage page_o;
+	UUID pageOId = UUID.randomUUID();
 
-    /**
-     * Test of calcDistanceWRadius method, of class TableView.
-     */
-    @Test
-    public void testCalcDistanceWRadius() {
-        System.out.println("calcDistanceWRadius");
-        TableView o = null;
-        TableView instance = null;
-        double expResult = 0.0;
-        double result = instance.calcDistanceWRadius(o);
-        assertEquals(expResult, result, 0.0);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
-    }
+	TableView instance = null;
 
-    /**
-     * Test of calcAngle method, of class TableView.
-     */
-    @Test
-    public void testCalcAngle_TableView() {
-        System.out.println("calcAngle");
-        TableView o = null;
-        TableView instance = null;
-        double expResult = 0.0;
-        double result = instance.calcAngle(o);
-        assertEquals(expResult, result, 0.0);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
-    }
+	TableView referencedBy = null;
+	TableView referencedTo = null;
 
-    /**
-     * Test of calcAngle method, of class TableView.
-     */
-    @Test
-    public void testCalcAngle_int_int() {
-        System.out.println("calcAngle");
-        int x = 0;
-        int y = 0;
-        TableView instance = null;
-        double expResult = 0.0;
-        double result = instance.calcAngle(x, y);
-        assertEquals(expResult, result, 0.0);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
-    }
+	double x1 = 100;
+	double y1 = 50;
+	double r1 = 10;
 
-    /**
-     * Test of getNumLinks method, of class TableView.
-     */
-    @Test
-    public void testGetNumLinks() {
-        System.out.println("getNumLinks");
-        TableView instance = null;
-        int expResult = 0;
-        int result = instance.getNumLinks();
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
-    }
+	double x2 = 50;
+	double y2 = 20;
+	double r2 = 5;
 
-    /**
-     * Test of setNumLinks method, of class TableView.
-     */
-    @Test
-    public void testSetNumLinks() {
-        System.out.println("setNumLinks");
-        int numLinks = 0;
-        TableView instance = null;
-        instance.setNumLinks(numLinks);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
-    }
+	List<TableView> referencedByList = new ArrayList<TableView>();
 
-    /**
-     * Test of getRadius method, of class TableView.
-     */
-    @Test
-    public void testGetRadius() {
-        System.out.println("getRadius");
-        TableView instance = null;
-        double expResult = 0.0;
-        double result = instance.getRadius();
-        assertEquals(expResult, result, 0.0);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
-    }
+	List<TableView> referencesToList = new ArrayList<TableView>();
 
-    /**
-     * Test of setRadius method, of class TableView.
-     */
-    @Test
-    public void testSetRadius() {
-        System.out.println("setRadius");
-        double radius = 0.0;
-        TableView instance = null;
-        instance.setRadius(radius);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
-    }
+	Map<String, ForeignKey> fkeys = null;
+	Map<String, Table> referencers = null;
 
-    /**
-     * Test of getReferencesTo method, of class TableView.
-     */
-    @Test
-    public void testGetReferencesTo() {
-        System.out.println("getReferencesTo");
-        TableView instance = null;
-        List expResult = null;
-        List result = instance.getReferencesTo();
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
-    }
+	@Before
+	public void setUp() {
+		MockitoAnnotations.initMocks(this);
+		when(page.getId()).thenReturn(pageId);
 
-    /**
-     * Test of setReferencesTo method, of class TableView.
-     */
-    @Test
-    public void testSetReferencesTo() {
-        System.out.println("setReferencesTo");
-        List<TableView> referencesTo = null;
-        TableView instance = null;
-        instance.setReferencesTo(referencesTo);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
-    }
+		instance = new TableView(table, page);
+		instance.setX(x1);
+		instance.setY(y1);
+		instance.setRadius(r1);
+		instance.setNumLinks(1);
+		instance.setClean();
 
-    /**
-     * Test of getReferencedBy method, of class TableView.
-     */
-    @Test
-    public void testGetReferencedBy() {
-        System.out.println("getReferencedBy");
-        TableView instance = null;
-        List expResult = null;
-        List result = instance.getReferencedBy();
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
-    }
+		referencedBy = new TableView(table_ref_by, page);
+		referencedBy.setX(x2);
+		referencedBy.setY(y2);
+		referencedBy.setRadius(r2);
+		referencedByList.add(referencedBy);
+		referencedBy.setClean();
 
-    /**
-     * Test of setReferencedBy method, of class TableView.
-     */
-    @Test
-    public void testSetReferencedBy() {
-        System.out.println("setReferencedBy");
-        List<TableView> referencedBy = null;
-        TableView instance = null;
-        instance.setReferencedBy(referencedBy);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
-    }
+		Map<UUID, TableView> refByTableViews = new HashMap<UUID, TableView>();
+		refByTableViews.put(pageId, referencedBy);
+		when(table_ref_by.getTablePageViews()).thenReturn(refByTableViews);
 
-    /**
-     * Test of getReferences method, of class TableView.
-     */
-    @Test
-    public void testGetReferences() {
-        System.out.println("getReferences");
-        TableView instance = null;
-        List expResult = null;
-        List result = instance.getReferences();
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
-    }
+		referencedTo = new TableView(table_ref_to, page);
+		referencedTo.setX(x2);
+		referencedTo.setY(y2);
+		referencedTo.setRadius(r2);
+		referencesToList.add(referencedTo);
+		referencedTo.setClean();
 
-    /**
-     * Test of getTable method, of class TableView.
-     */
-    @Test
-    public void testGetTable() {
-        System.out.println("getTable");
-        TableView instance = null;
-        Table expResult = null;
-        Table result = instance.getTable();
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
-    }
+		Map<UUID, TableView> refToTableViews = new HashMap<UUID, TableView>();
+		refToTableViews.put(pageId, referencedTo);
+		when(table_ref_to.getTablePageViews()).thenReturn(refToTableViews);
 
-    /**
-     * Test of setTable method, of class TableView.
-     */
-    @Test
-    public void testSetTable() {
-        System.out.println("setTable");
-        Table table = null;
-        TableView instance = null;
-        instance.setTable(table);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
-    }
+		instance.setReferencedBy(referencedByList);
+		instance.setReferencesTo(referencesToList);
 
-    /**
-     * Test of getX method, of class TableView.
-     */
-    @Test
-    public void testGetX() {
-        System.out.println("getX");
-        TableView instance = null;
-        int expResult = 0;
-        int result = instance.getX();
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
-    }
+		fkeys = new HashMap<String, ForeignKey>();
 
-    /**
-     * Test of setX method, of class TableView.
-     */
-    @Test
-    public void testSetX_int() {
-        System.out.println("setX");
-        int x = 0;
-        TableView instance = null;
-        instance.setX(x);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
-    }
+		fkeys.put("table ref to", fk);
+		when(fk.getReference()).thenReturn(fkColumn);
+		when(fkColumn.getTable()).thenReturn(table_ref_to);
+		when(table.getForeignKeys()).thenReturn(fkeys);
+		referencers = new HashMap<String, Table>();
+		referencers.put("table ref by", table_ref_by);
+		when(table.getReferencingTables()).thenReturn(referencers);
+	}
 
-    /**
-     * Test of setX method, of class TableView.
-     */
-    @Test
-    public void testSetX_double() {
-        System.out.println("setX");
-        double x = 0.0;
-        TableView instance = null;
-        instance.setX(x);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
-    }
+	/**
+	 * Test of calcLinksAndRadius method, of class TableView.
+	 */
+	@Test
+	public void testCalcLinksAndRadius_Radius() {
 
-    /**
-     * Test of getY method, of class TableView.
-     */
-    @Test
-    public void testGetY() {
-        System.out.println("getY");
-        TableView instance = null;
-        int expResult = 0;
-        int result = instance.getY();
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
-    }
+		int height = 30;
+		int width = 130;
 
-    /**
-     * Test of setY method, of class TableView.
-     */
-    @Test
-    public void testSetY_int() {
-        System.out.println("setY");
-        int y = 0;
-        TableView instance = null;
-        instance.setY(y);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
-    }
+		when(table.getHeight()).thenReturn(height);
+		when(table.getWidth()).thenReturn(width);
 
-    /**
-     * Test of setY method, of class TableView.
-     */
-    @Test
-    public void testSetY_double() {
-        System.out.println("setY");
-        double y = 0.0;
-        TableView instance = null;
-        instance.setY(y);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
-    }
+		double diagonal = Math.sqrt(Math.pow(height, 2) + Math.pow(width, 2));
 
-    /**
-     * Test of getVelocityX method, of class TableView.
-     */
-    @Test
-    public void testGetVelocityX() {
-        System.out.println("getVelocityX");
-        TableView instance = null;
-        double expResult = 0.0;
-        double result = instance.getVelocityX();
-        assertEquals(expResult, result, 0.0);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
-    }
+		double expected = (11.0 / 20.0) * diagonal;
 
-    /**
-     * Test of setVelocityX method, of class TableView.
-     */
-    @Test
-    public void testSetVelocityX() {
-        System.out.println("setVelocityX");
-        double velocityX = 0.0;
-        TableView instance = null;
-        instance.setVelocityX(velocityX);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
-    }
+		instance.calcLinksAndRadius();
+		assertEquals(expected, instance.getRadius(), 0.0);
 
-    /**
-     * Test of getVelocityY method, of class TableView.
-     */
-    @Test
-    public void testGetVelocityY() {
-        System.out.println("getVelocityY");
-        TableView instance = null;
-        double expResult = 0.0;
-        double result = instance.getVelocityY();
-        assertEquals(expResult, result, 0.0);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
-    }
+	}
 
-    /**
-     * Test of setVelocityY method, of class TableView.
-     */
-    @Test
-    public void testSetVelocityY() {
-        System.out.println("setVelocityY");
-        double velocityY = 0.0;
-        TableView instance = null;
-        instance.setVelocityY(velocityY);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
-    }
+	/**
+	 * Test of calcLinksAndRadius method, of class TableView.
+	 */
+	@Test
+	public void testCalcLinksAndRadius_NumLinks() {
 
-    /**
-     * Test of getId method, of class TableView.
-     */
-    @Test
-    public void testGetId() {
-        System.out.println("getId");
-        TableView instance = null;
-        int expResult = 0;
-        int result = instance.getId();
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
-    }
+		instance.setReferencedBy(new ArrayList<TableView>());
+		instance.setReferencesTo(new ArrayList<TableView>());
 
-    /**
-     * Test of setId method, of class TableView.
-     */
-    @Test
-    public void testSetId() {
-        System.out.println("setId");
-        int id = 0;
-        TableView instance = null;
-        instance.setId(id);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
-    }
+		int expected = 2;
 
-    /**
-     * Test of getPage method, of class TableView.
-     */
-    @Test
-    public void testGetPage() {
-        System.out.println("getPage");
-        TableView instance = null;
-        SchemaPage expResult = null;
-        SchemaPage result = instance.getPage();
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
-    }
+		instance.calcLinksAndRadius();
+		assertEquals(expected, instance.getNumLinks());
 
-    /**
-     * Test of setPage method, of class TableView.
-     */
-    @Test
-    public void testSetPage() {
-        System.out.println("setPage");
-        SchemaPage page = null;
-        TableView instance = null;
-        instance.setPage(page);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
-    }
+	}
 
-    /**
-     * Test of isDirty method, of class TableView.
-     */
-    @Test
-    public void testIsDirty() {
-        System.out.println("isDirty");
-        TableView instance = null;
-        boolean expResult = false;
-        boolean result = instance.isDirty();
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
-    }
+	/**
+	 * Test of calcDistance method, of class TableView.
+	 */
+	@Test
+	public void testCalcDistance_TableView() {
+		double expResult = Math.sqrt(Math.pow(x1 - x2, 2) + Math.pow(y1 - y2, 2));
+		double result = instance.calcDistance(referencedBy);
+		assertEquals(expResult, result, 0.0);
+	}
 
-    /**
-     * Test of setDirty method, of class TableView.
-     */
-    @Test
-    public void testSetDirty_boolean() {
-        System.out.println("setDirty");
-        boolean dirty = false;
-        TableView instance = null;
-        instance.setDirty(dirty);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
-    }
+	/**
+	 * Test of calcDistance method, of class TableView.
+	 */
+	@Test
+	public void testCalcDistance_int_int() {
+		int x = 0;
+		int y = 0;
+		double expResult = Math.sqrt(Math.pow(x1 - x, 2) + Math.pow(y1 - y, 2));
+		double result = instance.calcDistance(x, y);
+		assertEquals(expResult, result, 0.0);
+	}
 
-    /**
-     * Test of setDirty method, of class TableView.
-     */
-    @Test
-    public void testSetDirty_0args() {
-        System.out.println("setDirty");
-        TableView instance = null;
-        instance.setDirty();
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
-    }
+	/**
+	 * Test of calcDistanceWRadius method, of class TableView.
+	 */
+	@Test
+	public void testCalcDistanceWRadius() {
+		double expResult = Math.sqrt(Math.pow(x1 - x2, 2) + Math.pow(y1 - y2, 2)) - r1 - r2;
+		double result = instance.calcDistanceWRadius(referencedBy);
+		assertEquals(expResult, result, 0.0);
+	}
 
-    /**
-     * Test of setClean method, of class TableView.
-     */
-    @Test
-    public void testSetClean() {
-        System.out.println("setClean");
-        TableView instance = null;
-        instance.setClean();
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
-    }
+	/**
+	 * Test of calcAngle method, of class TableView.
+	 */
+	@Test
+	public void testCalcAngle_TableView() {
+		double expResult = Math.atan((y1 - y2) / (x1 - x2));
+		double result = instance.calcAngle(referencedBy);
+		assertEquals(expResult, result, 0.0);
+	}
 
-    /**
-     * Test of compareTo method, of class TableView.
-     */
-    @Test
-    public void testCompareTo() {
-        System.out.println("compareTo");
-        TableView o = null;
-        TableView instance = null;
-        int expResult = 0;
-        int result = instance.compareTo(o);
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
-    }
+	/**
+	 * Test of calcAngle method, of class TableView.
+	 */
+	@Test
+	public void testCalcAngle_int_int() {
+		int x = 0;
+		int y = 0;
+		double expResult = Math.atan((y1 - y) / (x1 - x));
+		double result = instance.calcAngle(x, y);
+		assertEquals(expResult, result, 0.0);
+	}
+
+	/**
+	 * Test of getNumLinks method, of class TableView.
+	 */
+	@Test
+	public void testGetNumLinks() {
+		int expResult = 1;
+		int result = instance.getNumLinks();
+		assertEquals(expResult, result);
+	}
+
+	/**
+	 * Test of setNumLinks method, of class TableView.
+	 */
+	@Test
+	public void testSetNumLinks() {
+		int numLinks = 10;
+		instance.setNumLinks(numLinks);
+		assertEquals(numLinks, instance.getNumLinks());
+		assertFalse(instance.isDirty());
+	}
+
+	/**
+	 * Test of getRadius method, of class TableView.
+	 */
+	@Test
+	public void testGetRadius() {
+		double expResult = 10;
+		double result = instance.getRadius();
+		assertEquals(expResult, result, 0.0);
+	}
+
+	/**
+	 * Test of setRadius method, of class TableView.
+	 */
+	@Test
+	public void testSetRadius() {
+		double radius = 20;
+		instance.setRadius(radius);
+		double result = instance.getRadius();
+		assertEquals(20, result, 0.0);
+		assertFalse(instance.isDirty());
+	}
+
+	/**
+	 * Test of getReferencesTo method, of class TableView.
+	 */
+	@Test
+	public void testGetReferencesTo() {
+		List<TableView> result = instance.getReferencesTo();
+		assertEquals(referencesToList, result);
+	}
+
+	// /**
+	// * Test of setReferencesTo method, of class TableView.
+	// */
+	// @Test
+	// public void testSetReferencesTo() {
+	// List<TableView> referencesTo = null;
+	// instance.setReferencesTo(referencesTo);
+	// // TODO review the generated test code and remove the default call to
+	// // fail.
+	// fail("The test case is a prototype.");
+	// }
+
+	/**
+	 * Test of getReferencedBy method, of class TableView.
+	 */
+	@Test
+	public void testGetReferencedBy() {
+		List<TableView> result = instance.getReferencedBy();
+		assertEquals(referencedByList, result);
+		assertFalse(instance.isDirty());
+	}
+
+	// /**
+	// * Test of setReferencedBy method, of class TableView.
+	// */
+	// @Test
+	// public void testSetReferencedBy() {
+	// List<TableView> referencedBy = null;
+	// instance.setReferencedBy(referencedBy);
+	// // TODO review the generated test code and remove the default call to
+	// // fail.
+	// fail("The test case is a prototype.");
+	// }
+
+	/**
+	 * Test of getReferences method, of class TableView.
+	 */
+	@Test
+	public void testGetReferences() {
+		List<TableView> expResult = new ArrayList<TableView>();
+		expResult.add(referencedBy);
+		expResult.add(referencedTo);
+		List<TableView> result = instance.getReferences();
+		assertEquals(expResult, result);
+	}
+
+	/**
+	 * Test of getTable method, of class TableView.
+	 */
+	@Test
+	public void testGetTable() {
+		Table expResult = table;
+		Table result = instance.getTable();
+		assertEquals(expResult, result);
+		assertFalse(instance.isDirty());
+	}
+
+	/**
+	 * Test of setTable method, of class TableView.
+	 */
+	@Test
+	public void testSetTable() {
+		instance.setTable(table_ref_by);
+		Table result = instance.getTable();
+		assertEquals(table_ref_by, result);
+	}
+
+	/**
+	 * Test of getX method, of class TableView.
+	 */
+	@Test
+	public void testGetX() {
+		int expResult = 100;
+		int result = instance.getX();
+		assertEquals(expResult, result);
+		assertFalse(instance.isDirty());
+	}
+
+	/**
+	 * Test of setX method, of class TableView.
+	 */
+	@Test
+	public void testSetX_int() {
+		int x = 0;
+		instance.setX(x);
+		assertEquals(x, instance.getX());
+		assertTrue(instance.isDirty());
+	}
+
+	/**
+	 * Test of setX method, of class TableView.
+	 */
+	@Test
+	public void testSetX_double() {
+		double x = 0.0;
+		instance.setX(x);
+		assertEquals(x, instance.getX(), 0.0);
+		assertTrue(instance.isDirty());
+
+	}
+
+	/**
+	 * Test of getY method, of class TableView.
+	 */
+	@Test
+	public void testGetY() {
+		int expResult = 50;
+		assertEquals(expResult, instance.getY());
+		assertFalse(instance.isDirty());
+	}
+
+	/**
+	 * Test of setY method, of class TableView.
+	 */
+	@Test
+	public void testSetY_int() {
+		int y = 0;
+		instance.setY(y);
+		assertEquals(y, instance.getY());
+		assertTrue(instance.isDirty());
+	}
+
+	/**
+	 * Test of setY method, of class TableView.
+	 */
+	@Test
+	public void testSetY_double() {
+		double y = 0.0;
+		instance.setY(y);
+		assertEquals(y, instance.getY(), 0.0);
+		assertTrue(instance.isDirty());
+	}
+
+	/**
+	 * Test of getVelocityX method, of class TableView.
+	 */
+	@Test
+	public void testGetVelocityX() {
+		double expResult = 0.0;
+		double result = instance.getVelocityX();
+		assertEquals(expResult, result, 0.0);
+		assertFalse(instance.isDirty());
+	}
+
+	/**
+	 * Test of setVelocityX method, of class TableView.
+	 */
+	@Test
+	public void testSetVelocityX() {
+		double velocityX = 50.0;
+		instance.setVelocityX(velocityX);
+		assertEquals(velocityX, instance.getVelocityX(), 0.0);
+		assertFalse(instance.isDirty());
+	}
+
+	/**
+	 * Test of getVelocityY method, of class TableView.
+	 */
+	@Test
+	public void testGetVelocityY() {
+		double expResult = 0.0;
+		double result = instance.getVelocityY();
+		assertEquals(expResult, result, 0.0);
+		assertFalse(instance.isDirty());
+	}
+
+	/**
+	 * Test of setVelocityY method, of class TableView.
+	 */
+	@Test
+	public void testSetVelocityY() {
+		double velocityY = 50.0;
+		instance.setVelocityY(velocityY);
+		assertEquals(velocityY, instance.getVelocityY(), 0.0);
+		assertFalse(instance.isDirty());
+	}
+
+	/**
+	 * Test of getId method, of class TableView.
+	 */
+	@Test
+	public void testGetId() {
+		int expResult = 0;
+		int result = instance.getId();
+		assertEquals(expResult, result);
+		assertFalse(instance.isDirty());
+	}
+
+	/**
+	 * Test of setId method, of class TableView.
+	 */
+	@Test
+	public void testSetId() {
+		int id = 60;
+		instance.setId(id);
+		assertEquals(id, instance.getId());
+		assertFalse(instance.isDirty());
+	}
+
+	/**
+	 * Test of getPage method, of class TableView.
+	 */
+	@Test
+	public void testGetPage() {
+		instance.setPage(page);
+		SchemaPage result = instance.getPage();
+		assertEquals(page, result);
+		assertFalse(instance.isDirty());
+	}
+
+	/**
+	 * Test of setPage method, of class TableView.
+	 */
+	@Test
+	public void testSetPage() {
+		SchemaPage page = page_o;
+		instance.setPage(page);
+		assertEquals(page, instance.getPage());
+		assertFalse(instance.isDirty());
+	}
+
+	/**
+	 * Test of isDirty method, of class TableView.
+	 */
+	@Test
+	public void testConstructedDirty() {
+		instance = new TableView(table);
+		boolean expResult = true;
+		boolean result = instance.isDirty();
+		assertEquals(expResult, result);
+	}
+
+	/**
+	 * Test of setDirty method, of class TableView.
+	 */
+	@Test
+	public void testSetDirty_boolean() {
+		boolean dirty = false;
+		instance.setDirty(dirty);
+		assertEquals(dirty, instance.isDirty());
+	}
+
+	/**
+	 * Test of setDirty method, of class TableView.
+	 */
+	@Test
+	public void testSetDirty_0args() {
+		instance.setDirty();
+		assertEquals(true, instance.isDirty());
+	}
+
+	/**
+	 * Test of setClean method, of class TableView.
+	 */
+	@Test
+	public void testSetClean() {
+		instance.setClean();
+		assertEquals(false, instance.isDirty());
+	}
+
+	/**
+	 * Test of compareTo method, of class TableView.
+	 */
+	@Test
+	public void testCompareTo() {
+		int expResult = 1;
+		int result = instance.compareTo(referencedBy);
+		assertEquals(expResult, result);
+	}
 
 }
