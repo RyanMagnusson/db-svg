@@ -3,7 +3,7 @@
  * and open the template in the editor.
  */
 
-package DBViewer.objects.model;
+package com.dbsvg.objects.model;
 
 import static org.junit.Assert.assertEquals;
 
@@ -11,6 +11,9 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+
+import com.dbsvg.objects.model.Column;
+import com.dbsvg.objects.model.ForeignKey;
 
 /**
  * 

@@ -3,7 +3,7 @@
  * and open the template in the editor.
  */
 
-package DBViewer.objects.view;
+package com.dbsvg.objects.view;
 
 import static org.junit.Assert.assertEquals;
 
@@ -11,6 +11,8 @@ import java.util.UUID;
 
 import org.junit.Before;
 import org.junit.Test;
+
+import com.dbsvg.objects.view.SchemaPage;
 
 /**
  * 

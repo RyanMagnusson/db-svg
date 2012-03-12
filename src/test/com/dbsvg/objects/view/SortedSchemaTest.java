@@ -3,13 +3,15 @@
  * and open the template in the editor.
  */
 
-package DBViewer.objects.view;
+package com.dbsvg.objects.view;
 
 import static org.junit.Assert.assertEquals;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.MockitoAnnotations;
+
+import com.dbsvg.objects.view.SortedSchema;
 
 /**
  * 

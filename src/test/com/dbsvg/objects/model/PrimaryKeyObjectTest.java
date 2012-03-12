@@ -3,12 +3,14 @@
  * and open the template in the editor.
  */
 
-package DBViewer.objects.model;
+package com.dbsvg.objects.model;
 
 import static org.junit.Assert.assertEquals;
 
 import org.junit.Before;
 import org.junit.Test;
+
+import com.dbsvg.objects.model.PrimaryKeyObject;
 
 /**
  * 

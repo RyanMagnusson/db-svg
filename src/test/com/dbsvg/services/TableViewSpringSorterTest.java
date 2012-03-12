@@ -3,7 +3,7 @@
  * and open the template in the editor.
  */
 
-package DBViewer.services;
+package com.dbsvg.services;
 
 import static org.junit.Assert.assertEquals;
 
@@ -12,7 +12,9 @@ import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import DBViewer.models.InternalDataDAO;
+import com.dbsvg.models.InternalDataDAO;
+import com.dbsvg.services.TableViewSpringSorter;
+
 
 /**
  * 
