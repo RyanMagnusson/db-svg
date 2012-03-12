@@ -29,7 +29,6 @@ import static org.junit.Assert.*;
 public class SQLiteInternalDataDAOTest {
 
     private String iDAOPath = "C:\\DB-SVG\\test.db";
-    private ServiceLocator sLocator = TestServiceLocator.getInstance(iDAOPath);
     
     public SQLiteInternalDataDAOTest() {
         

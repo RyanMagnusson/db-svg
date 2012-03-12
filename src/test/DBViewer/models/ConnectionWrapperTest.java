@@ -6,9 +6,6 @@
 package DBViewer.models;
 
 import java.sql.Connection;
-import DBViewer.ServiceLocator.*;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
@@ -19,7 +16,6 @@ import static org.junit.Assert.*;
 public class ConnectionWrapperTest {
 
     private String iDAOPath = "C:\\DB-SVG\\test.db";
-    private ServiceLocator sLocator = TestServiceLocator.getInstance(iDAOPath);
     
     public ConnectionWrapperTest() {
     }

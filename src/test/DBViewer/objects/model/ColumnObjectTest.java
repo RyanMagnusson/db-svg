@@ -42,6 +42,13 @@ public class ColumnObjectTest {
         c.setTable(new Table());
         Column result = ColumnObject.clone(c);
         assertTrue(c != result);
+        assertEquals(c.getClass(), result.getClass());
+        assertEquals(c.getComment(), result.getComment());
+        assertEquals(c.getDataType(), result.getDataType());
+        assertEquals(c.getName(), result.getName());
+        assertEquals(c.getNullable(), result.getNullable());
+        assertEquals(c.getOrdinalValue(), result.getOrdinalValue());
+        assertEquals(c.getTable(), result.getTable());
     }
 
     /**
