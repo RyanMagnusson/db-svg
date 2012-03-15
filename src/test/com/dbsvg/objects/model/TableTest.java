@@ -16,11 +16,6 @@ import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import com.dbsvg.objects.model.Column;
-import com.dbsvg.objects.model.ForeignKey;
-import com.dbsvg.objects.model.PrimaryKey;
-import com.dbsvg.objects.model.Table;
-
 /**
  * 
  * @author derrick.bowen
@@ -133,7 +128,6 @@ public class TableTest {
 	// */
 	// @Test
 	// public void testGenerateWidth() {
-	// System.out.println("generateWidth");
 	// Table instance = new Table();
 	// int expResult = 0;
 	// int result = instance.generateWidth();
@@ -148,7 +142,6 @@ public class TableTest {
 	// */
 	// @Test
 	// public void testGetTablePageViews() {
-	// System.out.println("getTablePageViews");
 	// Table instance = new Table();
 	// Map expResult = null;
 	// Map result = instance.getTablePageViews();
@@ -163,7 +156,6 @@ public class TableTest {
 	// */
 	// @Test
 	// public void testAddTableViewForPage_TableView_UUID() {
-	// System.out.println("addTableViewForPage");
 	// TableView tv = null;
 	// UUID pageId = null;
 	// Table instance = new Table();
@@ -178,7 +170,6 @@ public class TableTest {
 	// */
 	// @Test
 	// public void testAddTableViewForPage_TableView_SchemaPage() {
-	// System.out.println("addTableViewForPage");
 	// TableView tv = null;
 	// SchemaPage page = null;
 	// Table instance = new Table();
@@ -193,7 +184,6 @@ public class TableTest {
 	// */
 	// @Test
 	// public void testGetHeight() {
-	// System.out.println("getHeight");
 	// Table instance = new Table();
 	// int expResult = 0;
 	// int result = instance.getHeight();
@@ -208,7 +198,6 @@ public class TableTest {
 	// */
 	// @Test
 	// public void testSetHeight() {
-	// System.out.println("setHeight");
 	// int height = 0;
 	// Table instance = new Table();
 	// instance.setHeight(height);
@@ -222,7 +211,6 @@ public class TableTest {
 	// */
 	// @Test
 	// public void testGetWidth() {
-	// System.out.println("getWidth");
 	// Table instance = new Table();
 	// int expResult = 0;
 	// int result = instance.getWidth();
@@ -237,7 +225,6 @@ public class TableTest {
 	// */
 	// @Test
 	// public void testSetWidth() {
-	// System.out.println("setWidth");
 	// int width = 0;
 	// Table instance = new Table();
 	// instance.setWidth(width);
@@ -251,7 +238,6 @@ public class TableTest {
 	// */
 	// @Test
 	// public void testCompareTo() {
-	// System.out.println("compareTo");
 	// Table o = null;
 	// Table instance = new Table();
 	// int expResult = 0;

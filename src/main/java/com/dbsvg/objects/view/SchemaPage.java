@@ -20,202 +20,212 @@
  */
 package com.dbsvg.objects.view;
 
-import java.util.*;
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
 
-import com.dbsvg.objects.model.*;
-import com.dbsvg.services.*;
+import com.dbsvg.objects.model.Table;
+import com.dbsvg.services.ITablePageSorter;
+
 /**
- *
- * @author horizon
+ * 
  */
-public class SchemaPage implements Comparable<SchemaPage>,Serializable{
+@SuppressWarnings("serial")
+public class SchemaPage implements Comparable<SchemaPage>, Serializable {
 
-    List<TableView> tableViews = new ArrayList();
-    String title;
-    UUID id;
-    int orderid;
-    int width = 0;
-    int height = 0;
-    int transx = 0;
-    int transy = 0;
-    SortedSchema schema;
-    List<LinkLine> lines = new ArrayList();
-    ITablePageSorter pageSorter;
-    Boolean sorted = false;
+	List<TableView> tableViews = new ArrayList<TableView>();
+	String title;
+	UUID id;
+	int orderid;
+	int width = 0;
+	int height = 0;
+	int transx = 0;
+	int transy = 0;
+	SortedSchema schema;
+	List<LinkLine> lines = new ArrayList<LinkLine>();
+	ITablePageSorter pageSorter;
+	Boolean sorted = false;
 
-    public SchemaPage(){
-        this.id = UUID.randomUUID();
-    }
+	public SchemaPage() {
+		this.id = UUID.randomUUID();
+	}
 
-    public SchemaPage(UUID id){
-        this.id = id;
-    }
+	public SchemaPage(UUID id) {
+		this.id = id;
+	}
 
-    public SchemaPage(String id){
-        this.id = UUID.fromString(id);
-    }
-    
-    /**
-     * Calculates the schema height width and translation values based on the tableviews
-     */
-    public void calcDimensions() {
-        double minx = 2000;
-        double miny = 2000;
-        double maxx = 0;
-        double maxy = 0;
+	public SchemaPage(String id) {
+		this.id = UUID.fromString(id);
+	}
 
-        for (TableView tv : tableViews) {
-            double x = tv.getX();
-            double y = tv.getY();
+	/**
+	 * Calculates the schema height width and translation values based on the
+	 * tableviews
+	 */
+	public void calcDimensions() {
+		double minx = 2000;
+		double miny = 2000;
+		double maxx = 0;
+		double maxy = 0;
 
-            if (x < minx) minx = x;
-            if (y < miny) miny = y;
-            if (x > maxx) maxx = x;
-            if (y > maxy) maxy = y;
-        }
-        setWidth((int)(maxx-minx)+300);
-        setHeight((int)(maxy-miny)+500);
-        setTransx((int)(-1 * minx)+20);
-        setTransy((int)(-1 * miny)+20);
-    }
+		for (TableView tv : tableViews) {
+			double x = tv.getX();
+			double y = tv.getY();
 
-    public void setTableViewPosition(int i, String x_pos, String y_pos) {
-        try {
-            TableView t = tableViews.get(i);
-            t.setX(Double.parseDouble(x_pos));
-            t.setY(Double.parseDouble(y_pos));
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
+			if (x < minx)
+				minx = x;
+			if (y < miny)
+				miny = y;
+			if (x > maxx)
+				maxx = x;
+			if (y > maxy)
+				maxy = y;
+		}
+		setWidth((int) (maxx - minx) + 300);
+		setHeight((int) (maxy - miny) + 500);
+		setTransx((int) (-1 * minx) + 20);
+		setTransy((int) (-1 * miny) + 20);
+	}
 
-    public List<TableView> getTableViews() {
-        return tableViews;
-    }
+	public void setTableViewPosition(int i, String x_pos, String y_pos) {
+		try {
+			TableView t = tableViews.get(i);
+			t.setX(Double.parseDouble(x_pos));
+			t.setY(Double.parseDouble(y_pos));
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
 
-    public void setTableViews(List<TableView> tableViews) {
-        this.tableViews = tableViews;
-        sorted = false;
-    }
+	public List<TableView> getTableViews() {
+		return tableViews;
+	}
 
-    public UUID getId() {
-        return id;
-    }
+	public void setTableViews(List<TableView> tableViews) {
+		this.tableViews = tableViews;
+		sorted = false;
+	}
 
-    public void setId(UUID id) {
-        this.id = id;
-    }
+	public UUID getId() {
+		return id;
+	}
 
-    /**
-     * sets the UUID by String
-     * @param id
-     */
-    public void setId(String id) {
-        this.id = UUID.fromString(id);
-    }
+	public void setId(UUID id) {
+		this.id = id;
+	}
 
-    public int getOrderid() {
-        return orderid;
-    }
+	/**
+	 * sets the UUID by String
+	 * 
+	 * @param id
+	 */
+	public void setId(String id) {
+		this.id = UUID.fromString(id);
+	}
 
-    public void setOrderid(int orderid) {
-        this.orderid = orderid;
-    }
+	public int getOrderid() {
+		return orderid;
+	}
 
-    public String getTitle() {
-        return title;
-    }
+	public void setOrderid(int orderid) {
+		this.orderid = orderid;
+	}
 
-    public void setTitle(String title) {
-        this.title = title;
-    }
+	public String getTitle() {
+		return title;
+	}
 
-    public int getHeight() {
-        return height;
-    }
+	public void setTitle(String title) {
+		this.title = title;
+	}
 
-    public void setHeight(int height) {
-        this.height = height;
-    }
+	public int getHeight() {
+		return height;
+	}
 
-    public int getTransx() {
-        return transx;
-    }
+	public void setHeight(int height) {
+		this.height = height;
+	}
 
-    public void setTransx(int transx) {
-        this.transx = transx;
-    }
+	public int getTransx() {
+		return transx;
+	}
 
-    public int getTransy() {
-        return transy;
-    }
+	public void setTransx(int transx) {
+		this.transx = transx;
+	}
 
-    public void setTransy(int transy) {
-        this.transy = transy;
-    }
+	public int getTransy() {
+		return transy;
+	}
 
-    public int getWidth() {
-        return width;
-    }
+	public void setTransy(int transy) {
+		this.transy = transy;
+	}
 
-    public void setWidth(int width) {
-        this.width = width;
-    }
+	public int getWidth() {
+		return width;
+	}
 
-    public SortedSchema getSchema() {
-        return schema;
-    }
+	public void setWidth(int width) {
+		this.width = width;
+	}
 
-    public void setSchema(SortedSchema schema) {
-        this.schema = schema;
-    }
+	public SortedSchema getSchema() {
+		return schema;
+	}
 
-    public List<LinkLine> getLines() {
-        return lines;
-    }
+	public void setSchema(SortedSchema schema) {
+		this.schema = schema;
+	}
 
-    public void setLines(List<LinkLine> lines) {
-        this.lines = lines;
-    }
+	public List<LinkLine> getLines() {
+		return lines;
+	}
 
-    public boolean areTableViewsClean() {
-        boolean allClean = true;
-        for(TableView tv : tableViews) {
-            if (tv.isDirty())
-                allClean = false;
-        }
-        return allClean;
-    }
+	public void setLines(List<LinkLine> lines) {
+		this.lines = lines;
+	}
 
-    public int compareTo(SchemaPage o) {
-        if (this.orderid == o.getOrderid())
-            return 0;
-        else if (this.orderid > o.getOrderid())
-            return 1;
-        else
-            return -1;
-    }
+	public boolean areTableViewsClean() {
+		boolean allClean = true;
+		for (TableView tv : tableViews) {
+			if (tv.isDirty())
+				allClean = false;
+		}
+		return allClean;
+	}
 
-    /**
-     * Checks to see if the given table is in the schema page.
-     * @param t
-     * @return
-     */
-    public boolean contains(Table t){
-            for (TableView tv : tableViews){
-                if (tv.getTable().getId().compareTo(t.getId())==0) return true;
-            }
-        return false;
-    }
+	public int compareTo(SchemaPage o) {
+		if (this.orderid == o.getOrderid())
+			return 0;
+		else if (this.orderid > o.getOrderid())
+			return 1;
+		else
+			return -1;
+	}
 
-    public Boolean isSorted() {
-        return sorted;
-    }
+	/**
+	 * Checks to see if the given table is in the schema page.
+	 * 
+	 * @param t
+	 * @return
+	 */
+	public boolean contains(Table t) {
+		for (TableView tv : tableViews) {
+			if (tv.getTable().getId().compareTo(t.getId()) == 0)
+				return true;
+		}
+		return false;
+	}
 
-    public void setSorted(Boolean sorted) {
-        this.sorted = sorted;
-    }
-    
+	public Boolean isSorted() {
+		return sorted;
+	}
+
+	public void setSorted(Boolean sorted) {
+		this.sorted = sorted;
+	}
 
 }

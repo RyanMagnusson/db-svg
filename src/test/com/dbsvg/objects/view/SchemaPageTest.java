@@ -12,8 +12,6 @@ import java.util.UUID;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.dbsvg.objects.view.SchemaPage;
-
 /**
  * 
  * @author derrick.bowen
@@ -41,7 +39,6 @@ public class SchemaPageTest {
 	 */
 	// @Test
 	// public void testCalcDimensions() {
-	// System.out.println("calcDimensions");
 	// SchemaPage instance = new SchemaPage();
 	// instance.calcDimensions();
 	// // TODO review the generated test code and remove the default call to
@@ -54,7 +51,6 @@ public class SchemaPageTest {
 	// */
 	// @Test
 	// public void testSetTableViewPosition() {
-	// System.out.println("setTableViewPosition");
 	// int i = 0;
 	// String x_pos = "";
 	// String y_pos = "";
@@ -70,7 +66,6 @@ public class SchemaPageTest {
 	// */
 	// @Test
 	// public void testGetTableViews() {
-	// System.out.println("getTableViews");
 	// SchemaPage instance = new SchemaPage();
 	// List expResult = null;
 	// List result = instance.getTableViews();
@@ -85,7 +80,6 @@ public class SchemaPageTest {
 	// */
 	// @Test
 	// public void testSetTableViews() {
-	// System.out.println("setTableViews");
 	// List<TableView> tableViews = null;
 	// SchemaPage instance = new SchemaPage();
 	// instance.setTableViews(tableViews);
@@ -99,7 +93,6 @@ public class SchemaPageTest {
 	// */
 	// @Test
 	// public void testSetId_UUID() {
-	// System.out.println("setId");
 	// UUID id = null;
 	// SchemaPage instance = new SchemaPage();
 	// instance.setId(id);
@@ -113,7 +106,6 @@ public class SchemaPageTest {
 	// */
 	// @Test
 	// public void testSetId_String() {
-	// System.out.println("setId");
 	// String id = "";
 	// SchemaPage instance = new SchemaPage();
 	// instance.setId(id);
@@ -127,7 +119,6 @@ public class SchemaPageTest {
 	// */
 	// @Test
 	// public void testGetOrderid() {
-	// System.out.println("getOrderid");
 	// SchemaPage instance = new SchemaPage();
 	// int expResult = 0;
 	// int result = instance.getOrderid();
@@ -142,7 +133,6 @@ public class SchemaPageTest {
 	// */
 	// @Test
 	// public void testSetOrderid() {
-	// System.out.println("setOrderid");
 	// int orderid = 0;
 	// SchemaPage instance = new SchemaPage();
 	// instance.setOrderid(orderid);
@@ -156,7 +146,6 @@ public class SchemaPageTest {
 	// */
 	// @Test
 	// public void testGetTitle() {
-	// System.out.println("getTitle");
 	// SchemaPage instance = new SchemaPage();
 	// String expResult = "";
 	// String result = instance.getTitle();
@@ -171,7 +160,6 @@ public class SchemaPageTest {
 	// */
 	// @Test
 	// public void testSetTitle() {
-	// System.out.println("setTitle");
 	// String title = "";
 	// SchemaPage instance = new SchemaPage();
 	// instance.setTitle(title);
@@ -185,7 +173,6 @@ public class SchemaPageTest {
 	// */
 	// @Test
 	// public void testGetHeight() {
-	// System.out.println("getHeight");
 	// SchemaPage instance = new SchemaPage();
 	// int expResult = 0;
 	// int result = instance.getHeight();
@@ -200,7 +187,6 @@ public class SchemaPageTest {
 	// */
 	// @Test
 	// public void testSetHeight() {
-	// System.out.println("setHeight");
 	// int height = 0;
 	// SchemaPage instance = new SchemaPage();
 	// instance.setHeight(height);
@@ -214,7 +200,6 @@ public class SchemaPageTest {
 	// */
 	// @Test
 	// public void testGetTransx() {
-	// System.out.println("getTransx");
 	// SchemaPage instance = new SchemaPage();
 	// int expResult = 0;
 	// int result = instance.getTransx();
@@ -229,7 +214,6 @@ public class SchemaPageTest {
 	// */
 	// @Test
 	// public void testSetTransx() {
-	// System.out.println("setTransx");
 	// int transx = 0;
 	// SchemaPage instance = new SchemaPage();
 	// instance.setTransx(transx);
@@ -243,7 +227,6 @@ public class SchemaPageTest {
 	// */
 	// @Test
 	// public void testGetTransy() {
-	// System.out.println("getTransy");
 	// SchemaPage instance = new SchemaPage();
 	// int expResult = 0;
 	// int result = instance.getTransy();
@@ -258,7 +241,6 @@ public class SchemaPageTest {
 	// */
 	// @Test
 	// public void testSetTransy() {
-	// System.out.println("setTransy");
 	// int transy = 0;
 	// SchemaPage instance = new SchemaPage();
 	// instance.setTransy(transy);
@@ -272,7 +254,6 @@ public class SchemaPageTest {
 	// */
 	// @Test
 	// public void testGetWidth() {
-	// System.out.println("getWidth");
 	// SchemaPage instance = new SchemaPage();
 	// int expResult = 0;
 	// int result = instance.getWidth();
@@ -287,7 +268,6 @@ public class SchemaPageTest {
 	// */
 	// @Test
 	// public void testSetWidth() {
-	// System.out.println("setWidth");
 	// int width = 0;
 	// SchemaPage instance = new SchemaPage();
 	// instance.setWidth(width);
@@ -301,7 +281,6 @@ public class SchemaPageTest {
 	// */
 	// @Test
 	// public void testGetSchema() {
-	// System.out.println("getSchema");
 	// SchemaPage instance = new SchemaPage();
 	// SortedSchema expResult = null;
 	// SortedSchema result = instance.getSchema();
@@ -316,7 +295,6 @@ public class SchemaPageTest {
 	// */
 	// @Test
 	// public void testSetSchema() {
-	// System.out.println("setSchema");
 	// SortedSchema schema = null;
 	// SchemaPage instance = new SchemaPage();
 	// instance.setSchema(schema);
@@ -330,7 +308,6 @@ public class SchemaPageTest {
 	// */
 	// @Test
 	// public void testGetLines() {
-	// System.out.println("getLines");
 	// SchemaPage instance = new SchemaPage();
 	// List expResult = null;
 	// List result = instance.getLines();
@@ -345,7 +322,6 @@ public class SchemaPageTest {
 	// */
 	// @Test
 	// public void testSetLines() {
-	// System.out.println("setLines");
 	// List<LinkLine> lines = null;
 	// SchemaPage instance = new SchemaPage();
 	// instance.setLines(lines);
@@ -359,7 +335,6 @@ public class SchemaPageTest {
 	// */
 	// @Test
 	// public void testAreTableViewsClean() {
-	// System.out.println("areTableViewsClean");
 	// SchemaPage instance = new SchemaPage();
 	// boolean expResult = false;
 	// boolean result = instance.areTableViewsClean();
@@ -374,7 +349,6 @@ public class SchemaPageTest {
 	// */
 	// @Test
 	// public void testCompareTo() {
-	// System.out.println("compareTo");
 	// SchemaPage o = null;
 	// SchemaPage instance = new SchemaPage();
 	// int expResult = 0;
@@ -390,7 +364,6 @@ public class SchemaPageTest {
 	// */
 	// @Test
 	// public void testContains() {
-	// System.out.println("contains");
 	// Table t = null;
 	// SchemaPage instance = new SchemaPage();
 	// boolean expResult = false;
@@ -406,7 +379,6 @@ public class SchemaPageTest {
 	// */
 	// @Test
 	// public void testIsSorted() {
-	// System.out.println("isSorted");
 	// SchemaPage instance = new SchemaPage();
 	// Boolean expResult = null;
 	// Boolean result = instance.isSorted();
@@ -421,7 +393,6 @@ public class SchemaPageTest {
 	// */
 	// @Test
 	// public void testSetSorted() {
-	// System.out.println("setSorted");
 	// Boolean sorted = null;
 	// SchemaPage instance = new SchemaPage();
 	// instance.setSorted(sorted);

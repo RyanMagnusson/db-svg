@@ -30,9 +30,11 @@
 -------------------------------------------------------------------
 Same as above.
 
-    
-    If there are problems writing to the internal SQLite database, you can change
-    the path in the web.xml file.
+This project is built with maven, so once you install maven you can easily tweak the setup and do a full build.
+For example, if there are problems writing to the internal SQLite database, you can change
+the path in the src/main/webapp/WEB-INF/app-context.xml file and recompile the project with the command: "mvn clean install".
+
+To start the application using an embedded jetty web server, simply use the command: "mvn jetty:run"
     
     
     

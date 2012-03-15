@@ -71,21 +71,21 @@ ul {
 
 /**********************  Title Styles  **********************/
 .titleHeader {
-    background-image: url(/DB-SVG/images/title_bg.png);
+    background-image: url(../images/title_bg.png);
     background-repeat: repeat-x;
     height: 50px;
     width:100%;
 }
 .titleLeft {
     float:left;
-    background-image: url(/DB-SVG/images/title_left_bg.png);
+    background-image: url(../images/title_left_bg.png);
     background-repeat: no-repeat;
     height: 50px;
     width: 20px;
 }
 .titleRight {
     float:right;
-    background-image: url(/DB-SVG/images/title_right_bg.png);
+    background-image: url(../images/title_right_bg.png);
     background-repeat: no-repeat;
     height: 50px;
     width: 20px;

@@ -5,18 +5,19 @@
 
 package com.dbsvg.services;
 
-import java.util.*;
+import java.util.List;
 
-import com.dbsvg.models.*;
-import com.dbsvg.objects.model.*;
-import com.dbsvg.objects.view.*;
+import com.dbsvg.objects.view.LinkLine;
+import com.dbsvg.objects.view.SchemaPage;
+import com.dbsvg.objects.view.TableView;
 
 /**
- *
+ * 
  * @author derrick.bowen
  */
 public interface ITablePageSorter {
 
-    public List<TableView> SortPage(SchemaPage currentPage, boolean resort);
-    public List<LinkLine> calcLines(SchemaPage page);
+	public List<TableView> SortPage(SchemaPage currentPage, boolean resort);
+
+	public List<LinkLine> calcLines(SchemaPage page);
 }

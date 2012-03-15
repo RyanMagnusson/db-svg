@@ -13,8 +13,6 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import com.dbsvg.models.InternalDataDAO;
-import com.dbsvg.services.TableViewSpringSorter;
-
 
 /**
  * 
@@ -30,7 +28,8 @@ public class TableViewSpringSorterTest {
 	@Before
 	public void setUp() {
 		MockitoAnnotations.initMocks(this);
-		instance = new TableViewSpringSorter(iDAO);
+		instance = new TableViewSpringSorter();
+		instance.iDAO = iDAO;
 	}
 
 	/**
@@ -47,7 +46,6 @@ public class TableViewSpringSorterTest {
 	// */
 	// @Test
 	// public void testSortPage() {
-	// System.out.println("SortPage");
 	// SchemaPage currentPage = null;
 	// boolean resort = false;
 	// TableViewSpringSorter instance = null;
@@ -64,7 +62,6 @@ public class TableViewSpringSorterTest {
 	// */
 	// @Test
 	// public void testCalcLines() {
-	// System.out.println("calcLines");
 	// SchemaPage page = null;
 	// TableViewSpringSorter instance = null;
 	// List expResult = null;
@@ -80,7 +77,6 @@ public class TableViewSpringSorterTest {
 	// */
 	// @Test
 	// public void testSetIDAO() {
-	// System.out.println("setIDAO");
 	// InternalDataDAO iDAO = null;
 	// TableViewSpringSorter instance = null;
 	// instance.setIDAO(iDAO);

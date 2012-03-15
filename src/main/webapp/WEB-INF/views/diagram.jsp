@@ -17,14 +17,14 @@
  *   along with DB-SVG.  If not, see <http://www.gnu.org/licenses/>.
  *
 --%><%@page contentType="text/html"%>
-<%@page pageEncoding="UTF-8"%>
+<%@page pageEncoding="UTF-8"%><%@page session="true" %>
 
-<%@page import="DBViewer.models.*" %>
+<%@page import="com.dbsvg.models.*" %>
 <%@page import="java.util.*" %>
 <%@page import="java.sql.*" %>
-<%@page import="DBViewer.objects.model.*" %>
-<%@page import="DBViewer.objects.view.*" %>
-<%@page import="DBViewer.controllers.*" %>
+<%@page import="com.dbsvg.objects.model.*" %>
+<%@page import="com.dbsvg.objects.view.*" %>
+<%@page import="com.dbsvg.controllers.*" %>
 <!DOCTYPE HTML>
 <html>
     <head>
@@ -33,10 +33,11 @@
         <link rel="stylesheet" type="text/css" media="screen" href="css/style.css" />
         <link rel="stylesheet" type="text/css" media="screen" href="css/jquery.svg.css" />
         <link rel="stylesheet" type="text/css" media="screen" href="css/jq-ui.css" />
-        <link rel="shortcut icon" href="favicon.ico" type="image/x-icon" /> 
+        <link rel="shortcut icon" href="images/favicon.ico" type="image/x-icon" /> 
         <script type="text/javascript" src="js/jquery.js"></script>
         <script type="text/javascript" src="js/jquery.svg.js"></script>
         <script type="text/javascript" src="js/jquery.svganim.js"></script>
+        <script type="text/javascript" src="js/diagram.js"></script>
 <script type="text/javascript">
 var svg;
 var onTable = false;
@@ -62,13 +63,14 @@ var currentDragy;
     SchemaPage sPage = (SchemaPage)request.getSession().getAttribute("CurrentPage");
     
 %>
-
+  var dbi = <%=dbi%>;
+  var pageid = <%=pageid%>;
   var transx = (-1*<%= sPage.getTransx() %>)-30;
   var transy = (-1*<%= sPage.getTransy() %>)-100;
 
 $(function() {
 
-svg = $('#svgwindow').svg({loadURL: 'schema.svg.jsp<%=schemaUrlData%>'});
+svg = $('#svgwindow').svg({loadURL: 'diagram/download<%=schemaUrlData%>'});
 
       svg.mousemove(function (e){
            if (onTable) {
@@ -82,63 +84,38 @@ svg = $('#svgwindow').svg({loadURL: 'schema.svg.jsp<%=schemaUrlData%>'});
           } 
       });
       $('#saver').click(function(){
-           $.post("Diagram", { "m": "save" },
+           $.post("diagram/save", { "dbi":dbi, "pageid":pageid },
            function(data){
-             alert(data);
+             alert(data.message);
            });
            return false;
-      });
+      }, "json");
 
       $('#sorter').click(function(){
-           $.post("Diagram", { "m": "refresh" },
+           $.post("diagram/refresh",
            function(data){
-            // alert("Data Loaded: " + data);
             location.reload(true);
            });
            return false;
-      });
+      }, "json");
 });
 
-    function tableDown(evt) {
-        currentTable = evt.parentNode;
-        onTable = true;
-    }
-    
-    function tableUp(evt) {
-        onTable = false;
-        $.post("Diagram", { "m": "setTablePosition", "name": evt.id, "x": currentDragx, "y": currentDragy },
-           function(data){
-            // alert("Data Loaded: " + data);
-            location.reload(true);
-           });
-    }
+function tableDown(evt) {
+    currentTable = evt.parentNode;
+    onTable = true;
+}
 
-    function tableMove(evt) {
-    }
+function tableUp(evt) {
+    onTable = false;
+    $.post("diagram/setTablePosition", { "tableid": evt.id, "x": currentDragx, "y": currentDragy },
+       function(data){
+        // alert("Data Loaded: " + data);
+        location.reload(true);
+       }, "json");
+}
 
-    function isWebKit(){
-        return RegExp(" AppleWebKit/").test(navigator.userAgent);
-    }
-    function f_scrollLeft() {
-          return f_filterResults (
-                window.pageXOffset ? window.pageXOffset : 0,
-                document.documentElement ? document.documentElement.scrollLeft : 0,
-                document.body ? document.body.scrollLeft : 0
-          );
-    }
-    function f_scrollTop() {
-          return f_filterResults (
-                window.pageYOffset ? window.pageYOffset : 0,
-                document.documentElement ? document.documentElement.scrollTop : 0,
-                document.body ? document.body.scrollTop : 0
-          );
-    }
-    function f_filterResults(n_win, n_docel, n_body) {
-          var n_result = n_win ? n_win : 0;
-          if (n_docel && (!n_result || (n_result > n_docel)))
-                n_result = n_docel;
-          return n_body && (!n_result || (n_result > n_body)) ? n_body : n_result;
-    }
+function tableMove(evt) {
+}
 
 </script>
     </head>
@@ -152,10 +129,10 @@ svg = $('#svgwindow').svg({loadURL: 'schema.svg.jsp<%=schemaUrlData%>'});
     </div>
     <div id="content" class="modelContentBox"><% if (currentSchema.getPages().size()>1) { %>
         <div class="tablayer"><% for (SchemaPage p :currentSchema.getPages().values()) { %>
-<a href="#"><div class="tab"><%= p.getTitle() %></div></a><% } %>
+<a href="#"><span class="tab"><%= p.getTitle() %></span></a><% } %>
         </div><% } %>
         <div class="menu">
-            <a href="Menu">Back to Menu</a><a href="Setup?dbi=<%= dbi %>">Setup</a><a id="sorter" href="#Diagram?m=refresh">Re-sort</a><a id="saver" href="#Diagram?m=save">Save</a><a href="schema.svg.jsp<%=schemaUrlData%>" target="_blank">Download</a><span class="coord" id="coord" style="display:none">x,y</span>
+            <a href="menu">Back to Menu</a><a href="setup?dbi=<%= dbi %>">Setup</a><a id="sorter" href="#diagram/refresh">Re-sort</a><a id="saver" href="#diagram/save">Save</a><a href="diagram/download<%=schemaUrlData%>" target="_blank">Download</a><span class="coord" id="coord" style="display:none">x,y</span>
         </div>
         <div class="svgwrapper" style="width:<%= sPage.getWidth() %>px;height:<%= sPage.getHeight() %>px;">
             <div id="svgwindow" class="svgwindow"></div>

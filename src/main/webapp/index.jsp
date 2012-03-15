@@ -17,6 +17,6 @@
  *   along with DB-SVG.  If not, see <http://www.gnu.org/licenses/>.
  *
 --%><%
-    String redirectURL = "Menu";
+    String redirectURL = "menu";
     response.sendRedirect(redirectURL);
 %>

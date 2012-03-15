@@ -18,9 +18,6 @@ import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import com.dbsvg.models.InternalDataDAO;
-import com.dbsvg.models.SQLiteInternalDataDAO;
-
 /**
  * 
  * @author derrick.bowen
@@ -58,7 +55,8 @@ public class SQLiteInternalDataDAOTest {
 			Connection conn = instance.getConnection();
 			instance.setUpInternalDB(conn);
 		} catch (Exception ex) {
-			Logger.getLogger(SQLiteInternalDataDAOTest.class.getName()).log(Level.SEVERE, ex.getMessage(), ex);
+			Logger.getLogger(SQLiteInternalDataDAOTest.class.getName()).log(
+					Level.SEVERE, ex.getMessage(), ex);
 			// TODO review the generated test code and remove the default call
 			// to fail.
 			fail("The internal DB failed to set up.");
@@ -79,7 +77,6 @@ public class SQLiteInternalDataDAOTest {
 	// */
 	// @Test
 	// public void testSaveConnectionWrapper() {
-	// System.out.println("saveConnectionWrapper");
 	// ConnectionWrapper c = null;
 	// Connection conn = null;
 	// SQLiteInternalDataDAO instance = new SQLiteInternalDataDAO(iDAOPath);
@@ -94,7 +91,6 @@ public class SQLiteInternalDataDAOTest {
 	// */
 	// @Test
 	// public void testDeleteConnectionWrapper() {
-	// System.out.println("deleteConnectionWrapper");
 	// String id = "";
 	// Connection conn = null;
 	// SQLiteInternalDataDAO instance = new SQLiteInternalDataDAO(iDAOPath);
@@ -110,7 +106,6 @@ public class SQLiteInternalDataDAOTest {
 	// */
 	// @Test
 	// public void testSaveConnectionWrapperNewID() {
-	// System.out.println("saveConnectionWrapperNewID");
 	// ConnectionWrapper c = null;
 	// Connection conn = null;
 	// SQLiteInternalDataDAO instance = new SQLiteInternalDataDAO(iDAOPath);
@@ -125,7 +120,6 @@ public class SQLiteInternalDataDAOTest {
 	// */
 	// @Test
 	// public void testSaveTable() {
-	// System.out.println("saveTable");
 	// Table t = null;
 	// Connection conn = null;
 	// SQLiteInternalDataDAO instance = new SQLiteInternalDataDAO(iDAOPath);
@@ -140,7 +134,6 @@ public class SQLiteInternalDataDAOTest {
 	// */
 	// @Test
 	// public void testSaveSchemaPage() {
-	// System.out.println("saveSchemaPage");
 	// SchemaPage page = null;
 	// Connection conn = null;
 	// SQLiteInternalDataDAO instance = new SQLiteInternalDataDAO(iDAOPath);
@@ -155,7 +148,6 @@ public class SQLiteInternalDataDAOTest {
 	// */
 	// @Test
 	// public void testSaveTablePosition() {
-	// System.out.println("saveTablePosition");
 	// TableView tv = null;
 	// Connection conn = null;
 	// SQLiteInternalDataDAO instance = new SQLiteInternalDataDAO(iDAOPath);
@@ -170,7 +162,6 @@ public class SQLiteInternalDataDAOTest {
 	// */
 	// @Test
 	// public void testVerifySchema() {
-	// System.out.println("verifySchema");
 	// String schema = "";
 	// Connection conn = null;
 	// SQLiteInternalDataDAO instance = new SQLiteInternalDataDAO(iDAOPath);
@@ -185,7 +176,6 @@ public class SQLiteInternalDataDAOTest {
 	// */
 	// @Test
 	// public void testReadConnectionWrapper() {
-	// System.out.println("readConnectionWrapper");
 	// int id = 0;
 	// Connection conn = null;
 	// SQLiteInternalDataDAO instance = new SQLiteInternalDataDAO(iDAOPath);
@@ -203,7 +193,6 @@ public class SQLiteInternalDataDAOTest {
 	// */
 	// @Test
 	// public void testReadAllConnectionWrappers() {
-	// System.out.println("readAllConnectionWrappers");
 	// Connection conn = null;
 	// SQLiteInternalDataDAO instance = new SQLiteInternalDataDAO(iDAOPath);
 	// Map expResult = null;
@@ -219,7 +208,6 @@ public class SQLiteInternalDataDAOTest {
 	// */
 	// @Test
 	// public void testMakeTableSchema() {
-	// System.out.println("makeTableSchema");
 	// Table t = null;
 	// Connection conn = null;
 	// SQLiteInternalDataDAO instance = new SQLiteInternalDataDAO(iDAOPath);
@@ -234,7 +222,6 @@ public class SQLiteInternalDataDAOTest {
 	// */
 	// @Test
 	// public void testMakeAllTablesForSchema() {
-	// System.out.println("makeAllTablesForSchema");
 	// String SchemaName = "";
 	// Connection conn = null;
 	// SQLiteInternalDataDAO instance = new SQLiteInternalDataDAO(iDAOPath);
@@ -251,7 +238,6 @@ public class SQLiteInternalDataDAOTest {
 	// */
 	// @Test
 	// public void testMakeViewWCoordinates() {
-	// System.out.println("makeViewWCoordinates");
 	// Table t = null;
 	// SchemaPage page = null;
 	// int numTables = 0;
@@ -271,7 +257,6 @@ public class SQLiteInternalDataDAOTest {
 	// */
 	// @Test
 	// public void testReadSchemaPages() {
-	// System.out.println("readSchemaPages");
 	// SortedSchema schema = null;
 	// Connection conn = null;
 	// SQLiteInternalDataDAO instance = new SQLiteInternalDataDAO(iDAOPath);

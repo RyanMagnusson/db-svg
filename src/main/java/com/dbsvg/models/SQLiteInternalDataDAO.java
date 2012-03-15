@@ -31,6 +31,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.dbsvg.objects.model.Table;
 import com.dbsvg.objects.view.SchemaPage;
 import com.dbsvg.objects.view.SortedSchema;
@@ -44,13 +47,16 @@ import com.dbsvg.objects.view.TableView;
 @SuppressWarnings("serial")
 public class SQLiteInternalDataDAO implements Serializable, InternalDataDAO {
 
+	protected static final Logger LOG = LoggerFactory
+			.getLogger(SQLiteInternalDataDAO.class);
+
 	private String url = "jdbc:sqlite:";
 	private String driver = "org.sqlite.JDBC";
 	private String path = "unset.db";
 
 	public SQLiteInternalDataDAO(String path) {
 		this.path = path;
-		System.out.println("INFO: Initializing Internal DAO with path: " + path);
+		LOG.debug("INFO: Initializing Internal DAO with path: " + path);
 	}
 
 	/**
@@ -66,7 +72,7 @@ public class SQLiteInternalDataDAO implements Serializable, InternalDataDAO {
 			Connection conn = DriverManager.getConnection(url + path);
 			return conn;
 		} catch (SQLException e) {
-			System.out.println("Internal DAO path incorrect.");
+			LOG.error("Internal DAO path incorrect.", e);
 			throw e;
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -314,7 +320,8 @@ public class SQLiteInternalDataDAO implements Serializable, InternalDataDAO {
 	 * @param conn
 	 * @return
 	 */
-	public Map<String, ConnectionWrapper> readAllConnectionWrappers(Connection conn) {
+	public Map<String, ConnectionWrapper> readAllConnectionWrappers(
+			Connection conn) {
 		Map<String, ConnectionWrapper> connections = new HashMap<String, ConnectionWrapper>();
 		String selectAllSQL = "SELECT * FROM connection ORDER BY id DESC;";
 		try {
@@ -371,7 +378,8 @@ public class SQLiteInternalDataDAO implements Serializable, InternalDataDAO {
 	 * @param schemaName
 	 * @param conn
 	 */
-	public Map<String, Table> makeAllTablesForSchema(String SchemaName, Connection conn) {
+	public Map<String, Table> makeAllTablesForSchema(String SchemaName,
+			Connection conn) {
 
 		Map<String, Table> tables = new HashMap<String, Table>();
 
@@ -405,7 +413,8 @@ public class SQLiteInternalDataDAO implements Serializable, InternalDataDAO {
 	 * @param conn
 	 * @return coordsFound
 	 */
-	public TableView makeViewWCoordinates(Table t, SchemaPage page, int numTables, Connection conn) {
+	public TableView makeViewWCoordinates(Table t, SchemaPage page,
+			int numTables, Connection conn) {
 		TableView tv = new TableView(t);
 		t.addTableViewForPage(tv, page);
 		tv.setPage(page);
@@ -421,7 +430,9 @@ public class SQLiteInternalDataDAO implements Serializable, InternalDataDAO {
 			if (rs.next()) {
 				tv.setX(rs.getDouble("x_pos"));
 				tv.setY(rs.getDouble("y_pos"));
-				System.out.println("Populated Coordinates for: " + tv.getTable().getName() + "{" + tv.getX() + "," + tv.getY() + "}");
+				LOG.debug("Populated Coordinates for: "
+						+ tv.getTable().getName() + "{" + tv.getX() + ","
+						+ tv.getY() + "}");
 				tv.calcLinksAndRadius();
 				tv.setClean();
 			} else {
@@ -444,7 +455,8 @@ public class SQLiteInternalDataDAO implements Serializable, InternalDataDAO {
 	 * @param conn
 	 * @return
 	 */
-	public Map<UUID, SchemaPage> readSchemaPages(SortedSchema schema, Connection conn) {
+	public Map<UUID, SchemaPage> readSchemaPages(SortedSchema schema,
+			Connection conn) {
 		String insertSQL = "SELECT * FROM schema_page sp WHERE schema = ? ORDER BY sp.orderid ASC;";
 		Map<UUID, SchemaPage> pages = new HashMap<UUID, SchemaPage>();
 		try {

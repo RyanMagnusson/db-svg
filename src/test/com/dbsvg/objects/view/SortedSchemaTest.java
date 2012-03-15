@@ -9,9 +9,10 @@ import static org.junit.Assert.assertEquals;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import com.dbsvg.objects.view.SortedSchema;
+import com.dbsvg.models.ConnectionWrapper;
 
 /**
  * 
@@ -20,10 +21,13 @@ import com.dbsvg.objects.view.SortedSchema;
 public class SortedSchemaTest {
 	SortedSchema instance;
 
+	@Mock
+	ConnectionWrapper currentConn;
+
 	@Before
 	public void setUp() {
 		MockitoAnnotations.initMocks(this);
-		instance = new SortedSchema();
+		instance = new SortedSchema(currentConn);
 	}
 
 	/**
@@ -42,7 +46,6 @@ public class SortedSchemaTest {
 	// */
 	// @Test
 	// public void testSetTableViewPosition() {
-	// System.out.println("setTableViewPosition");
 	// int i = 0;
 	// String x_pos = "";
 	// String y_pos = "";
@@ -58,7 +61,6 @@ public class SortedSchemaTest {
 	// */
 	// @Test
 	// public void testGetFirstPage() {
-	// System.out.println("getFirstPage");
 	// SortedSchema instance = new SortedSchema();
 	// SchemaPage expResult = null;
 	// SchemaPage result = instance.getFirstPage();
@@ -73,7 +75,6 @@ public class SortedSchemaTest {
 	// */
 	// @Test
 	// public void testGetDefaultTableViews() {
-	// System.out.println("getDefaultTableViews");
 	// SortedSchema instance = new SortedSchema();
 	// List expResult = null;
 	// List result = instance.getDefaultTableViews();
@@ -88,7 +89,6 @@ public class SortedSchemaTest {
 	// */
 	// @Test
 	// public void testGetTransx() {
-	// System.out.println("getTransx");
 	// SortedSchema instance = new SortedSchema();
 	// int expResult = 0;
 	// int result = instance.getTransx();
@@ -103,7 +103,6 @@ public class SortedSchemaTest {
 	// */
 	// @Test
 	// public void testSetTransx() {
-	// System.out.println("setTransx");
 	// int transx = 0;
 	// SortedSchema instance = new SortedSchema();
 	// instance.setTransx(transx);
@@ -117,7 +116,6 @@ public class SortedSchemaTest {
 	// */
 	// @Test
 	// public void testGetTransy() {
-	// System.out.println("getTransy");
 	// SortedSchema instance = new SortedSchema();
 	// int expResult = 0;
 	// int result = instance.getTransy();
@@ -132,7 +130,6 @@ public class SortedSchemaTest {
 	// */
 	// @Test
 	// public void testSetTransy() {
-	// System.out.println("setTransy");
 	// int transy = 0;
 	// SortedSchema instance = new SortedSchema();
 	// instance.setTransy(transy);
@@ -146,7 +143,6 @@ public class SortedSchemaTest {
 	// */
 	// @Test
 	// public void testGetWidth() {
-	// System.out.println("getWidth");
 	// SortedSchema instance = new SortedSchema();
 	// int expResult = 0;
 	// int result = instance.getWidth();
@@ -161,7 +157,6 @@ public class SortedSchemaTest {
 	// */
 	// @Test
 	// public void testSetWidth() {
-	// System.out.println("setWidth");
 	// int width = 0;
 	// SortedSchema instance = new SortedSchema();
 	// instance.setWidth(width);
@@ -175,7 +170,6 @@ public class SortedSchemaTest {
 	// */
 	// @Test
 	// public void testGetName() {
-	// System.out.println("getName");
 	// SortedSchema instance = new SortedSchema();
 	// String expResult = "";
 	// String result = instance.getName();
@@ -190,7 +184,6 @@ public class SortedSchemaTest {
 	// */
 	// @Test
 	// public void testSetName() {
-	// System.out.println("setName");
 	// String name = "";
 	// SortedSchema instance = new SortedSchema();
 	// instance.setName(name);
@@ -204,7 +197,6 @@ public class SortedSchemaTest {
 	// */
 	// @Test
 	// public void testGetDbi() {
-	// System.out.println("getDbi");
 	// SortedSchema instance = new SortedSchema();
 	// String expResult = "";
 	// String result = instance.getDbi();
@@ -219,7 +211,6 @@ public class SortedSchemaTest {
 	// */
 	// @Test
 	// public void testSetDbi() {
-	// System.out.println("setDbi");
 	// String dbi = "";
 	// SortedSchema instance = new SortedSchema();
 	// instance.setDbi(dbi);
@@ -233,7 +224,6 @@ public class SortedSchemaTest {
 	// */
 	// @Test
 	// public void testGetPages() {
-	// System.out.println("getPages");
 	// SortedSchema instance = new SortedSchema();
 	// Map expResult = null;
 	// Map result = instance.getPages();
@@ -248,7 +238,6 @@ public class SortedSchemaTest {
 	// */
 	// @Test
 	// public void testSetPages() {
-	// System.out.println("setPages");
 	// Map<UUID, SchemaPage> pages = null;
 	// SortedSchema instance = new SortedSchema();
 	// instance.setPages(pages);
@@ -262,7 +251,6 @@ public class SortedSchemaTest {
 	// */
 	// @Test
 	// public void testGetTables() {
-	// System.out.println("getTables");
 	// SortedSchema instance = new SortedSchema();
 	// Map expResult = null;
 	// Map result = instance.getTables();
@@ -277,7 +265,6 @@ public class SortedSchemaTest {
 	// */
 	// @Test
 	// public void testSetTables() {
-	// System.out.println("setTables");
 	// Map<String, Table> tables = null;
 	// SortedSchema instance = new SortedSchema();
 	// instance.setTables(tables);
@@ -291,7 +278,6 @@ public class SortedSchemaTest {
 	// */
 	// @Test
 	// public void testIsTablesSorted() {
-	// System.out.println("isTablesSorted");
 	// SortedSchema instance = new SortedSchema();
 	// boolean expResult = false;
 	// boolean result = instance.isTablesSorted();
@@ -306,7 +292,6 @@ public class SortedSchemaTest {
 	// */
 	// @Test
 	// public void testSetTablesSorted() {
-	// System.out.println("setTablesSorted");
 	// boolean tablesSorted = false;
 	// SortedSchema instance = new SortedSchema();
 	// instance.setTablesSorted(tablesSorted);
@@ -320,7 +305,6 @@ public class SortedSchemaTest {
 	// */
 	// @Test
 	// public void testGetNumTables() {
-	// System.out.println("getNumTables");
 	// SortedSchema instance = new SortedSchema();
 	// int expResult = 0;
 	// int result = instance.getNumTables();

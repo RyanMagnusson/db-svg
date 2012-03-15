@@ -17,8 +17,6 @@ import org.mockito.MockitoAnnotations;
 
 import com.dbsvg.models.ConnectionWrapper;
 import com.dbsvg.objects.view.SchemaPage;
-import com.dbsvg.services.DBViewerMinimalCache;
-
 
 /**
  * 
@@ -59,7 +57,6 @@ public class DBViewerMinimalCacheTest {
 	 */
 	@Test
 	public void testPutSchemaPage() {
-		System.out.println("putSchemaPage");
 		DBViewerMinimalCache instance = new DBViewerMinimalCache();
 		instance.putSchemaPage(page);
 		SchemaPage result = instance.getSchemaPage(pageId);
@@ -71,7 +68,6 @@ public class DBViewerMinimalCacheTest {
 	// */
 	// @Test
 	// public void testRemoveConnection() {
-	// System.out.println("removeConnection");
 	// String dbi = "";
 	// DBViewerMinimalCache instance = new DBViewerMinimalCache();
 	// instance.removeConnection(dbi);
@@ -85,7 +81,6 @@ public class DBViewerMinimalCacheTest {
 	// */
 	// @Test
 	// public void testSetAllConnections() {
-	// System.out.println("setAllConnections");
 	// Map<String, ConnectionWrapper> cwmap = null;
 	// DBViewerMinimalCache instance = new DBViewerMinimalCache();
 	// instance.setAllConnections(cwmap);
@@ -100,7 +95,6 @@ public class DBViewerMinimalCacheTest {
 	// */
 	// @Test
 	// public void testGetAllConnections() {
-	// System.out.println("getAllConnections");
 	// DBViewerMinimalCache instance = new DBViewerMinimalCache();
 	// Map expResult = null;
 	// Map result = instance.getAllConnections();

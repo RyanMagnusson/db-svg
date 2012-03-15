@@ -16,9 +16,9 @@
  *   You should have received a copy of the GNU General Public License
  *   along with DB-SVG.  If not, see <http://www.gnu.org/licenses/>.
  *
---%>
-<%@page import="DBViewer.objects.view.*" %>
-<%@page import="DBViewer.objects.model.*" %>
+--%><%@page session="true" %>
+<%@page import="com.dbsvg.objects.view.*" %>
+<%@page import="com.dbsvg.objects.model.*" %>
 <%@page import="java.util.*" %>
 <%
 TableView t = (TableView)request.getSession().getAttribute("CurrentTableView");

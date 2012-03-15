@@ -23,13 +23,15 @@ package com.dbsvg.models;
 import java.io.Serializable;
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.SQLException;
 
 /**
  * 
  * @author horizon
  */
 @SuppressWarnings("serial")
-public class ConnectionWrapper implements Comparable<ConnectionWrapper>, Serializable {
+public class ConnectionWrapper implements Comparable<ConnectionWrapper>,
+		Serializable {
 
 	private int id;
 	private String title = "";
@@ -86,7 +88,9 @@ public class ConnectionWrapper implements Comparable<ConnectionWrapper>, Seriali
 		this.username = username;
 	}
 
-	public Connection getConnection() throws Exception {
+	public Connection connectToDB() throws SQLException,
+			InstantiationException, IllegalAccessException,
+			ClassNotFoundException {
 		Class.forName(driver).newInstance();
 		Connection conn = DriverManager.getConnection(url, username, password);
 		return conn;

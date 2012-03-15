@@ -12,9 +12,6 @@ import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import com.dbsvg.objects.model.Column;
-import com.dbsvg.objects.model.ForeignKey;
-
 /**
  * 
  * @author derrick.bowen
@@ -91,7 +88,6 @@ public class ForeignKeyTest {
 	// */
 	// @Test
 	// public void testCloneTo() {
-	// System.out.println("cloneTo");
 	// ForeignKey fk = null;
 	// ForeignKey instance = new ForeignKey();
 	// ForeignKey expResult = null;

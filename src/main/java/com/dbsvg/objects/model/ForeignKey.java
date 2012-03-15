@@ -21,103 +21,103 @@
 package com.dbsvg.objects.model;
 
 /**
- *
+ * 
  * @author Derrick Bowen <derrickbowen@gmail.com>
  */
+@SuppressWarnings("serial")
 public class ForeignKey extends ColumnObject {
 
-   Column reference;
-   String referencedColumn;
-   String referencedTable;
-   String updateRule;
-   String deleteRule;
+	Column reference;
+	String referencedColumn;
+	String referencedTable;
+	String updateRule;
+	String deleteRule;
 
-   /**
+	/**
     * 
     */
-   public ForeignKey() {
-   }
+	public ForeignKey() {
+	}
 
-   /**
-    * 
-    * @param name
-    */
-   public ForeignKey(String name) {
-      super.name = name;
-   }
-   
-   public ForeignKey cloneTo(ForeignKey fk) {
-      fk.setReference(this.getReference());
-      fk.setReferencedTable(this.getReferencedTable());
-      fk.setReferencedColumn(this.getReferencedColumn());
-      fk.setUpdateRule(this.getUpdateRule());
-      fk.setDeleteRule(this.getDeleteRule());
-      return fk;
-   }
+	/**
+	 * 
+	 * @param name
+	 */
+	public ForeignKey(String name) {
+		super.name = name;
+	}
 
-   /**
-    * 
-    * @return
-    */
-   public String getDeleteRule() {
-      return deleteRule;
-   }
+	public ForeignKey cloneTo(ForeignKey fk) {
+		fk.setReference(this.getReference());
+		fk.setReferencedTable(this.getReferencedTable());
+		fk.setReferencedColumn(this.getReferencedColumn());
+		fk.setUpdateRule(this.getUpdateRule());
+		fk.setDeleteRule(this.getDeleteRule());
+		return fk;
+	}
 
-   /**
-    * 
-    * @param deleteRule
-    */
-   public void setDeleteRule(String deleteRule) {
-      this.deleteRule = deleteRule;
-   }
+	/**
+	 * 
+	 * @return
+	 */
+	public String getDeleteRule() {
+		return deleteRule;
+	}
 
-   /**
-    * 
-    * @return
-    */
-   public String getUpdateRule() {
-      return updateRule;
-   }
+	/**
+	 * 
+	 * @param deleteRule
+	 */
+	public void setDeleteRule(String deleteRule) {
+		this.deleteRule = deleteRule;
+	}
 
-   /**
-    * 
-    * @param updateRule
-    */
-   public void setUpdateRule(String updateRule) {
-      this.updateRule = updateRule;
-   }
+	/**
+	 * 
+	 * @return
+	 */
+	public String getUpdateRule() {
+		return updateRule;
+	}
 
-   /**
-    * 
-    * @return
-    */
-   public Column getReference() {
-      return reference;
-   }
+	/**
+	 * 
+	 * @param updateRule
+	 */
+	public void setUpdateRule(String updateRule) {
+		this.updateRule = updateRule;
+	}
 
-   /**
-    * 
-    * @param reference
-    */
-   public void setReference(Column reference) {
-      this.reference = reference;
-   }
+	/**
+	 * 
+	 * @return
+	 */
+	public Column getReference() {
+		return reference;
+	}
 
-   public String getReferencedColumn() {
-      return referencedColumn;
-   }
+	/**
+	 * 
+	 * @param reference
+	 */
+	public void setReference(Column reference) {
+		this.reference = reference;
+	}
 
-   public void setReferencedColumn(String referencedColumn) {
-      this.referencedColumn = referencedColumn;
-   }
+	public String getReferencedColumn() {
+		return referencedColumn;
+	}
 
-   public String getReferencedTable() {
-      return referencedTable;
-   }
+	public void setReferencedColumn(String referencedColumn) {
+		this.referencedColumn = referencedColumn;
+	}
 
-   public void setReferencedTable(String referencedTable) {
-      this.referencedTable = referencedTable;
-   }
-   
-   
+	public String getReferencedTable() {
+		return referencedTable;
+	}
+
+	public void setReferencedTable(String referencedTable) {
+		this.referencedTable = referencedTable;
+	}
+
 }

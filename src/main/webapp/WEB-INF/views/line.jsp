@@ -16,7 +16,7 @@
  *   You should have received a copy of the GNU General Public License
  *   along with DB-SVG.  If not, see <http://www.gnu.org/licenses/>.
  *
---%><%@page import="DBViewer.objects.view.*" %><%
+--%><%@page import="com.dbsvg.objects.view.*" %><%@page session="true" %><%
 
 LinkLine l = (LinkLine)request.getSession().getAttribute("CurrentLine");
 

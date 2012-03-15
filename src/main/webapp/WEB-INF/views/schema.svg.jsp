@@ -19,41 +19,18 @@
     Document   : schema.svg.jsp
     Created on : Mar 28, 2009, 5:47:13 PM
     Author     : horizon
---%>
-
-<%@page contentType="image/svg+xml" pageEncoding="UTF-8"%>
-<%@page import="DBViewer.objects.model.*" %>
-<%@page import="DBViewer.objects.view.*" %>
-<%@page import="DBViewer.controllers.*" %>
-<%@page import="DBViewer.controllers.*" %>
+--%><%@page contentType="image/svg+xml" pageEncoding="UTF-8"%><%@page session="true" %>
+<%@page import="com.dbsvg.objects.model.*" %>
+<%@page import="com.dbsvg.objects.view.*" %>
+<%@page import="com.dbsvg.controllers.*" %>
+<%@page import="com.dbsvg.services.*" %>
 <%@page import="java.util.*" %>
 <%
 String dbi = request.getParameter("dbi");
-String pageid = request.getParameter("pageid");
-
-if (dbi == null) {
-    dbi = (String)request.getSession().getAttribute("CurrentDBI");
-}
-if (pageid == null) {
-    pageid = (String)request.getSession().getAttribute("pageid");
-}
 
 if (dbi != null) {
-
-    SortedSchema currentSchema = new SortedSchema();
-    if (request.getSession().getAttribute("CurrentSchema")==null || 
-            request.getSession().getAttribute("CurrentSchema").getClass()!=currentSchema.getClass() ||
-            !((SortedSchema)request.getSession().getAttribute("CurrentSchema")).getDbi().equals(dbi) ) {
-        
-        currentSchema.setDbi(dbi);
-        request.getSession().setAttribute("CurrentSchema", currentSchema);
-    } else {
-        currentSchema = (SortedSchema)request.getSession().getAttribute("CurrentSchema");
-    }
-    SchemaPage sPage = SchemaController.prepareSchema(currentSchema, dbi, pageid);
-
+    SchemaPage sPage = (SchemaPage)request.getSession().getAttribute("CurrentPage");
     List<TableView> tableViews = sPage.getTableViews();
-    
 %>
 <svg
    xmlns:dc="http://purl.org/dc/elements/1.1/"
@@ -75,39 +52,38 @@ if (dbi != null) {
    onload="init();" >
 <style type="text/css" >
 <![CDATA[
-<jsp:include page="css/diagramstyle.css" ></jsp:include>
+<jsp:include page="../../css/diagramstyle.css" ></jsp:include>
 ]]>
 </style>
 <svg:g id="<%= sPage.getId() %>"
    transform="translate(<%= sPage.getTransx() %>,<%= sPage.getTransy() %>)">
 <%
-List<LinkLine> lines = sPage.getLines();
-            for (LinkLine l : lines) {
-                request.getSession().setAttribute("CurrentLine",l);
+	List<LinkLine> lines = sPage.getLines();
+    for (LinkLine l : lines) {
+        request.getSession().setAttribute("CurrentLine", l);
 
-                %>
-                <jsp:include page="line.jsp" ></jsp:include>
-                <%
-            }
-
-            for (TableView t : tableViews) {
-                
-                request.getSession().setAttribute("CurrentTableView",t);
-                
-                %>
-                <jsp:include page="table.jsp" >
-                    <jsp:param name="transx" value="<%= t.getX() %>" />
-                    <jsp:param name="transy" value="<%= t.getY() %>" />
-                </jsp:include>
+        %>
+        <jsp:include page="line.jsp" ></jsp:include>
         <%
-            }
-          } else { %>
-          <g>
-            <rect width="350" height="50" x="20" y="90" fill="#9a564c"></rect>
+    }
+
+    for (TableView t : tableViews) {
+        request.getSession().setAttribute("CurrentTableView", t);
+        
+        %>
+       <jsp:include page="table.jsp" >
+           <jsp:param name="transx" value="<%= t.getX() %>" />
+           <jsp:param name="transy" value="<%= t.getY() %>" />
+       </jsp:include>
+ <%
+     }
+} else { %>
+          <g class="svgTable">
+            <rect width="350" height="50" x="20" y="90" fill="#9a564c" class="tableBody"></rect>
             <text x="40" y="120" fill="white" font-weight="bold"> 
               No Schema Loaded</text>
           </g>
-       <% } %>
+<% } %>
        </svg:g>
    </svg>
 

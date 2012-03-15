@@ -1,8 +1,40 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<web-app version="2.5" xmlns="http://java.sun.com/xml/ns/javaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd">
-    <display-name>DB-SVG</display-name>
+<web-app version="2.5" xmlns="http://java.sun.com/xml/ns/javaee"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd">
+
+   <display-name>DB-SVG</display-name>
     <distributable/>
+    
+    <!-- Processes application requests -->
     <servlet>
+        <servlet-name>appServlet</servlet-name>
+        <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+        <init-param>
+            <param-name>contextConfigLocation</param-name>
+            <param-value>/WEB-INF/app-context.xml</param-value>
+        </init-param>
+        <load-on-startup>1</load-on-startup>
+    </servlet>        
+ 
+    <servlet-mapping>
+	    <servlet-name>default</servlet-name>
+	    <url-pattern>/css/*</url-pattern>
+	</servlet-mapping>
+    <servlet-mapping>
+	    <servlet-name>default</servlet-name>
+	    <url-pattern>/js/*</url-pattern>
+	</servlet-mapping>
+    <servlet-mapping>
+	    <servlet-name>default</servlet-name>
+	    <url-pattern>/images/*</url-pattern>
+	</servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>appServlet</servlet-name>
+        <url-pattern>/</url-pattern>
+    </servlet-mapping>
+    
+   <!-- <servlet>
         <servlet-name>MenuController</servlet-name>
         <servlet-class>DBViewer.controllers.MenuViewController</servlet-class>
     </servlet>
@@ -28,7 +60,7 @@
         <servlet-name>MenuController</servlet-name>
         <url-pattern>/Menu</url-pattern>
         <url-pattern>/menu</url-pattern>
-    </servlet-mapping>
+    </servlet-mapping> --> 
     <session-config>
         <session-timeout>
             30
@@ -37,28 +69,11 @@
     <welcome-file-list>
         <welcome-file>index.jsp</welcome-file>
     </welcome-file-list>
-    <env-entry>
-        <description>Path to Available DB definitions</description>
-        <env-entry-name>DBXMLPATH</env-entry-name>
-        <env-entry-type>java.lang.String</env-entry-type>
-        <env-entry-value>/DB-SVG/dbs.xml</env-entry-value>
-    </env-entry>
+   
     <env-entry>
         <description>Path to Location of SQLite App DB</description>
         <env-entry-name>AppDBLocation</env-entry-name>
         <env-entry-type>java.lang.String</env-entry-type>
         <env-entry-value>DB-SVG.db</env-entry-value>
-    </env-entry>
-    <env-entry>
-        <description>Failover Path to Available DB definitions</description>
-        <env-entry-name>DBXMLPATH2</env-entry-name>
-        <env-entry-type>java.lang.String</env-entry-type>
-        <env-entry-value>C:\DB-SVG\dbs.xml</env-entry-value>
-    </env-entry>
-    <env-entry>
-        <description>Failover Path to Location of SQLite App DB</description>
-        <env-entry-name>AppDBLocation2</env-entry-name>
-        <env-entry-type>java.lang.String</env-entry-type>
-        <env-entry-value>C:\DB-SVG\DB-SVG.db</env-entry-value>
     </env-entry>
 </web-app>

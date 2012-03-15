@@ -14,9 +14,6 @@ import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import com.dbsvg.models.InternalDataDAO;
-import com.dbsvg.models.JdbcMainDAO;
-
 /**
  * 
  * @author derrick.bowen
@@ -51,7 +48,6 @@ public class JdbcMainDAOTest {
 	// */
 	// @Test
 	// public void testGetTables() throws Exception {
-	// System.out.println("getTables");
 	// Connection conn = null;
 	// String schemaName = "";
 	// JdbcMainDAO instance = new JdbcMainDAO();

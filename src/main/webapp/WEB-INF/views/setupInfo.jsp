@@ -17,13 +17,13 @@
  *   along with DB-SVG.  If not, see <http://www.gnu.org/licenses/>.
  *
 --%>
-<%@page contentType="text/html" pageEncoding="UTF-8"%>
-<%@page import="DBViewer.models.*" %>
+<%@page contentType="text/html" pageEncoding="UTF-8"%><%@page session="true" %>
+<%@page import="com.dbsvg.models.*" %>
 <%@page import="java.util.*" %>
 <%@page import="java.sql.*" %>
-<%@page import="DBViewer.objects.model.*" %>
-<%@page import="DBViewer.objects.view.*" %>
-<%@page import="DBViewer.controllers.*" %><%
+<%@page import="com.dbsvg.objects.model.*" %>
+<%@page import="com.dbsvg.objects.view.*" %>
+<%@page import="com.dbsvg.controllers.*" %><%
 
     SortedSchema currentSchema = (SortedSchema)request.getSession().getAttribute("CurrentSchema");
     ConnectionWrapper cw = (ConnectionWrapper)request.getSession().getAttribute("CurrentConn");
