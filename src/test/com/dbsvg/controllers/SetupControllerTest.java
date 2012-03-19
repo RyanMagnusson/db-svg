@@ -79,31 +79,7 @@ public class SetupControllerTest {
 	}
 
 	@Test
-	public void initializeNoSessionValues() throws Exception {
-		String expectedView = "setup";
-		String dbi = "10";
-
-		when(session.getAttribute("CurrentSchema")).thenReturn(null);
-		when(session.getAttribute("CurrentConn")).thenReturn(null);
-		when(session.getAttribute("CurrentPage")).thenReturn(null);
-
-		when(programCache.getConnection(dbi)).thenReturn(resultConn);
-
-		String result = instance.showFrontPage(dbi, request);
-
-		verify(session).setAttribute(eq("CurrentSchema"),
-				schemaCaptor.capture());
-		SortedSchema resultSchema = schemaCaptor.getValue();
-
-		verify(schemaService).prepareSchema(eq(resultSchema), eq(dbi),
-				(String) isNull());
-
-		assertEquals(expectedView, result);
-		assertEquals(dbi, resultSchema.getDbi());
-	}
-
-	@Test
-	public void initializeSameSessionValues() throws Exception {
+	public void showFrontPage() throws Exception {
 		String expectedView = "setup";
 		String dbi = "10";
 
@@ -124,15 +100,14 @@ public class SetupControllerTest {
 	}
 
 	@Test
-	public void initializeDifferentSessionValues() throws Exception {
-		String expectedView = "setup";
+	public void setupInfo() throws Exception {
+		String expectedView = "setupInfo";
 		String dbi = "10";
-		String oldDbi = "20";
 
-		when(programCache.getConnection(dbi)).thenReturn(resultConn);
-		when(currentSchema.getDbi()).thenReturn(oldDbi);
+		when(programCache.getConnection(dbi)).thenReturn(currentConn);
+		when(currentSchema.getDbi()).thenReturn(dbi);
 
-		String result = instance.showFrontPage(dbi, request);
+		String result = instance.setupInfo(dbi, request);
 
 		verify(session).setAttribute(eq("CurrentSchema"),
 				schemaCaptor.capture());
@@ -145,4 +120,24 @@ public class SetupControllerTest {
 		assertEquals(dbi, resultSchema.getDbi());
 	}
 
+	@Test
+	public void setupPages() throws Exception {
+		String expectedView = "setupPages";
+		String dbi = "10";
+
+		when(programCache.getConnection(dbi)).thenReturn(currentConn);
+		when(currentSchema.getDbi()).thenReturn(dbi);
+
+		String result = instance.setupPages(dbi, request);
+
+		verify(session).setAttribute(eq("CurrentSchema"),
+				schemaCaptor.capture());
+		SortedSchema resultSchema = schemaCaptor.getValue();
+
+		verify(schemaService).prepareSchema(eq(resultSchema), eq(dbi),
+				(String) isNull());
+
+		assertEquals(expectedView, result);
+		assertEquals(dbi, resultSchema.getDbi());
+	}
 }

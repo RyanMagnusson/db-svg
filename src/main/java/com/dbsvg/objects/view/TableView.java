@@ -209,4 +209,11 @@ public class TableView extends Vertex implements Serializable {
 		return builder.toString();
 	}
 
+	public void randomInitialize(int numTables) {
+		this.setX((Math.random()) * 2 * numTables * 200);
+		this.setY((Math.random()) * 2 * numTables * 50 + 300);
+		this.calcLinksAndRadius();
+		this.setNeedsSort();
+	}
+
 }

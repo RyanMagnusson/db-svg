@@ -261,4 +261,21 @@ public class SchemaPage implements Comparable<SchemaPage>, Serializable {
 		this.sorted = sorted;
 	}
 
+	public TableView makeViewForTable(Table table) {
+		TableView tv = new TableView(table, this);
+		table.addTableViewForPage(tv, this);
+		return tv;
+	}
+
+	public TableView removeViewForTable(Table table) {
+		TableView tv = null;
+		for (TableView tv2 : tableViews) {
+			if (tv2.getTable().equals(table))
+				tv = tv2;
+		}
+		if (tv != null)
+			tableViews.remove(tv);
+		return tv;
+	}
+
 }

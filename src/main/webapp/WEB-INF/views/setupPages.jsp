@@ -41,8 +41,7 @@
 %>
 <h3 class="ui-widget-header ui-corner-all">Pages Setup</h3>
 <div class="pagesButtons">
-    <button type="button" name="AddPage" id="addPage">Add Page</button>
-    <button type="button" name="Save" id="save">Save Changes</button>
+    <button type="button" name="AddPage" id="addPage" onclick="showAddPage();">Add Page</button>
 </div>
 <table class="pagesTable">
     <thead>
@@ -54,8 +53,19 @@
     <tbody><% for (Table t : tables) { %>
     <tr>
         <td><%= t.getName() %></td><% for (SchemaPage p : pages) { %>
-        <td class="pagebox"><input type="checkbox" <%= (p.contains(t)? "CHECKED":"")%> ></input></td>
-    <% } } %>
+        <td class="pagebox"><input type="checkbox" <%= (p.contains(t)? "CHECKED":"")%> class="page<%= p.getId() %>" onclick="selectPageForTable('<%= p.getId() %>', '<%= t.getName() %>', this)"></input></td>
+    	<% } %>
     </tr>
+     <% } %>
     </tbody>
+    <tfoot>
+        <tr>
+            <td></td><% for (SchemaPage p : pages) { %>
+            <td class="select-button">
+	            <button type="button" onclick="selectAllTablesForPage('<%= p.getId() %>')" >All</button><br>
+	            <button type="button" onclick="deselectAllTablesForPage('<%= p.getId() %>')" >None</button><br>
+	            <button type="button" onclick="deletePage('<%= p.getId() %>')" >Delete Page</button><br>
+            </td><% } %>
+        </tr>
+    </tfoot>
 </table>

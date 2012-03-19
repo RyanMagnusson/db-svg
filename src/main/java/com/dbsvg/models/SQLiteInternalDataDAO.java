@@ -93,7 +93,7 @@ public class SQLiteInternalDataDAO implements Serializable, InternalDataDAO {
 					+ " FOREIGN KEY (schema) REFERENCES schema(title));");
 			st.executeUpdate(" CREATE TABLE IF NOT EXISTS schema_page (id PRIMARY KEY, orderid INTEGER, title, schema, "
 					+ " FOREIGN KEY (schema) REFERENCES schema(title)); ");
-			st.executeUpdate(" CREATE TABLE IF NOT EXISTS table_page_position (pageid, tableid, x_pos FLOAT, y_pos FLOAT,"
+			st.executeUpdate(" CREATE TABLE IF NOT EXISTS table_page_position (pageid, tableid, x_pos INTEGER, y_pos INTEGER,"
 					+ " UNIQUE (pageid, tableid), "
 					+ " FOREIGN KEY (pageid) REFERENCES schema_page(id), "
 					+ " FOREIGN KEY (tableid) REFERENCES table_schema(id) "
@@ -232,6 +232,27 @@ public class SQLiteInternalDataDAO implements Serializable, InternalDataDAO {
 	}
 
 	/**
+	 * Deletes a TableView
+	 * 
+	 * @param tv
+	 * @param conn
+	 */
+	public void deleteTablePosition(TableView tv, Connection conn) {
+		String insertTableViewSQL = "DELETE FROM table_page_position WHERE pageid=? AND tableid=?;";
+		try {
+			PreparedStatement ps = conn.prepareStatement(insertTableViewSQL);
+			ps.setString(1, tv.getPage().getId().toString());
+			ps.setString(2, tv.getTable().getId().toString());
+			ps.executeUpdate();
+			ps.close();
+
+			LOG.info("DELETED TableView {}", tv);
+		} catch (Exception e) {
+			LOG.error("Ignoring Table Position Delete Error:", e);
+		}
+	}
+
+	/**
 	 * Save a SchemaPage to the internal DB
 	 * 
 	 * @param page
@@ -249,6 +270,25 @@ public class SQLiteInternalDataDAO implements Serializable, InternalDataDAO {
 
 		} catch (Exception e) {
 			LOG.error("Ignoring SchemaPage Save Error:", e);
+		}
+
+	}
+
+	/**
+	 * Save a SchemaPage to the internal DB
+	 * 
+	 * @param page
+	 * @param conn
+	 */
+	public void deleteSchemaPage(SchemaPage page, Connection conn) {
+		String insertPageSQL = "DELETE FROM schema_page WHERE id=?;";
+		try {
+			PreparedStatement ps = conn.prepareStatement(insertPageSQL);
+			ps.setString(1, page.getId().toString());
+			ps.executeUpdate();
+
+		} catch (Exception e) {
+			LOG.error("Ignoring SchemaPage Delete Error:", e);
 		}
 
 	}
@@ -357,7 +397,7 @@ public class SQLiteInternalDataDAO implements Serializable, InternalDataDAO {
 			}
 			rs.close();
 		} catch (Exception e) {
-			LOG.error("Ignoring Make Table Schema Save Error:", e);
+			LOG.error("Ignoring Make Table Schema SELECT Error:", e);
 		}
 	}
 
@@ -401,12 +441,12 @@ public class SQLiteInternalDataDAO implements Serializable, InternalDataDAO {
 	 * 
 	 * @param page
 	 * @param conn
+	 * 
 	 * @return coordsFound
 	 */
-	public TableView makeViewWCoordinates(Table t, SchemaPage page,
-			int numTables, Connection conn) {
-		TableView tv = new TableView(t, page);
-		t.addTableViewForPage(tv, page);
+	public TableView makeViewWCoordinates(Table t, SchemaPage page, int numTables, Connection conn, boolean makeViewsForAllTables) {
+		TableView tv = page.makeViewForTable(t);
+
 		String selectTVSQL = "SELECT * FROM table_page_position WHERE pageid = ? AND tableid = ? LIMIT 1;";
 		try {
 			PreparedStatement ps = conn.prepareStatement(selectTVSQL);
@@ -423,11 +463,8 @@ public class SQLiteInternalDataDAO implements Serializable, InternalDataDAO {
 				tv.calcLinksAndRadius();
 				tv.setSorted();
 				LOG.info("Read TableView from db {}", tv);
-			} else {
-				tv.setX((Math.random()) * 2 * numTables * 200);
-				tv.setY((Math.random()) * 2 * numTables * 50 + 300);
-				tv.calcLinksAndRadius();
-				tv.setNeedsSort();
+			} else if (makeViewsForAllTables) {
+				tv.randomInitialize(numTables);
 				LOG.info("No TableView found for table. Created blank view for this page {}", tv);
 			}
 			rs.close();

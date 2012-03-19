@@ -47,8 +47,12 @@ public interface InternalDataDAO extends Serializable {
 
 	public Map<String, Table> makeAllTablesForSchema(String SchemaName, Connection conn);
 
-	public TableView makeViewWCoordinates(Table t, SchemaPage page, int numTables, Connection conn);
+	public TableView makeViewWCoordinates(Table t, SchemaPage page, int numTables, Connection conn, boolean makeViewsForAllTables);
 
 	public Map<UUID, SchemaPage> readSchemaPages(SortedSchema schema, Connection conn);
+
+	public void deleteTablePosition(TableView tv, Connection conn);
+
+	public void deleteSchemaPage(SchemaPage page, Connection conn);
 
 }

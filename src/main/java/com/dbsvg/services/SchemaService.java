@@ -218,19 +218,20 @@ public class SchemaService {
 		if (schema.getTables().size() > 0) {
 			Connection conn = iDAO.getConnection();
 			Map<UUID, SchemaPage> pages = iDAO.readSchemaPages(schema, conn);
+			boolean makeViewsForAllTables = false;
 			if (pages.size() < 1) {
 				SchemaPage sp = new SchemaPage();
 				pages.put(sp.getId(), sp);
 				sp.setTitle(DB_SVG_DEFAULT_NAMESPACE);
 				sp.setOrderid(0);
 				sp.setSchema(schema);
+				makeViewsForAllTables = true;// TODO test this
 			}
 			for (SchemaPage page : pages.values()) {
 				int i = 0;
 				for (Table t : schema.getTables().values()) {
 					iDAO.makeTableSchema(t, conn);
-					TableView tv = iDAO.makeViewWCoordinates(t, page, schema
-							.getTables().size(), conn);
+					TableView tv = iDAO.makeViewWCoordinates(t, page, schema.getTables().size(), conn, makeViewsForAllTables);
 					tv.setId(i);
 					page.getTableViews().add(tv);
 					i++;

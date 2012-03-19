@@ -83,5 +83,15 @@
             <input type="password" name="password" id="password" value="<%= cw.getPassword() %>" class="text ui-widget-content"><br>
         </form>
     </div>
+    <div id="addPageDialog" class="addDialog ui-dialog" title="Add New Page">
+	    <p>
+	        What should the page be titled?
+	    </p>
+	    <span id="validatePageReqs"></span>
+	    <form>
+	        <label for="pageTitle">Title</label>
+	        <input type="text" name="pageTitle" id="pageTitle" value="Page Title" class="text ui-widget-content"><br>
+	    </form>
+	</div>
     </body>
 </html>

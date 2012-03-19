@@ -1,12 +1,19 @@
 var dbi = $.getUrlVar('dbi');
+var reqs;
+var allFields;
 
 $(function() {
-	var title = $("#title"), 
-	url = $("#url"), 
-	driver = $("#driver"), 
-	username = $("#username"), 
-	password = $("#password"), 
-	allFields = $([]).add(title).add(url).add(driver).add(username).add(password), reqs = $("#validateReqs");
+	var title = $("#title");
+	var url = $("#url");
+	var driver = $("#driver");
+	var username = $("#username");
+	var password = $("#password");
+	var allFields = $([]).add(title).add(url).add(driver).add(username).add(
+			password);
+	var reqs = $("#validateReqs");
+	var pageTitle = $("#pageTitle");
+	var pageFields = $([]).add(pageTitle);
+	var pageReqs = $("#validatePageReqs");
 
 	$("#editConnDialog").dialog({
 		autoOpen : false,
@@ -18,11 +25,11 @@ $(function() {
 				var bValid = true;
 				allFields.removeClass('ui-state-error');
 
-				bValid = bValid && checkLength(title, "Title");
-				bValid = bValid && checkLength(url, "URL");
-				bValid = bValid && checkLength(driver, "Driver");
-				bValid = bValid && checkLength(username, "Username");
-				bValid = bValid && checkLength(password, "Password");
+				bValid = bValid && checkLength(title, "Title", reqs);
+				bValid = bValid && checkLength(url, "URL", reqs);
+				bValid = bValid && checkLength(driver, "Driver", reqs);
+				bValid = bValid && checkLength(username, "Username", reqs);
+				bValid = bValid && checkLength(password, "Password", reqs);
 
 				if (bValid) {
 					$.post("connections/save", {
@@ -50,6 +57,44 @@ $(function() {
 
 	});
 
+	$("#addPageDialog").dialog({
+		autoOpen : false,
+		height : 400,
+		width : 420,
+		modal : false,
+		buttons : {
+			Ok : function() {
+				var bValid = true;
+				allFields.removeClass('ui-state-error');
+
+				bValid = bValid && checkLength(pageTitle, "Title", pageReqs);
+
+				if (bValid) {
+					$.post("pages/add", {
+						"dbi" : dbi,
+						"title" : pageTitle.val(),
+					}, function(data) {
+						if (data["val"] == "0") {
+							alert(data.message);
+						} else {
+							$.post("setup/pages", {
+								"dbi" : dbi
+							}, function(data) {
+								$('#changer').html(data);
+							});
+						}
+					}, "json");
+					$(this).dialog('close');
+				}
+			},
+			Cancel : function() {
+				$(this).dialog('close');
+				resetPageFields();
+			}
+		}
+
+	});
+
 	$('#info').click(function() {
 		$.post("setup/info", {
 			"dbi" : dbi
@@ -61,32 +106,79 @@ $(function() {
 
 	$('#pages').click(function() {
 		$.post("setup/pages", {
-			"dbi" : dbi,
-			"refresh" : "true"
+			"dbi" : dbi
 		}, function(data) {
 			$('#changer').html(data);
 		});
 		return false;
 	});
-	// show validation requirements
-	function updateReqs(t) {
-		reqs.text(t).effect("highlight", {}, 1500);
-	}
-	// basic validation
-	function checkLength(o, n) {
-		if (o.val().length < 1) {
-			o.addClass('ui-state-error');
-			updateReqs(n + " is required.");
-			return false;
-		} else {
-			return true;
-		}
 
-	}
+
 });
 
-// displays add connection dialog
+// displays edit connection dialog
 function showEditConn() {
 	$("#editConnDialog").dialog("open");
 	return false;
 }
+
+//displays edit connection dialog
+function showAddPage() {
+	$("#addPageDialog").dialog("open");
+	return false;
+}
+
+function selectPageForTable(page, table, input) {
+	$.post("pages/setPageForTable", {
+		"dbi" : dbi,
+		"page" : page,
+		"table" : table,
+		"checked" : input.checked
+	}, function(data) {
+		if (data.val == 0) {
+			alert(data.message)
+		}
+	}, "json");
+}
+
+
+function selectAllTablesForPage(page) {
+	$(".page"+page).attr("checked", "checked");
+	$.post("pages/selectAll", {
+		"dbi" : dbi,
+		"page" : page
+	}, function(data) {
+		if (data.val == 0) {
+			alert(data.message)
+		}		
+	}, "json");
+}
+
+
+function deselectAllTablesForPage(page) {
+	$(".page"+page).attr("checked", "");
+	$.post("pages/deselectAll", {
+		"dbi" : dbi,
+		"page" : page
+	}, function(data) {
+		if (data.val == 0) {
+			alert(data.message)
+		}		
+	}, "json");
+}
+
+function deletePage(page) {
+	$.post("pages/remove", {
+		"dbi" : dbi,
+		"page" : page
+	}, function(data) {
+		if (data.val != 0){
+			$.post("setup/pages", {
+				"dbi" : dbi
+			}, function(data) {
+				$('#changer').html(data);
+			});
+		}
+	});
+}
+

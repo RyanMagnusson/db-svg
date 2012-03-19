@@ -33,3 +33,18 @@ function showLoading() {
 function hideLoading() {
 	$("#loadDialog").dialog("close");
 }
+
+// show validation requirements
+function updateReqs(t, reqs) {
+	reqs.text(t).effect("highlight", {}, 1500);
+}
+// basic validation
+function checkLength(o, n, reqs) {
+	if (o.val().length < 1) {
+		o.addClass('ui-state-error');
+		updateReqs(n + " is required.", reqs);
+		return false;
+	} else {
+		return true;
+	}
+}

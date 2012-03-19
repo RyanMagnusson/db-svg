@@ -155,4 +155,34 @@ public class SortedSchema implements Serializable {
 		return id;
 	}
 
+	/**
+	 * convenience method
+	 * 
+	 * @param tableName
+	 * @return
+	 */
+	public Table getTable(String tableName) {
+		return tables.get(tableName);
+	}
+
+	/**
+	 * convenience method
+	 * 
+	 * @param id
+	 * @return
+	 */
+	public SchemaPage getPage(String id) {
+		return pages.get(UUID.fromString(id));
+	}
+
+	/**
+	 * convenience method
+	 * 
+	 * @param page
+	 * @return
+	 */
+	public void removePage(UUID pageId) {
+		pages.remove(pageId);
+	}
+
 }
