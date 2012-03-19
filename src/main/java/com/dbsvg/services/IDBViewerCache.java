@@ -31,4 +31,8 @@ public interface IDBViewerCache {
 
 	public void putSchemaPage(SchemaPage sPage);
 
+	public void setInitialized();
+
+	public boolean isInitialized();
+
 }

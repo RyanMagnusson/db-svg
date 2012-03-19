@@ -29,7 +29,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-import com.dbsvg.models.ConnectionWrapper;
 import com.dbsvg.objects.model.Table;
 
 /**
@@ -40,37 +39,21 @@ import com.dbsvg.objects.model.Table;
 @SuppressWarnings("serial")
 public class SortedSchema implements Serializable {
 
-	int width = 0;
-	int height = 0;
-	int transx = 0;
-	int transy = 0;
-	Map<UUID, SchemaPage> pages = new LinkedHashMap<UUID, SchemaPage>();
-	Map<String, Table> tables = new HashMap<String, Table>();
-	ConnectionWrapper connWrapper;
-	String dbi;
-
+	private String id;
+	private int width = 0;
+	private int height = 0;
+	private int transx = 0;
+	private int transy = 0;
+	private Map<UUID, SchemaPage> pages = new LinkedHashMap<UUID, SchemaPage>();
+	private Map<String, Table> tables = new HashMap<String, Table>();
+	private String dbi;
 	boolean tablesSorted = false;
 
 	/**
-	 * @param connWrapper
-	 *            TODO
-	 * 
+	 * Use when loading a schema from the database
 	 */
-	public SortedSchema(ConnectionWrapper connWrapper) {
-		this.connWrapper = connWrapper;
-	}
-
-	/**
-	 * Convenience method.
-	 * 
-	 * @param i
-	 * @param x_pos
-	 * @param y_pos
-	 * @param p
-	 */
-	public void setTableViewPosition(int i, String x_pos, String y_pos,
-			SchemaPage p) {
-		p.setTableViewPosition(i, x_pos, y_pos);
+	public SortedSchema(String id) {
+		this.id = id;
 	}
 
 	public int getHeight() {
@@ -122,10 +105,6 @@ public class SortedSchema implements Serializable {
 		this.width = width;
 	}
 
-	public String getName() {
-		return connWrapper.getTitle();
-	}
-
 	/**
 	 * Menu Database Index
 	 * 
@@ -170,6 +149,10 @@ public class SortedSchema implements Serializable {
 
 	public int getNumTables() {
 		return tables.size();
+	}
+
+	public String getId() {
+		return id;
 	}
 
 }

@@ -62,6 +62,7 @@
       <div id="changer">
           <jsp:include page="setupInfo.jsp"></jsp:include>
       </div>
+    <jsp:include page="loading.jsp"></jsp:include>
     </div>
        <div id="editConnDialog" class="editDialog ui-dialog" title="Edit Connection">
         <p>
@@ -71,7 +72,7 @@
         <span id="validateReqs"></span>
         <form>
             <label for="title">Title</label>
-            <input type="text" name="title" id="title" value="<%= currentSchema.getName() %>" class="text ui-widget-content"><br>
+            <input type="text" name="title" id="title" value="<%= cw.getTitle() %>" class="text ui-widget-content"><br>
             <label for="url">URL</label>
             <input type="text" name="url" id="url" value="<%= cw.getUrl() %>" class="text ui-widget-content"><br>
             <label for="driver">Driver</label>

@@ -27,7 +27,7 @@ public class SortedSchemaTest {
 	@Before
 	public void setUp() {
 		MockitoAnnotations.initMocks(this);
-		instance = new SortedSchema(currentConn);
+		instance = new SortedSchema("test");
 	}
 
 	/**

@@ -34,7 +34,8 @@ public class SQLiteInternalDataDAOTest {
 	@Before
 	public void setUp() {
 		MockitoAnnotations.initMocks(this);
-		instance = new SQLiteInternalDataDAO(iDAOPath);
+		instance = new SQLiteInternalDataDAO();
+		instance.path = iDAOPath;
 	}
 
 	/**

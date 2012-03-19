@@ -61,7 +61,7 @@ public class SchemaServiceTest {
 	@Mock
 	IMainDAO dao;
 	@Mock
-	ITablePageSorter tvSorter;
+	TableViewSpringSorter tvSorter;
 	@Mock
 	InternalDataDAO iDAO;
 	@Mock
@@ -127,7 +127,7 @@ public class SchemaServiceTest {
 		when(schema.getFirstPage()).thenReturn(page);
 		when(schema.getNumTables()).thenReturn(0);
 		when(page.getSchema()).thenReturn(schema);
-		when(schema.getName()).thenReturn(connectionTitle);
+		when(schema.getId()).thenReturn(connectionTitle);
 
 	}
 

@@ -30,8 +30,7 @@ import java.sql.SQLException;
  * @author horizon
  */
 @SuppressWarnings("serial")
-public class ConnectionWrapper implements Comparable<ConnectionWrapper>,
-		Serializable {
+public class ConnectionWrapper implements Comparable<ConnectionWrapper>, Serializable {
 
 	private int id;
 	private String title = "";
@@ -54,6 +53,10 @@ public class ConnectionWrapper implements Comparable<ConnectionWrapper>,
 
 	public void setId(int id) {
 		this.id = id;
+	}
+
+	public String getSchemaId() {
+		return Integer.toString(id);
 	}
 
 	public String getTitle() {

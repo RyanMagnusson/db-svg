@@ -129,9 +129,9 @@ public class LinkLine implements Serializable {
 
 	private boolean eitherEndOftheLineIsDirty() {
 		return this.startingTable.getTablePageViews().get(page.getId())
-				.isDirty()
+				.needsResort()
 				|| this.foreignkey.getReference().getTable()
-						.getTablePageViews().get(page.getId()).isDirty();
+						.getTablePageViews().get(page.getId()).needsResort();
 	}
 
 	private boolean pageIdIsNotNull() {

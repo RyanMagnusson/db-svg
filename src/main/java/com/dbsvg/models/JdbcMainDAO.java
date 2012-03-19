@@ -49,10 +49,10 @@ public class JdbcMainDAO implements Serializable, IMainDAO {
 	protected static final Logger LOG = LoggerFactory
 			.getLogger(JdbcMainDAO.class);
 
-	private static int CHAR_WIDTH = 7;
-	private static int PAD_WIDTH = 15;
-	private static int CHAR_HEIGHT = 15;
-	private static int PAD_HEIGHT = 45;
+	public static final int CHAR_WIDTH = 7;
+	public static final int PAD_WIDTH = 15;
+	public static final int CHAR_HEIGHT = 15;
+	public static final int PAD_HEIGHT = 45;
 
 	/**
 	 * Gets the default connection from the Connection Pool in cases where
@@ -90,7 +90,7 @@ public class JdbcMainDAO implements Serializable, IMainDAO {
 			String tableOrViewName = rs.getString("TABLE_NAME");
 			Table t = new Table(tableOrViewName);
 			tableMap.put(tableOrViewName, t);
-			t.setSchemaName(schemaName);
+			t.setSchemaId(schemaName);
 			populateTable(t, conn);
 		}
 

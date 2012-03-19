@@ -1,16 +1,35 @@
 $.extend({
-  getUrlVars: function(){
-    var vars = [], hash;
-    var hashes = window.location.href.slice(window.location.href.indexOf('?') + 1).split('&');
-    for(var i = 0; i < hashes.length; i++)
-    {
-      hash = hashes[i].split('=');
-      vars.push(hash[0]);
-      vars[hash[0]] = hash[1];
-    }
-    return vars;
-  },
-  getUrlVar: function(name){
-    return $.getUrlVars()[name];
-  }
+	getUrlVar : function(name, paramString) {
+		paramString = typeof paramString !== 'undefined' ? paramString
+				: window.location.href;
+
+		name = name.replace(/[\[]/, "\\\[").replace(/[\]]/, "\\\]");
+		var regexS = "[\\?&]" + name + "=([^&#]*)";
+		var regex = new RegExp(regexS);
+		var results = regex.exec(paramString);
+		if (results == null)
+			return "";
+		else
+			return decodeURIComponent(results[1]);
+	}
+
 });
+
+$(document).ready(function() {
+	$("#loadDialog").dialog({
+		autoOpen : false,
+		resizable : false,
+		height : 170,
+		modal : true
+	});
+});
+
+// displays loading dialog
+function showLoading() {
+	$("#loadDialog").dialog("open");
+}
+
+// displays loading dialog
+function hideLoading() {
+	$("#loadDialog").dialog("close");
+}

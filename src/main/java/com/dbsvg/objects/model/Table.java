@@ -25,6 +25,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.UUID;
 
+import com.dbsvg.common.HashCodeUtil;
 import com.dbsvg.objects.view.SchemaPage;
 import com.dbsvg.objects.view.TableView;
 
@@ -37,7 +38,7 @@ public class Table implements Comparable<Table>, Serializable {
 
 	UUID id;
 	String name = "";
-	String schemaName = "";
+	String schemaId = "";
 	Map<String, Column> columns = new LinkedHashMap<String, Column>();
 	Map<String, ForeignKey> foreignKeys = new LinkedHashMap<String, ForeignKey>();
 	Map<String, Table> referencingTables = new LinkedHashMap<String, Table>();
@@ -75,12 +76,12 @@ public class Table implements Comparable<Table>, Serializable {
 		this.name = name;
 	}
 
-	public String getSchemaName() {
-		return schemaName;
+	public String getSchemaId() {
+		return schemaId;
 	}
 
-	public void setSchemaName(String schemaName) {
-		this.schemaName = schemaName;
+	public void setSchemaId(String schemaId) {
+		this.schemaId = schemaId;
 	}
 
 	/**
@@ -122,19 +123,6 @@ public class Table implements Comparable<Table>, Serializable {
 
 	public void setPrimaryKeys(Map<String, PrimaryKey> primaryKeys) {
 		this.primaryKeys = primaryKeys;
-	}
-
-	public int generateWidth() {
-		if (width < 1) {
-			width = name.length();
-			for (Column c : columns.values()) {
-				int clen = c.getName().length();
-				if (clen > width) {
-					width = clen;
-				}
-			}
-		}
-		return width;
 	}
 
 	public Map<UUID, TableView> getTablePageViews() {
@@ -187,6 +175,36 @@ public class Table implements Comparable<Table>, Serializable {
 	}
 
 	public int compareTo(Table o) {
+		if (o == null) {
+			return 1;
+		}
 		return this.name.compareTo(o.getName());
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (o == null) {
+			return false;
+		}
+		if (!o.getClass().equals(Table.class)) {
+			return false;
+		}
+		Table t = (Table) o;
+		return compareTo(t) == 0;
+	}
+
+	@Override
+	public int hashCode() {
+		return HashCodeUtil.generateHash(name);
+	}
+
+	@Override
+	public String toString() {
+		StringBuilder builder = new StringBuilder("Table[");
+		builder.append(getName());
+		builder.append(",id:");
+		builder.append(getId());
+		builder.append(']');
+		return builder.toString();
 	}
 }

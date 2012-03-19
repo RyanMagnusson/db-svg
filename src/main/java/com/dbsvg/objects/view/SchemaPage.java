@@ -25,8 +25,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+import com.dbsvg.common.HashCodeUtil;
 import com.dbsvg.objects.model.Table;
-import com.dbsvg.services.ITablePageSorter;
 
 /**
  * 
@@ -34,18 +34,17 @@ import com.dbsvg.services.ITablePageSorter;
 @SuppressWarnings("serial")
 public class SchemaPage implements Comparable<SchemaPage>, Serializable {
 
-	List<TableView> tableViews = new ArrayList<TableView>();
-	String title;
-	UUID id;
-	int orderid;
-	int width = 0;
-	int height = 0;
-	int transx = 0;
-	int transy = 0;
-	SortedSchema schema;
-	List<LinkLine> lines = new ArrayList<LinkLine>();
-	ITablePageSorter pageSorter;
-	Boolean sorted = false;
+	private List<TableView> tableViews = new ArrayList<TableView>();
+	private String title;
+	private UUID id;
+	private int orderid = 0;
+	private int width = 0;
+	private int height = 0;
+	private int transx = 0;
+	private int transy = 0;
+	private SortedSchema schema;
+	private List<LinkLine> lines = new ArrayList<LinkLine>();
+	private Boolean sorted = false;
 
 	public SchemaPage() {
 		this.id = UUID.randomUUID();
@@ -69,7 +68,7 @@ public class SchemaPage implements Comparable<SchemaPage>, Serializable {
 		double maxx = 0;
 		double maxy = 0;
 
-		for (TableView tv : tableViews) {
+		for (Vertex tv : tableViews) {
 			double x = tv.getX();
 			double y = tv.getY();
 
@@ -88,14 +87,11 @@ public class SchemaPage implements Comparable<SchemaPage>, Serializable {
 		setTransy((int) (-1 * miny) + 20);
 	}
 
-	public void setTableViewPosition(int i, String x_pos, String y_pos) {
-		try {
-			TableView t = tableViews.get(i);
-			t.setX(Double.parseDouble(x_pos));
-			t.setY(Double.parseDouble(y_pos));
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+	public void setTableViewPosition(int i, double x_pos, double y_pos) {
+		TableView t = tableViews.get(i);
+		t.setX(x_pos);
+		t.setY(y_pos);
+		t.setSorted();
 	}
 
 	public List<TableView> getTableViews() {
@@ -188,22 +184,27 @@ public class SchemaPage implements Comparable<SchemaPage>, Serializable {
 		this.lines = lines;
 	}
 
-	public boolean areTableViewsClean() {
-		boolean allClean = true;
+	public int numDirtyTableViews() {
+		int numDirty = 0;
 		for (TableView tv : tableViews) {
-			if (tv.isDirty())
-				allClean = false;
+			if (tv.needsResort())
+				numDirty++;
 		}
-		return allClean;
+		return numDirty;
 	}
 
 	public int compareTo(SchemaPage o) {
-		if (this.orderid == o.getOrderid())
-			return 0;
-		else if (this.orderid > o.getOrderid())
+		if (this.orderid > o.getOrderid())
 			return 1;
-		else
+		else if (this.orderid < o.getOrderid())
 			return -1;
+		else {
+			if (this.title.compareTo(o.getTitle()) != 0) {
+				return this.title.compareTo(o.getTitle());
+			} else {
+				return this.getId().compareTo(o.getId());
+			}
+		}
 	}
 
 	/**
@@ -218,6 +219,38 @@ public class SchemaPage implements Comparable<SchemaPage>, Serializable {
 				return true;
 		}
 		return false;
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (o == null) {
+			return false;
+		}
+		if (!(o instanceof SchemaPage)) {
+			return false;
+		}
+		SchemaPage v = (SchemaPage) o;
+		if (!getTitle().equals(v.getTitle())) {
+			return false;
+		}
+		return compareTo(v) == 0;
+	}
+
+	@Override
+	public int hashCode() {
+		return HashCodeUtil.generateHash(title, id, getOrderid());
+	}
+
+	@Override
+	public String toString() {
+		StringBuilder builder = new StringBuilder("SchemaPage[");
+		builder.append(getTitle());
+		builder.append(",id:");
+		builder.append(getId());
+		builder.append(",order:");
+		builder.append(getOrderid());
+		builder.append("]");
+		return builder.toString();
 	}
 
 	public Boolean isSorted() {

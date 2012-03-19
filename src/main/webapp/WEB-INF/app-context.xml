@@ -9,6 +9,7 @@
         http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd">
  
     <!-- DispatcherServlet Context: defines this servlet's request-processing infrastructure -->
+	<context:property-placeholder ignore-resource-not-found="true"  />
  
     <!-- Scans within the base package of the application for @Components to configure as beans -->
     <!-- @Controller, @Service, @Configuration, etc. -->
@@ -23,24 +24,15 @@
 	    <property name="suffix" value=".jsp" />
 	</bean>
  
-   <!-- might be handy at some point <bean id="restTemplate" class="org.springframework.web.client.RestTemplate">
-        <property name="messageConverters">
-            <list>
-                <ref bean="jacksonMessageConverter"/>
-            </list>
-        </property>
-    </bean> --> 
-
     <bean id="jacksonMessageConverter"
             class="org.springframework.http.converter.json.MappingJacksonHttpMessageConverter">
             <property name="supportedMediaTypes" value="application/json" />
     </bean>
-    
-    <bean id="iDAO" class="com.dbsvg.models.SQLiteInternalDataDAO" scope="singleton">
-            <constructor-arg name="path" value="config.db"></constructor-arg>
-    </bean>
  
     <bean id="programCache" class="com.dbsvg.services.DBViewerMinimalCache" scope="singleton">
+    </bean>
+    
+    <bean id="initialDistributionStrategy" class="com.dbsvg.services.sort.LinkBasedInitialPositionStrategy" scope="singleton">
     </bean>
  
 </beans>

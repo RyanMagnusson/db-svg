@@ -22,12 +22,15 @@ package com.dbsvg.objects.view;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
+import com.dbsvg.common.HashCodeUtil;
 import com.dbsvg.objects.model.ForeignKey;
 import com.dbsvg.objects.model.Table;
-
 
 /**
  * A view object for Tables. Holds a table, its coordinates, references, and
@@ -37,25 +40,13 @@ import com.dbsvg.objects.model.Table;
  * @author horizon
  */
 @SuppressWarnings("serial")
-public class TableView implements Comparable<TableView>, Serializable {
+public class TableView extends Vertex implements Serializable {
 
-	Table table;
-	int x = 0;
-	int y = 0;
-	double velocityX = 0.0;
-	double velocityY = 0.0;
-	double radius = 0;
-	int numLinks = 0;
-	List<TableView> referencesTo = new ArrayList<TableView>();
-	List<TableView> referencedBy = new ArrayList<TableView>();
-	List<TableView> ref = null;
-	SchemaPage page;
-	int id = 0;
-	boolean dirty = true;
-
-	public TableView(Table t) {
-		table = t;
-	}
+	private Table table;
+	private Set<TableView> referencesTo = new HashSet<TableView>();
+	private Set<TableView> referencedBy = new HashSet<TableView>();
+	private SchemaPage page;
+	private int id = 0;
 
 	public TableView(Table t, SchemaPage p) {
 		table = t;
@@ -67,19 +58,16 @@ public class TableView implements Comparable<TableView>, Serializable {
 	 * all references for the current page and the radius of the table.
 	 */
 	public void calcLinksAndRadius() {
-		this.numLinks = 0;
 		Map<String, ForeignKey> fkeys = this.table.getForeignKeys();
 		Map<String, Table> referencers = this.table.getReferencingTables();
 		for (ForeignKey fk : fkeys.values()) {
 			if (fk.getReference().getTable().getTablePageViews().get(this.page.getId()) != null) {
 				this.getReferencesTo().add(fk.getReference().getTable().getTablePageViews().get(this.page.getId()));
-				this.numLinks++;
 			}
 		}
 		for (Table t : referencers.values()) {
 			if (t.getTablePageViews().get(this.page.getId()) != null) {
-				this.getReferencesTo().add(t.getTablePageViews().get(this.page.getId()));
-				this.numLinks++;
+				this.getReferencedBy().add(t.getTablePageViews().get(this.page.getId()));
 			}
 		}
 
@@ -88,133 +76,47 @@ public class TableView implements Comparable<TableView>, Serializable {
 
 		double diagonal = Math.sqrt(Math.pow(height, 2) + Math.pow(width, 2));
 
-		this.radius = (11.0 / 20.0) * diagonal;
+		setRadius((11.0 / 20.0) * diagonal);
+
+		setReferences(null);
+		initializeReferences();
 	}
 
-	/**
-	 * calculates the distance between this TableView and another.
-	 * 
-	 * @param o
-	 * @return
-	 */
-	public double calcDistance(TableView o) {
-		return calcDistance(o.getX(), o.getY());
-	}
-
-	/**
-	 * Calculates the distance between this tableView and a set of coordinates
-	 * 
-	 * @param x
-	 * @param y
-	 * @return
-	 */
-	public double calcDistance(int x, int y) {
-		double distance = 0.0;
-		double x1 = this.getX();
-		double y1 = this.getY();
-
-		distance = Math.sqrt(Math.pow(x1 - x, 2) + Math.pow(y1 - y, 2));
-
-		return distance;
-	}
-
-	/**
-	 * calculates the distance between this TableView and another. Takes the
-	 * radius of each table into account
-	 * 
-	 * @param o
-	 * @return
-	 */
-	public double calcDistanceWRadius(TableView o) {
-		double distance = 0.0;
-		double x1 = this.getX();
-		double y1 = this.getY();
-		double r1 = this.getRadius();
-		double x2 = o.getX();
-		double y2 = o.getY();
-		double r2 = o.getRadius();
-
-		distance = Math.sqrt(Math.pow(x1 - x2, 2) + Math.pow(y1 - y2, 2)) - r1 - r2;
-
-		return distance;
-	}
-
-	/**
-	 * Calculates the angle between this TableView and another.
-	 * 
-	 * @param o
-	 * @return
-	 */
-	public double calcAngle(TableView o) {
-		return calcAngle(o.getX(), o.getY());
-	}
-
-	/**
-	 * Calculates the angle between this TableView and a set of coordinates.
-	 * 
-	 * @param x
-	 * @param y
-	 * @return
-	 */
-	public double calcAngle(int x, int y) {
-		double angle = 0.0;
-
-		double x1 = this.getX();
-		double y1 = this.getY();
-
-		angle = Math.atan((y1 - y) / (x1 - x));
-		return angle;
-	}
-
-	public int getNumLinks() {
-		return numLinks;
-	}
-
-	public void setNumLinks(int numLinks) {
-		this.numLinks = numLinks;
-	}
-
-	public double getRadius() {
-		return radius;
-	}
-
-	public void setRadius(double radius) {
-		this.radius = radius;
-	}
-
-	public List<TableView> getReferencesTo() {
+	public Set<TableView> getReferencesTo() {
 		return referencesTo;
 	}
 
-	public void setReferencesTo(List<TableView> referencesTo) {
-		this.referencesTo = referencesTo;
-		this.ref = null;
-		getReferences();
+	public void setReferencesTo(Collection<TableView> referencesTo) {
+		this.referencesTo.clear();
+		this.referencesTo.addAll(referencesTo);
+		setReferences(null);
+		initializeReferences();
 	}
 
-	public List<TableView> getReferencedBy() {
+	public Set<TableView> getReferencedBy() {
 		return referencedBy;
 	}
 
-	public void setReferencedBy(List<TableView> referencedBy) {
-		this.referencedBy = referencedBy;
-		this.ref = null;
-		getReferences();
+	public void setReferencedBy(Collection<TableView> referencedBy) {
+		this.referencedBy.clear();
+		this.referencedBy.addAll(referencedBy);
+		setReferences(null);
+		initializeReferences();
 	}
 
-	public List<TableView> getReferences() {
-		if (this.ref == null) {
-			this.ref = new ArrayList<TableView>();
+	private void initializeReferences() {
+		if (getReferences() == null) {
+			List<Vertex> ref = new ArrayList<Vertex>();
 			for (TableView t : this.referencedBy) {
-				if (!this.ref.contains(t))
-					this.ref.add(t);
+				if (!ref.contains(t))
+					ref.add(t);
 			}
 			for (TableView t : this.referencesTo) {
-				if (!this.ref.contains(t))
-					this.ref.add(t);
+				if (!ref.contains(t))
+					ref.add(t);
 			}
+			setReferences(ref);
 		}
-		return this.ref;
 	}
 
 	public Table getTable() {
@@ -223,50 +125,6 @@ public class TableView implements Comparable<TableView>, Serializable {
 
 	public void setTable(Table table) {
 		this.table = table;
-	}
-
-	public int getX() {
-		return x;
-	}
-
-	public void setX(int x) {
-		this.x = x;
-		this.dirty = true;
-	}
-
-	public void setX(double x) {
-		this.x = (int) x;
-		this.dirty = true;
-	}
-
-	public int getY() {
-		return y;
-	}
-
-	public void setY(int y) {
-		this.y = y;
-		this.dirty = true;
-	}
-
-	public void setY(double y) {
-		this.y = (int) y;
-		this.dirty = true;
-	}
-
-	public double getVelocityX() {
-		return velocityX;
-	}
-
-	public void setVelocityX(double velocityX) {
-		this.velocityX = velocityX;
-	}
-
-	public double getVelocityY() {
-		return velocityY;
-	}
-
-	public void setVelocityY(double velocityY) {
-		this.velocityY = velocityY;
 	}
 
 	public int getId() {
@@ -285,40 +143,70 @@ public class TableView implements Comparable<TableView>, Serializable {
 		this.page = page;
 	}
 
-	public boolean isDirty() {
-		return dirty;
-	}
-
-	public void setDirty(boolean dirty) {
-		this.dirty = dirty;
-	}
-
-	public void setDirty() {
-		this.dirty = true;
-	}
-
-	public void setClean() {
-		this.dirty = false;
+	@Override
+	public int getNumLinks() {
+		initializeReferences();
+		return super.getNumLinks();
 	}
 
 	/**
-	 * Compares TableViews by the number of nodes that they contain.
+	 * Compares Vertices by the number of nodes that they link to, and then then
+	 * by position (x, then y, then r)
 	 * 
 	 * @param o
 	 * @return
 	 */
-	public int compareTo(TableView o) {
-		// If this < o, return a negative value
-		if (this.getNumLinks() < o.getNumLinks())
-			return -1;
-		// If this = o, return 0
-		if (this.getNumLinks() == o.getNumLinks())
-			return 0;
-		// If this > o, return a positive value
-		if (this.getNumLinks() > o.getNumLinks())
+	@Override
+	public int compareTo(Vertex o) {
+		if (o == null) {
 			return 1;
+		}
+		if (!o.getClass().equals(TableView.class)) {
+			return 1;
+		}
+		TableView tv = (TableView) o;
 
-		return 0;
+		int result = super.compareTo(tv);
+		if (result != 0) {
+			return result;
+		} else {
+			return this.getTable().compareTo(tv.getTable());
+		}
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (o == null) {
+			return false;
+		}
+		if (!(o instanceof TableView)) {
+			return false;
+		}
+		TableView v = (TableView) o;
+		if (!this.page.equals(v.getPage())) {
+			return false;
+		}
+		return this.compareTo(v) == 0;
+	}
+
+	@Override
+	public int hashCode() {
+		return HashCodeUtil.generateHash(super.hashCode(), table);
+	}
+
+	@Override
+	public String toString() {
+		StringBuilder builder = new StringBuilder("TableView[");
+		builder.append(table.getName());
+		builder.append(" x:");
+		builder.append(getX());
+		builder.append(",y:");
+		builder.append(getY());
+		builder.append(",r:");
+		builder.append(getRadius());
+		builder.append("] page:");
+		builder.append(page.toString());
+		return builder.toString();
 	}
 
 }

@@ -29,7 +29,7 @@
     ConnectionWrapper cw = (ConnectionWrapper)request.getSession().getAttribute("CurrentConn");
 
 %>
-<h3 class="ui-widget-header ui-corner-all">Schema Information: <%= currentSchema.getName() %></h3>
+<h3 class="ui-widget-header ui-corner-all">Schema Information: <%= cw.getTitle() %></h3>
 <table class="info">
     <tr>
         <td class="label">Pages: </td><td class="data"><%= currentSchema.getPages().size() %></td>
@@ -55,7 +55,7 @@
     <h3 class="ui-widget-header ui-corner-all">Text Version </h3>
 <%
 
-List<Table> tables = new ArrayList();
+List<Table> tables = new ArrayList<Table>();
 tables.addAll(currentSchema.getTables().values());
 Collections.sort(tables);
       for (Table t : tables) {

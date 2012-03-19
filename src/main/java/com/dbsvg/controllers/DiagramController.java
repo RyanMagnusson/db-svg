@@ -26,8 +26,7 @@ public class DiagramController extends AbstractDiagramInitializingController {
 
 	public static final String MESSAGE = "message";
 
-	protected static final Logger LOG = LoggerFactory
-			.getLogger(DiagramController.class);
+	protected static final Logger LOG = LoggerFactory.getLogger(DiagramController.class);
 
 	@RequestMapping(value = "/diagram")
 	public String showDiagram(@RequestParam("dbi") String dbi,
@@ -57,25 +56,23 @@ public class DiagramController extends AbstractDiagramInitializingController {
 
 		SchemaPage currentPage = initialize(dbi, page, request);
 		schemaService.resortTableViews(currentPage);
+
 		LOG.info("View Resorted");
 		model.addAttribute(MESSAGE, "View Resorted");
-
 		return jsonView.Render(model, response);
 	}
 
 	@RequestMapping(value = "/diagram/setTablePosition", method = RequestMethod.POST)
 	public ModelAndView setTablePosition(@RequestParam("tableid") int tableid,
-			@RequestParam("x") String x_pos, @RequestParam("y") String y_pos,
+			@RequestParam("x") double x_pos, @RequestParam("y") double y_pos,
 			HttpServletRequest request, HttpServletResponse response,
 			Model model) throws Exception {
 
-		SchemaPage currentPage = (SchemaPage) request.getSession()
-				.getAttribute("CurrentPage");
+		SchemaPage currentPage = (SchemaPage) request.getSession().getAttribute("CurrentPage");
 		currentPage.setTableViewPosition(tableid, x_pos, y_pos);
-		LOG.info("Table position set: {} {},{}", new Object[] { tableid, x_pos,
-				y_pos });
-		model.addAttribute(MESSAGE, "Table position set");
 
+		LOG.info("Table position set: {} {},{}", new Object[] { tableid, x_pos, y_pos });
+		model.addAttribute(MESSAGE, "Table position set");
 		return jsonView.Render(model, response);
 	}
 

@@ -12,8 +12,10 @@ import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 
 import org.junit.Before;
@@ -24,9 +26,6 @@ import org.mockito.MockitoAnnotations;
 import com.dbsvg.objects.model.Column;
 import com.dbsvg.objects.model.ForeignKey;
 import com.dbsvg.objects.model.Table;
-import com.dbsvg.objects.view.SchemaPage;
-import com.dbsvg.objects.view.TableView;
-
 
 /**
  * 
@@ -69,31 +68,51 @@ public class TableViewTest {
 	double y2 = 20;
 	double r2 = 5;
 
-	List<TableView> referencedByList = new ArrayList<TableView>();
-
-	List<TableView> referencesToList = new ArrayList<TableView>();
+	Set<TableView> referencedByList;
+	Set<TableView> referencesToList;
 
 	Map<String, ForeignKey> fkeys = null;
 	Map<String, Table> referencers = null;
+
+	TableView tv;
+	TableView tvsame;
+	TableView tvx;
+	TableView tvy;
+	TableView tvr;
+	TableView tvl;
+	TableView tvt;
 
 	@Before
 	public void setUp() {
 		MockitoAnnotations.initMocks(this);
 		when(page.getId()).thenReturn(pageId);
 
+		referencedByList = new HashSet<TableView>();
+		referencesToList = new HashSet<TableView>();
+
 		instance = new TableView(table, page);
 		instance.setX(x1);
 		instance.setY(y1);
 		instance.setRadius(r1);
-		instance.setNumLinks(1);
-		instance.setClean();
+		instance.setSorted();
 
 		referencedBy = new TableView(table_ref_by, page);
 		referencedBy.setX(x2);
 		referencedBy.setY(y2);
 		referencedBy.setRadius(r2);
 		referencedByList.add(referencedBy);
-		referencedBy.setClean();
+		referencedBy.setSorted();
+
+		when(table.getName()).thenReturn("table");
+		when(table_ref_by.getName()).thenReturn("table_ref_by");
+		when(table_ref_to.getName()).thenReturn("table_ref_to");
+
+		when(table.compareTo(table_ref_by)).thenReturn(-1);
+		when(table.compareTo(table_ref_to)).thenReturn(-1);
+		when(table_ref_by.compareTo(table)).thenReturn(1);
+		when(table_ref_to.compareTo(table)).thenReturn(1);
+		when(table_ref_by.compareTo(table_ref_to)).thenReturn(-1);
+		when(table_ref_to.compareTo(table_ref_by)).thenReturn(1);
 
 		Map<UUID, TableView> refByTableViews = new HashMap<UUID, TableView>();
 		refByTableViews.put(pageId, referencedBy);
@@ -104,14 +123,11 @@ public class TableViewTest {
 		referencedTo.setY(y2);
 		referencedTo.setRadius(r2);
 		referencesToList.add(referencedTo);
-		referencedTo.setClean();
+		referencedTo.setSorted();
 
 		Map<UUID, TableView> refToTableViews = new HashMap<UUID, TableView>();
 		refToTableViews.put(pageId, referencedTo);
 		when(table_ref_to.getTablePageViews()).thenReturn(refToTableViews);
-
-		instance.setReferencedBy(referencedByList);
-		instance.setReferencesTo(referencesToList);
 
 		fkeys = new HashMap<String, ForeignKey>();
 
@@ -122,6 +138,53 @@ public class TableViewTest {
 		referencers = new HashMap<String, Table>();
 		referencers.put("table ref by", table_ref_by);
 		when(table.getReferencingTables()).thenReturn(referencers);
+
+		instance.setReferencedBy(referencedByList);
+		instance.setReferencesTo(referencesToList);
+
+		tv = new TableView(table, page);
+		tv.setX(10);
+		tv.setY(10);
+		tv.setRadius(10);
+		tv.setSorted();
+
+		tvsame = new TableView(table, page);
+		tvsame.setX(10);
+		tvsame.setY(10);
+		tvsame.setRadius(10);
+		tvsame.setSorted();
+
+		tvx = new TableView(table, page);
+		tvx.setX(100);
+		tvx.setY(10);
+		tvx.setRadius(10);
+		tvx.setSorted();
+
+		tvy = new TableView(table, page);
+		tvy.setX(10);
+		tvy.setY(100);
+		tvy.setRadius(10);
+		tvy.setSorted();
+
+		tvr = new TableView(table, page);
+		tvr.setX(10);
+		tvr.setY(10);
+		tvr.setRadius(100);
+		tvr.setSorted();
+
+		tvl = new TableView(table, page);
+		tvl.setX(10);
+		tvl.setY(10);
+		tvl.setRadius(10);
+		tvl.addReference(tvr);
+		tvl.setSorted();
+
+		tvt = new TableView(table_ref_by, page);
+		tvt.setX(10);
+		tvt.setY(10);
+		tvt.setRadius(10);
+		tvt.setSorted();
+
 	}
 
 	/**
@@ -146,13 +209,28 @@ public class TableViewTest {
 	}
 
 	/**
+	 * Tests that equals is working properly for the mocks
+	 */
+	@Test
+	public void testReferencesContains() {
+		List<Vertex> ref = new ArrayList<Vertex>();
+		for (TableView t : referencedByList) {
+			if (!ref.contains(t))
+				ref.add(t);
+		}
+		for (TableView t : referencesToList) {
+			if (!ref.contains(t))
+				ref.add(t);
+		}
+
+		assertEquals(2, ref.size());
+	}
+
+	/**
 	 * Test of calcLinksAndRadius method, of class TableView.
 	 */
 	@Test
 	public void testCalcLinksAndRadius_NumLinks() {
-
-		instance.setReferencedBy(new ArrayList<TableView>());
-		instance.setReferencesTo(new ArrayList<TableView>());
 
 		int expected = 2;
 
@@ -162,100 +240,13 @@ public class TableViewTest {
 	}
 
 	/**
-	 * Test of calcDistance method, of class TableView.
-	 */
-	@Test
-	public void testCalcDistance_TableView() {
-		double expResult = Math.sqrt(Math.pow(x1 - x2, 2) + Math.pow(y1 - y2, 2));
-		double result = instance.calcDistance(referencedBy);
-		assertEquals(expResult, result, 0.0);
-	}
-
-	/**
-	 * Test of calcDistance method, of class TableView.
-	 */
-	@Test
-	public void testCalcDistance_int_int() {
-		int x = 0;
-		int y = 0;
-		double expResult = Math.sqrt(Math.pow(x1 - x, 2) + Math.pow(y1 - y, 2));
-		double result = instance.calcDistance(x, y);
-		assertEquals(expResult, result, 0.0);
-	}
-
-	/**
-	 * Test of calcDistanceWRadius method, of class TableView.
-	 */
-	@Test
-	public void testCalcDistanceWRadius() {
-		double expResult = Math.sqrt(Math.pow(x1 - x2, 2) + Math.pow(y1 - y2, 2)) - r1 - r2;
-		double result = instance.calcDistanceWRadius(referencedBy);
-		assertEquals(expResult, result, 0.0);
-	}
-
-	/**
-	 * Test of calcAngle method, of class TableView.
-	 */
-	@Test
-	public void testCalcAngle_TableView() {
-		double expResult = Math.atan((y1 - y2) / (x1 - x2));
-		double result = instance.calcAngle(referencedBy);
-		assertEquals(expResult, result, 0.0);
-	}
-
-	/**
-	 * Test of calcAngle method, of class TableView.
-	 */
-	@Test
-	public void testCalcAngle_int_int() {
-		int x = 0;
-		int y = 0;
-		double expResult = Math.atan((y1 - y) / (x1 - x));
-		double result = instance.calcAngle(x, y);
-		assertEquals(expResult, result, 0.0);
-	}
-
-	/**
 	 * Test of getNumLinks method, of class TableView.
 	 */
 	@Test
 	public void testGetNumLinks() {
-		int expResult = 1;
+		int expResult = 2;
 		int result = instance.getNumLinks();
 		assertEquals(expResult, result);
-	}
-
-	/**
-	 * Test of setNumLinks method, of class TableView.
-	 */
-	@Test
-	public void testSetNumLinks() {
-		int numLinks = 10;
-		instance.setNumLinks(numLinks);
-		assertEquals(numLinks, instance.getNumLinks());
-		assertFalse(instance.isDirty());
-	}
-
-	/**
-	 * Test of getRadius method, of class TableView.
-	 */
-	@Test
-	public void testGetRadius() {
-		double expResult = 10;
-		double result = instance.getRadius();
-		assertEquals(expResult, result, 0.0);
-	}
-
-	/**
-	 * Test of setRadius method, of class TableView.
-	 */
-	@Test
-	public void testSetRadius() {
-		double radius = 20;
-		instance.setRadius(radius);
-		double result = instance.getRadius();
-		assertEquals(20, result, 0.0);
-		assertFalse(instance.isDirty());
 	}
 
 	/**
@@ -263,7 +254,7 @@ public class TableViewTest {
 	 */
 	@Test
 	public void testGetReferencesTo() {
-		List<TableView> result = instance.getReferencesTo();
+		Set<TableView> result = instance.getReferencesTo();
 		assertEquals(referencesToList, result);
 	}
 
@@ -284,9 +275,9 @@ public class TableViewTest {
 	 */
 	@Test
 	public void testGetReferencedBy() {
-		List<TableView> result = instance.getReferencedBy();
+		Set<TableView> result = instance.getReferencedBy();
 		assertEquals(referencedByList, result);
-		assertFalse(instance.isDirty());
+		assertFalse(instance.needsResort());
 	}
 
 	// /**
@@ -306,10 +297,10 @@ public class TableViewTest {
 	 */
 	@Test
 	public void testGetReferences() {
-		List<TableView> expResult = new ArrayList<TableView>();
+		List<Vertex> expResult = new ArrayList<Vertex>();
 		expResult.add(referencedBy);
 		expResult.add(referencedTo);
-		List<TableView> result = instance.getReferences();
+		List<Vertex> result = instance.getReferences();
 		assertEquals(expResult, result);
 	}
 
@@ -321,7 +312,7 @@ public class TableViewTest {
 		Table expResult = table;
 		Table result = instance.getTable();
 		assertEquals(expResult, result);
-		assertFalse(instance.isDirty());
+		assertFalse(instance.needsResort());
 	}
 
 	/**
@@ -342,7 +333,7 @@ public class TableViewTest {
 		int expResult = 100;
 		int result = instance.getX();
 		assertEquals(expResult, result);
-		assertFalse(instance.isDirty());
+		assertFalse(instance.needsResort());
 	}
 
 	/**
@@ -352,8 +343,8 @@ public class TableViewTest {
 	public void testSetX_int() {
 		int x = 0;
 		instance.setX(x);
-		assertEquals(x, instance.getX());
-		assertTrue(instance.isDirty());
+		assertEquals(x, (int) instance.getX());
+		assertTrue(instance.needsResort());
 	}
 
 	/**
@@ -364,7 +355,7 @@ public class TableViewTest {
 		double x = 0.0;
 		instance.setX(x);
 		assertEquals(x, instance.getX(), 0.0);
-		assertTrue(instance.isDirty());
+		assertTrue(instance.needsResort());
 
 	}
 
@@ -374,8 +365,8 @@ public class TableViewTest {
 	@Test
 	public void testGetY() {
 		int expResult = 50;
-		assertEquals(expResult, instance.getY());
-		assertFalse(instance.isDirty());
+		assertEquals(expResult, (int) instance.getY());
+		assertFalse(instance.needsResort());
 	}
 
 	/**
@@ -385,8 +376,8 @@ public class TableViewTest {
 	public void testSetY_int() {
 		int y = 0;
 		instance.setY(y);
-		assertEquals(y, instance.getY());
-		assertTrue(instance.isDirty());
+		assertEquals(y, (int) instance.getY());
+		assertTrue(instance.needsResort());
 	}
 
 	/**
@@ -397,51 +388,7 @@ public class TableViewTest {
 		double y = 0.0;
 		instance.setY(y);
 		assertEquals(y, instance.getY(), 0.0);
-		assertTrue(instance.isDirty());
-	}
-
-	/**
-	 * Test of getVelocityX method, of class TableView.
-	 */
-	@Test
-	public void testGetVelocityX() {
-		double expResult = 0.0;
-		double result = instance.getVelocityX();
-		assertEquals(expResult, result, 0.0);
-		assertFalse(instance.isDirty());
-	}
-
-	/**
-	 * Test of setVelocityX method, of class TableView.
-	 */
-	@Test
-	public void testSetVelocityX() {
-		double velocityX = 50.0;
-		instance.setVelocityX(velocityX);
-		assertEquals(velocityX, instance.getVelocityX(), 0.0);
-		assertFalse(instance.isDirty());
-	}
-
-	/**
-	 * Test of getVelocityY method, of class TableView.
-	 */
-	@Test
-	public void testGetVelocityY() {
-		double expResult = 0.0;
-		double result = instance.getVelocityY();
-		assertEquals(expResult, result, 0.0);
-		assertFalse(instance.isDirty());
-	}
-
-	/**
-	 * Test of setVelocityY method, of class TableView.
-	 */
-	@Test
-	public void testSetVelocityY() {
-		double velocityY = 50.0;
-		instance.setVelocityY(velocityY);
-		assertEquals(velocityY, instance.getVelocityY(), 0.0);
-		assertFalse(instance.isDirty());
+		assertTrue(instance.needsResort());
 	}
 
 	/**
@@ -452,7 +399,7 @@ public class TableViewTest {
 		int expResult = 0;
 		int result = instance.getId();
 		assertEquals(expResult, result);
-		assertFalse(instance.isDirty());
+		assertFalse(instance.needsResort());
 	}
 
 	/**
@@ -463,7 +410,7 @@ public class TableViewTest {
 		int id = 60;
 		instance.setId(id);
 		assertEquals(id, instance.getId());
-		assertFalse(instance.isDirty());
+		assertFalse(instance.needsResort());
 	}
 
 	/**
@@ -474,7 +421,7 @@ public class TableViewTest {
 		instance.setPage(page);
 		SchemaPage result = instance.getPage();
 		assertEquals(page, result);
-		assertFalse(instance.isDirty());
+		assertFalse(instance.needsResort());
 	}
 
 	/**
@@ -485,7 +432,7 @@ public class TableViewTest {
 		SchemaPage page = page_o;
 		instance.setPage(page);
 		assertEquals(page, instance.getPage());
-		assertFalse(instance.isDirty());
+		assertFalse(instance.needsResort());
 	}
 
 	/**
@@ -493,9 +440,9 @@ public class TableViewTest {
 	 */
 	@Test
 	public void testConstructedDirty() {
-		instance = new TableView(table);
+		instance = new TableView(table, page);
 		boolean expResult = true;
-		boolean result = instance.isDirty();
+		boolean result = instance.needsResort();
 		assertEquals(expResult, result);
 	}
 
@@ -505,8 +452,8 @@ public class TableViewTest {
 	@Test
 	public void testSetDirty_boolean() {
 		boolean dirty = false;
-		instance.setDirty(dirty);
-		assertEquals(dirty, instance.isDirty());
+		instance.setNeedsSort(dirty);
+		assertEquals(dirty, instance.needsResort());
 	}
 
 	/**
@@ -514,8 +461,8 @@ public class TableViewTest {
 	 */
 	@Test
 	public void testSetDirty_0args() {
-		instance.setDirty();
-		assertEquals(true, instance.isDirty());
+		instance.setNeedsSort();
+		assertEquals(true, instance.needsResort());
 	}
 
 	/**
@@ -523,8 +470,8 @@ public class TableViewTest {
 	 */
 	@Test
 	public void testSetClean() {
-		instance.setClean();
-		assertEquals(false, instance.isDirty());
+		instance.setSorted();
+		assertEquals(false, instance.needsResort());
 	}
 
 	/**
@@ -532,9 +479,70 @@ public class TableViewTest {
 	 */
 	@Test
 	public void testCompareTo() {
-		int expResult = 1;
-		int result = instance.compareTo(referencedBy);
-		assertEquals(expResult, result);
+
+		assertEquals(0, tv.compareTo(tvsame));
+		assertEquals(0, tvsame.compareTo(tv));
+
+		assertEquals(-1, tv.compareTo(tvx));
+		assertEquals(1, tvx.compareTo(tv));
+
+		assertEquals(-1, tv.compareTo(tvy));
+		assertEquals(1, tvy.compareTo(tv));
+
+		assertEquals(-1, tv.compareTo(tvr));
+		assertEquals(1, tvr.compareTo(tv));
+
+		assertEquals(-1, tv.compareTo(tvl));
+		assertEquals(1, tvl.compareTo(tv));
+
+		assertEquals(-1, tv.compareTo(tvt));
+		assertEquals(1, tvt.compareTo(tv));
+	}
+
+	/**
+	 * Test of compareTo method, of class Table.
+	 */
+	@Test
+	public void testEquals() {
+
+		assertTrue(tv.equals(tvsame));
+		assertTrue(tv.equals(tv));
+		assertTrue(tvsame.equals(tv));
+
+		assertFalse(tv.equals(tvx));
+		assertFalse(tvx.equals(tv));
+
+		assertFalse(tv.equals(tvy));
+		assertFalse(tvy.equals(tv));
+
+		assertFalse(tv.equals(tvr));
+		assertFalse(tvr.equals(tv));
+
+		assertFalse(tv.equals(tvl));
+		assertFalse(tvl.equals(tv));
+
+		assertFalse(tv.equals(tvt));
+		assertFalse(tvt.equals(tv));
+
+		assertFalse(instance.equals(null));
+	}
+
+	/**
+	 * Test of compareTo method, of class Table.
+	 */
+	@Test
+	public void testHash() {
+
+		HashSet<TableView> set = new HashSet<TableView>();
+		set.add(tv);
+
+		assertTrue(set.contains(tv));
+		assertTrue(set.contains(tvsame));
+		assertFalse(set.contains(tvx));
+		assertFalse(set.contains(tvy));
+		assertFalse(set.contains(tvr));
+		assertFalse(set.contains(tvl));
+		assertFalse(set.contains(tvt));
 	}
 
 }

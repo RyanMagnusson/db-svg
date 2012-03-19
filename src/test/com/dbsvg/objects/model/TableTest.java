@@ -6,8 +6,11 @@
 package com.dbsvg.objects.model;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.UUID;
 
@@ -70,8 +73,8 @@ public class TableTest {
 	@Test
 	public void testGetSchemaName() {
 		String schemaName = "SCH NAME";
-		instance.setSchemaName(schemaName);
-		String result = instance.getSchemaName();
+		instance.setSchemaId(schemaName);
+		String result = instance.getSchemaId();
 		assertEquals(schemaName, result);
 	}
 
@@ -121,6 +124,60 @@ public class TableTest {
 		instance.setPrimaryKeys(primaryKeys);
 		Map<String, PrimaryKey> result = instance.getPrimaryKeys();
 		assertEquals(primaryKeys, result);
+	}
+
+	/**
+	 * Test of compareTo method, of class Table.
+	 */
+	@Test
+	public void testCompareTo() {
+		Table instance = new Table("Name1");
+		Table equal = new Table("Name1");
+		Table more = new Table("Drudge");
+		Table less = new Table("Xray");
+		assertEquals(0, instance.compareTo(instance));
+		assertEquals(0, instance.compareTo(equal));
+		assertEquals(0, equal.compareTo(instance));
+		assertEquals(10, instance.compareTo(more));
+		assertEquals(-10, more.compareTo(instance));
+		assertEquals(-10, instance.compareTo(less));
+		assertEquals(10, less.compareTo(instance));
+		assertEquals(1, instance.compareTo(null));
+	}
+
+	/**
+	 * Test of compareTo method, of class Table.
+	 */
+	@Test
+	public void testEquals() {
+		Table instance = new Table("Name1");
+		Table equal = new Table("Name1");
+		Table more = new Table("Drudge");
+		Table less = new Table("Xray");
+		assertTrue(instance.equals(instance));
+		assertTrue(instance.equals(equal));
+		assertTrue(equal.equals(instance));
+		assertFalse(instance.equals(more));
+		assertFalse(more.equals(instance));
+		assertFalse(instance.equals(less));
+		assertFalse(less.equals(instance));
+		assertFalse(instance.equals(null));
+	}
+
+	/**
+	 * Test of compareTo method, of class Table.
+	 */
+	@Test
+	public void testHash() {
+		Table instance = new Table("Name1");
+		Table equal = new Table("Name1");
+		Table different = new Table("Drudge");
+		HashSet<Table> set = new HashSet<Table>();
+		set.add(instance);
+
+		assertTrue(set.contains(instance));
+		assertTrue(set.contains(equal));
+		assertFalse(set.contains(different));
 	}
 
 	// /**
@@ -233,19 +290,5 @@ public class TableTest {
 	// fail("The test case is a prototype.");
 	// }
 	//
-	// /**
-	// * Test of compareTo method, of class Table.
-	// */
-	// @Test
-	// public void testCompareTo() {
-	// Table o = null;
-	// Table instance = new Table();
-	// int expResult = 0;
-	// int result = instance.compareTo(o);
-	// assertEquals(expResult, result);
-	// // TODO review the generated test code and remove the default call to
-	// // fail.
-	// fail("The test case is a prototype.");
-	// }
 
 }

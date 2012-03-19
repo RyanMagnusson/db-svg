@@ -6,11 +6,19 @@
 package com.dbsvg.objects.view;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.verify;
 
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
 import java.util.UUID;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 
 /**
  * 
@@ -18,12 +26,44 @@ import org.junit.Test;
  */
 public class SchemaPageTest {
 
-	SchemaPage page;
+	SchemaPage instance;
 	UUID pageId = UUID.randomUUID();
+
+	SchemaPage samePage;
+	SchemaPage differentPageName;
+	SchemaPage differentPageOrderId;
+	SchemaPage differentPageId;
+	SchemaPage differentPageOrderIdTrumpsPageName;
+	UUID diffpageId = UUID.randomUUID();
+
+	@Mock
+	TableView tableView;
 
 	@Before
 	public void setUp() throws Exception {
-		page = new SchemaPage(pageId);
+		MockitoAnnotations.initMocks(this);
+		instance = new SchemaPage(pageId);
+		instance.setTitle("page");
+		List<TableView> tableViews = new ArrayList<TableView>();
+		tableViews.add(tableView);
+		instance.setTableViews(tableViews);
+
+		samePage = new SchemaPage(pageId);
+		samePage.setTitle("page");
+
+		differentPageName = new SchemaPage(pageId);
+		differentPageName.setTitle("page2");
+
+		differentPageOrderId = new SchemaPage(pageId);
+		differentPageOrderId.setTitle("page");
+		differentPageOrderId.setOrderid(10);
+
+		differentPageId = new SchemaPage(diffpageId);
+		differentPageId.setTitle("page");
+
+		differentPageOrderIdTrumpsPageName = new SchemaPage(pageId);
+		differentPageOrderIdTrumpsPageName.setTitle("apage");
+		differentPageOrderIdTrumpsPageName.setOrderid(10);
 	}
 
 	/**
@@ -31,9 +71,83 @@ public class SchemaPageTest {
 	 */
 	@Test
 	public void testGetId() {
-		assertEquals(pageId, page.getId());
+		assertEquals(pageId, instance.getId());
 	}
 
+	/**
+	 * Test of compareTo method, of class TableView.
+	 */
+	@Test
+	public void testCompareTo() {
+
+		assertEquals(0, instance.compareTo(samePage));
+		assertEquals(0, samePage.compareTo(instance));
+
+		assertEquals(-1, instance.compareTo(differentPageName));
+		assertEquals(1, differentPageName.compareTo(instance));
+
+		assertEquals(-1, instance.compareTo(differentPageOrderId));
+		assertEquals(1, differentPageOrderId.compareTo(instance));
+
+		assertEquals(pageId.compareTo(diffpageId), instance.compareTo(differentPageId));
+		assertEquals(diffpageId.compareTo(pageId), differentPageId.compareTo(instance));
+
+		assertEquals(-1, instance.compareTo(differentPageOrderIdTrumpsPageName));
+		assertEquals(1, differentPageOrderIdTrumpsPageName.compareTo(instance));
+	}
+
+	/**
+	 * Test of compareTo method, of class Table.
+	 */
+	@Test
+	public void testEquals() {
+
+		assertTrue(instance.equals(samePage));
+		assertTrue(instance.equals(instance));
+		assertTrue(samePage.equals(instance));
+
+		assertFalse(instance.equals(differentPageName));
+		assertFalse(differentPageName.equals(instance));
+
+		assertFalse(instance.equals(differentPageOrderId));
+		assertFalse(differentPageOrderId.equals(instance));
+
+		assertFalse(instance.equals(differentPageId));
+		assertFalse(differentPageId.equals(instance));
+
+		assertFalse(instance.equals(null));
+	}
+
+	/**
+	 * Test of compareTo method, of class Table.
+	 */
+	@Test
+	public void testHash() {
+
+		HashSet<SchemaPage> set = new HashSet<SchemaPage>();
+		set.add(instance);
+
+		assertTrue(set.contains(instance));
+		assertTrue(set.contains(samePage));
+		assertFalse(set.contains(differentPageName));
+		assertFalse(set.contains(differentPageOrderId));
+		assertFalse(set.contains(differentPageId));
+	}
+
+	/**
+	 * Test of setTableViewPosition method, of class SchemaPage.
+	 */
+	@Test
+	public void testSetTableViewPosition() {
+		int i = 0;
+		double x_pos = 200;
+		double y_pos = 100;
+		instance.setTableViewPosition(i, x_pos, y_pos);
+
+		verify(tableView).setX(x_pos);
+		verify(tableView).setY(y_pos);
+		verify(tableView).setSorted();
+	}
 	/**
 	 * Test of calcDimensions method, of class SchemaPage.
 	 */
@@ -46,20 +160,6 @@ public class SchemaPageTest {
 	// fail("The test case is a prototype.");
 	// }
 	//
-	// /**
-	// * Test of setTableViewPosition method, of class SchemaPage.
-	// */
-	// @Test
-	// public void testSetTableViewPosition() {
-	// int i = 0;
-	// String x_pos = "";
-	// String y_pos = "";
-	// SchemaPage instance = new SchemaPage();
-	// instance.setTableViewPosition(i, x_pos, y_pos);
-	// // TODO review the generated test code and remove the default call to
-	// fail.
-	// fail("The test case is a prototype.");
-	// }
 	//
 	// /**
 	// * Test of getTableViews method, of class SchemaPage.

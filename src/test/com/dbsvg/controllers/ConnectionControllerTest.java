@@ -16,7 +16,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -44,6 +46,10 @@ public class ConnectionControllerTest {
 
 	@Mock
 	HttpServletResponse response;
+	@Mock
+	HttpServletRequest request;
+	@Mock
+	HttpSession session;
 
 	@Captor
 	ArgumentCaptor<String> stringCaptor;
@@ -78,6 +84,8 @@ public class ConnectionControllerTest {
 		connections = new HashMap<String, ConnectionWrapper>();
 		connections.put("test", new ConnectionWrapper());
 		when(iDAO.readAllConnectionWrappers(iDAOconn)).thenReturn(connections);
+
+		when(request.getSession()).thenReturn(session);
 	}
 
 	@Test
@@ -152,7 +160,7 @@ public class ConnectionControllerTest {
 		String password = "password";
 
 		ModelAndView result = instance.saveConnection(dbi, title, url, driver,
-				username, password, model, response);
+				username, password, model, response, request);
 
 		verify(iDAO).saveConnectionWrapper(cwCaptor.capture(), eq(iDAOconn));
 
@@ -166,6 +174,7 @@ public class ConnectionControllerTest {
 		assertEquals(password, cw.getPassword());
 
 		verify(model).addAttribute(VAL, cw.getId());
+		verify(session).setAttribute(eq("CurrentConn"), eq(cw));
 		assertNull(result);
 	}
 

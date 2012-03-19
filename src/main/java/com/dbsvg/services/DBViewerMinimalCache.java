@@ -25,6 +25,7 @@ public class DBViewerMinimalCache implements IDBViewerCache {
 
 	private Map<String, ConnectionWrapper> dbc;
 	private Map<UUID, SchemaPage> schPages;
+	private boolean initialized = false;
 
 	public DBViewerMinimalCache() {
 		this.dbc = new HashMap<String, ConnectionWrapper>();
@@ -70,6 +71,16 @@ public class DBViewerMinimalCache implements IDBViewerCache {
 	@Override
 	public void putSchemaPage(SchemaPage sPage) {
 		schPages.put(sPage.getId(), sPage);
+	}
+
+	@Override
+	public void setInitialized() {
+		initialized = true;
+	}
+
+	@Override
+	public boolean isInitialized() {
+		return initialized;
 	}
 
 }

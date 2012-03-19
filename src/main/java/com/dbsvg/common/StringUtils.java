@@ -1,4 +1,4 @@
-package com.dbsvg.services;
+package com.dbsvg.common;
 
 public class StringUtils extends org.springframework.util.StringUtils {
 

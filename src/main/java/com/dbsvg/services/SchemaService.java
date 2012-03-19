@@ -32,6 +32,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.dbsvg.common.StringUtils;
 import com.dbsvg.models.ConnectionWrapper;
 import com.dbsvg.models.IMainDAO;
 import com.dbsvg.models.InternalDataDAO;
@@ -56,7 +57,7 @@ public class SchemaService {
 	@Autowired
 	IMainDAO dao;
 	@Autowired
-	ITablePageSorter tvSorter;
+	TableViewSpringSorter tvSorter;
 	@Autowired
 	InternalDataDAO iDAO;
 	@Autowired
@@ -84,7 +85,7 @@ public class SchemaService {
 		}
 
 		LOG.debug("Preparing schema: {} with dbi {} and page: {}",
-				new Object[] { schema.getName(), dbi, pageid });
+				new Object[] { schema.getId(), dbi, pageid });
 		SchemaPage page;
 
 		// get the table sorting object
@@ -148,7 +149,7 @@ public class SchemaService {
 					// iconn));
 					Table t = new Table();
 					t.setName("Unable to Connect");
-					t.setSchemaName(cw.getTitle());
+					t.setSchemaId(cw.getSchemaId());
 					Column c = new ColumnObject();
 					c.setName(e.toString());
 					t.getColumns().put(c.getName(), c);
@@ -188,25 +189,24 @@ public class SchemaService {
 	 */
 	protected void prepareTableViews(SchemaPage page, boolean isNewTables) {
 		List<LinkLine> lines = page.getLines();
-		if (!page.areTableViewsClean() || isNewTables) {
-			int numDirty = 0;
-			for (TableView tv : page.getTableViews()) {
-				if (tv.isDirty()) {
-					numDirty++;
-				}
-			}
-			tvSorter.SortPage(page, numDirty == page.getTableViews().size());
-			tvSorter.calcLines(page);
+		boolean needsReSort = needsResort(page.numDirtyTableViews());
+		if (needsReSort || isNewTables) {
+			tvSorter.SortPage(page, needsReSort);
 		} else {
 			List<TableView> tablesToClean = new ArrayList<TableView>();
 			for (LinkLine li : lines) {
 				tablesToClean.addAll(li.recalculateLine());
 			}
 			for (TableView tv : tablesToClean) {
-				tv.setClean();
+				tv.setSorted();
 			}
 		}
+		tvSorter.calcLines(page);
 		page.calcDimensions();
+	}
+
+	private boolean needsResort(int numDirty) {
+		return numDirty > 0;
 	}
 
 	/**
@@ -248,7 +248,7 @@ public class SchemaService {
 	 */
 	public void saveTablePositions(SchemaPage page) throws Exception {
 		Connection conn = iDAO.getConnection();
-		iDAO.verifySchema(page.getSchema().getName(), conn);
+		iDAO.verifySchema(page.getSchema().getId(), conn);
 		iDAO.saveSchemaPage(page, conn);
 		for (TableView tv : page.getTableViews()) {
 			iDAO.saveTable(tv.getTable(), conn);

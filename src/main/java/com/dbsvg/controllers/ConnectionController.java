@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.slf4j.Logger;
@@ -18,10 +19,10 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.dbsvg.common.StringUtils;
 import com.dbsvg.models.ConnectionWrapper;
 import com.dbsvg.models.InternalDataDAO;
 import com.dbsvg.services.IDBViewerCache;
-import com.dbsvg.services.StringUtils;
 
 /**
  * Handles requests for the application menu.
@@ -117,7 +118,7 @@ public class ConnectionController {
 	@RequestMapping(value = "/connections/save", method = RequestMethod.POST)
 	public ModelAndView saveConnection(String dbi, String title, String url,
 			String driver, String username, String password, Model model,
-			HttpServletResponse response) {
+			HttpServletResponse response, HttpServletRequest request) {
 		LOG.debug("Adding connection: {} {} {} {} [password]", new Object[] {
 				title, url, driver, username });
 
@@ -143,6 +144,8 @@ public class ConnectionController {
 			iDAO.saveConnectionWrapper(cw, conn);
 			programCache.putConnection(Integer.toString(cw.getId()), cw);
 			LOG.debug("Successfully saved connection with id {}", cw.getId());
+			request.getSession().setAttribute("CurrentConn", cw);
+
 			model.addAttribute(VAL, cw.getId());
 		} catch (Exception e) {
 			LOG.error("Unable to save connection to Internal DAO", e);

@@ -14,8 +14,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 @Controller
 public class SetupController extends AbstractDiagramInitializingController {
 
-	protected static final Logger LOG = LoggerFactory
-			.getLogger(SetupController.class);
+	protected static final Logger LOG = LoggerFactory.getLogger(SetupController.class);
 
 	@RequestMapping(value = "/setup")
 	public String showFrontPage(@RequestParam("dbi") String dbi,

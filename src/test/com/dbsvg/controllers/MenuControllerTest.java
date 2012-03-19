@@ -33,10 +33,6 @@ public class MenuControllerTest {
 	HttpServletResponse response;
 
 	@Captor
-	ArgumentCaptor<String> stringCaptor;
-	@Captor
-	ArgumentCaptor<ConnectionWrapper> cwCaptor;
-	@Captor
 	ArgumentCaptor<Map<String, ConnectionWrapper>> connectionsCaptor;
 
 	// Auto injected component mocks

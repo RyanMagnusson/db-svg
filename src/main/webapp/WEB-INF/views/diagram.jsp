@@ -35,8 +35,10 @@
         <link rel="stylesheet" type="text/css" media="screen" href="css/jq-ui.css" />
         <link rel="shortcut icon" href="images/favicon.ico" type="image/x-icon" /> 
         <script type="text/javascript" src="js/jquery.js"></script>
+        <script type="text/javascript" src="js/jquery-ui.min.js"></script>
         <script type="text/javascript" src="js/jquery.svg.js"></script>
         <script type="text/javascript" src="js/jquery.svganim.js"></script>
+        <script type="text/javascript" src="js/common.js"></script>
         <script type="text/javascript" src="js/diagram.js"></script>
 <script type="text/javascript">
 var svg;
@@ -72,51 +74,67 @@ $(function() {
 
 svg = $('#svgwindow').svg({loadURL: 'diagram/download<%=schemaUrlData%>'});
 
-      svg.mousemove(function (e){
-           if (onTable) {
-              var ex = e.clientX+f_scrollLeft();
-              var ey = e.clientY+f_scrollTop();
+	svg.mousemove(function(e) {
+			if (onTable) {
+				var ex = e.clientX + f_scrollLeft();
+				var ey = e.clientY + f_scrollTop();
 
-              currentDragx = (ex+transx);
-              currentDragy = (ey+transy);
-              $('#coord').html('x:'+(currentDragx)+' y:'+(currentDragy)+' '+f_scrollLeft()+','+f_scrollTop()+' '+window.pageYOffset+'.'+document.documentElement.scrollTop+'.'+document.body.scrollTop);
-              currentTable.setAttribute('transform','translate('+(currentDragx)+','+(currentDragy)+')');
-          } 
-      });
-      $('#saver').click(function(){
-           $.post("diagram/save", { "dbi":dbi, "pageid":pageid },
-           function(data){
-             alert(data.message);
-           });
-           return false;
-      }, "json");
+				currentDragx = (ex + transx);
+				currentDragy = (ey + transy);
+				$('#coord').html(
+						'x:' + (currentDragx) + ' y:' + (currentDragy) + ' '
+								+ f_scrollLeft() + ',' + f_scrollTop() + ' '
+								+ window.pageYOffset + '.'
+								+ document.documentElement.scrollTop + '.'
+								+ document.body.scrollTop);
+				currentTable.setAttribute('transform', 'translate('
+						+ (currentDragx) + ',' + (currentDragy) + ')');
+			}
+		});
+		$('#saver').click(function() {
+			showLoading();
+			$.post("diagram/save", {
+				"dbi" : dbi,
+				"pageid" : pageid
+			}, function(data) {
+				hideLoading();
+				showSave(data.message);
+			}, "json");
+			return false;
+		});
 
-      $('#sorter').click(function(){
-           $.post("diagram/refresh",
-           function(data){
-            location.reload(true);
-           });
-           return false;
-      }, "json");
-});
+		$('#sorter').click(function() {
+			showLoading();
+			$.post("diagram/refresh", {
+				"dbi" : dbi,
+				"pageid" : pageid
+			}, function(data) {
+				location.reload(true);
+			}, "json");
+			return false;
+		});
+	});
 
-function tableDown(evt) {
-    currentTable = evt.parentNode;
-    onTable = true;
-}
+	
+	function tableDown(evt) {
+		currentTable = evt.parentNode;
+		onTable = true;
+	}
 
-function tableUp(evt) {
-    onTable = false;
-    $.post("diagram/setTablePosition", { "tableid": evt.id, "x": currentDragx, "y": currentDragy },
-       function(data){
-        // alert("Data Loaded: " + data);
-        location.reload(true);
-       }, "json");
-}
+	function tableUp(evt) {
+		onTable = false;
+		$.post("diagram/setTablePosition", {
+			"tableid" : evt.id,
+			"x" : currentDragx,
+			"y" : currentDragy
+		}, function(data) {
+			// alert("Data Loaded: " + data);
+			location.reload(true);
+		}, "json");
+	}
 
-function tableMove(evt) {
-}
-
+	function tableMove(evt) {
+	}
 </script>
     </head>
     <body>
@@ -137,6 +155,11 @@ function tableMove(evt) {
         <div class="svgwrapper" style="width:<%= sPage.getWidth() %>px;height:<%= sPage.getHeight() %>px;">
             <div id="svgwindow" class="svgwindow"></div>
         </div>
+    <jsp:include page="loading.jsp"></jsp:include>
+		<div id="saveDialog" class="saveDialog ui-dialog" title="Save Completed">
+		    <p>The Save action has completed with the following message:</p>
+		    <div id="saveText"></div>
+		</div>
     </div>
     </body>
 </html>

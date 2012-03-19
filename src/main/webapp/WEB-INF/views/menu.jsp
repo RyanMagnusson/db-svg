@@ -44,9 +44,7 @@
         <div id="content" class="contentBoxMenu">
             <h2>Exploreable Databases:</h2>
             <ul class="frontmenulist"></ul>
-            <div id="loadDialog" class="loadDialog ui-dialog" title="Loading, Please Wait...">
-                <p><center><img src="images/ajax-loader.gif" alt="The database is being read into memory."/></center></p>
-            </div>
+            <jsp:include page="loading.jsp"></jsp:include>
 
             <div id="addDialog" class="addDialog ui-dialog" title="Add New Connection">
                 <p>

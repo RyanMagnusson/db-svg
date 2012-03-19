@@ -8,12 +8,6 @@ $(function() {
     allFields = $([]).add(title).add(url).add(driver).add(username).add(password),
     reqs = $("#validateReqs");
 
-    $("#loadDialog").dialog({
-        autoOpen: false,
-        resizable: false,
-        height:170,
-        modal: true
-    });
     $("#removeDialog").dialog({
         autoOpen: false,
         resizable: false,
@@ -115,10 +109,6 @@ function makeDBLink(connId, title ){
 	return html;
 }
 
-// displays loading dialog
-function showLoading() {
-    $("#loadDialog").dialog("open");
-}
 // displays add connection dialog
 function showAdd() {
     $("#addDialog").dialog("open");

@@ -19,6 +19,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import com.dbsvg.models.ConnectionWrapper;
+import com.dbsvg.models.InternalDataDAO;
 import com.dbsvg.objects.view.SchemaPage;
 import com.dbsvg.objects.view.SortedSchema;
 import com.dbsvg.services.IDBViewerCache;
@@ -38,6 +39,8 @@ public class SetupControllerTest {
 	IDBViewerCache programCache;
 	@Mock
 	SchemaService schemaService;
+	@Mock
+	InternalDataDAO iDAO;
 
 	@Mock
 	SortedSchema currentSchema;
@@ -61,7 +64,9 @@ public class SetupControllerTest {
 		instance = new SetupController();
 		instance.programCache = programCache;
 		instance.schemaService = schemaService;
+		instance.iDAO = iDAO;
 
+		when(programCache.isInitialized()).thenReturn(true);
 		when(request.getSession()).thenReturn(session);
 		when(session.getAttribute("pageid")).thenReturn(sessionPageId);
 		when(session.getAttribute("CurrentSchema")).thenReturn(currentSchema);
