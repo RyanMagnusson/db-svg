@@ -26,6 +26,7 @@
 3.  Navigate to /DB-SVG and enter database connection values.
 
 OPTIONAL: if you need to override the location of the internal config database, set the command line argument -Dconfig.db.location=[path]
+You can also override the log directory using -Dlog.dir=[path]
 
 -------------------------------------------------------------------
                Windows Installation Instructions:
