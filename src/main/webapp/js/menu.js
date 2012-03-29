@@ -1,3 +1,10 @@
+/*
+ * DB-SVG Copyright 2012 Derrick Bowen
+ * SVG based database visualization tool. http://dbsvg.com
+ * DB-SVG is licenced under the GNU General Public License as published by
+ *   the Free Software Foundation, version 3. see <http://www.gnu.org/licenses/>.
+ */
+
 var connToDelete;
 $(function() {
     var title = $("#title"),
@@ -100,8 +107,8 @@ $(function() {
         reqs.text(' ');
     }
 });
-function makeDBLink(connId, title ){
-	html = '<li id="conn' + connId + '"><a href="diagram?dbi=' + connId + '" onclick="showLoading();" >';
+function makeDBLink(connId, title) {
+	html = '<li id="conn' + connId + '"><a href="diagram?dbi=' + connId	+ '" onclick="showLoading();" >';
 	html += title + '</a><span class="frontmenusetup"><a href="setup?dbi=' + connId;
 	html += '" onclick="showLoading();" ><img src="images/document-properties.png\" alt=\"Setup\" border=0></a></span><span class="frontmenuremove"><a href="#Remove';
 	html += connId + '" onclick=\"showRemove(' + connId + ',\'';
@@ -111,11 +118,11 @@ function makeDBLink(connId, title ){
 
 // displays add connection dialog
 function showAdd() {
-    $("#addDialog").dialog("open");
+	$("#addDialog").dialog("open");
 }
 // displays add connection dialog
-function showRemove(idToNix,titleToNix) {
-    connToDelete = idToNix;
-    $("#removeText").text(titleToNix);
-    $("#removeDialog").dialog("open");
+function showRemove(idToNix, titleToNix) {
+	connToDelete = idToNix;
+	$("#removeText").text(titleToNix);
+	$("#removeDialog").dialog("open");
 }

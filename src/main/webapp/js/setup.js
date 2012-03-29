@@ -1,3 +1,10 @@
+/*
+ * DB-SVG Copyright 2012 Derrick Bowen
+ * SVG based database visualization tool. http://dbsvg.com
+ * DB-SVG is licenced under the GNU General Public License as published by
+ *   the Free Software Foundation, version 3. see <http://www.gnu.org/licenses/>.
+ */
+
 var dbi = $.getUrlVar('dbi');
 var reqs;
 var allFields;
@@ -50,6 +57,7 @@ $(function() {
 				}
 			},
 			Cancel : function() {
+				$(this).dialog('close');
 			}
 		}
 
@@ -87,7 +95,6 @@ $(function() {
 			},
 			Cancel : function() {
 				$(this).dialog('close');
-				resetPageFields();
 			}
 		}
 

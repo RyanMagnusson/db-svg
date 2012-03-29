@@ -1,5 +1,5 @@
 <%--
- * DB-SVG Copyright 2009 Derrick Bowen
+ * DB-SVG Copyright 2012 Derrick Bowen
  *
  * This file is part of DB-SVG.
  *
@@ -15,10 +15,8 @@
  *
  *   You should have received a copy of the GNU General Public License
  *   along with DB-SVG.  If not, see <http://www.gnu.org/licenses/>.
- *
-    Document   : schema.svg.jsp
-    Created on : Mar 28, 2009, 5:47:13 PM
-    Author     : horizon
+ *   
+ *   @author Derrick Bowen derrickbowen@dbsvg.com
 --%><%@page contentType="image/svg+xml" pageEncoding="UTF-8"%><%@page session="true" %>
 <%@page import="com.dbsvg.objects.model.*" %>
 <%@page import="com.dbsvg.objects.view.*" %>

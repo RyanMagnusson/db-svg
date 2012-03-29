@@ -3,25 +3,25 @@
 |                         DB-SVG Installation Instructions                             |
 |                                                                                      |
 |**************************************************************************************|
-                 Created by Derrick Bowen (derrickbowen@gmail.com)
+    DB-SVG Copyright 2012 Derrick Bowen < derrickbowen@dbsvg.com >
 
-    This program is free software: you can redistribute it and/or modify
+    DB-SVG is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation, either version 3 of the License, or
     (at your option) any later version.
 
-    This program is distributed in the hope that it will be useful,
+    DB-SVG is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+    along with DB-SVG.  If not, see <http://www.gnu.org/licenses/>.
 
 -------------------------------------------------------------------
        UNIX, Linux, and MacOSX Installation Instructions:
 -------------------------------------------------------------------
-1.  Copy ./dist/DB-SVG.war into your Tomcat (or similar Java Server) WebApps directory.
+1.  Copy DB-SVG.war into your Tomcat (or similar Java Server) WebApps directory.
 2.  Restart Tomcat
 3.  Navigate to /DB-SVG and enter database connection values.
 
@@ -32,12 +32,14 @@ OPTIONAL: if you need to override the location of the internal config database, 
 -------------------------------------------------------------------
 Same as above.
 
+-------------------------------------------------------------------
+                       Further Reading
+-------------------------------------------------------------------
+The source code for this project can be downloaded from: http://code.google.com/p/db-svg
+
 This project is built with maven, so once you install maven you can easily tweak the setup and do a full build.
 For example, if there are problems writing to the internal SQLite database, you can change
 the path in the src/main/webapp/WEB-INF/app-context.xml file and recompile the project with the command: "mvn clean install".
 
 To start the application using an embedded jetty web server, simply use the command: "mvn jetty:run", then go to http://localhost:8080/DB-SVG
-    
-    
-    
 

@@ -1,5 +1,5 @@
 <%--
- * DB-SVG Copyright 2009 Derrick Bowen
+ * DB-SVG Copyright 2012 Derrick Bowen
  *
  * This file is part of DB-SVG.
  *
@@ -15,9 +15,9 @@
  *
  *   You should have received a copy of the GNU General Public License
  *   along with DB-SVG.  If not, see <http://www.gnu.org/licenses/>.
- *
---%>
-<%@page contentType="text/html" pageEncoding="UTF-8"%><%@page session="true" %>
+ *   
+ *   @author Derrick Bowen derrickbowen@dbsvg.com
+--%><%@page contentType="text/html" pageEncoding="UTF-8"%><%@page session="true" %>
 <%@page import="com.dbsvg.models.*" %>
 <%@page import="java.util.*" %>
 <%@page import="java.sql.*" %>

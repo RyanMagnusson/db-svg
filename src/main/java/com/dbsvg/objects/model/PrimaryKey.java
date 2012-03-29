@@ -1,5 +1,5 @@
 /*
- * DB-SVG Copyright 2009 Derrick Bowen
+ * DB-SVG Copyright 2012 Derrick Bowen
  *
  * This file is part of DB-SVG.
  *
@@ -15,17 +15,14 @@
  *
  *   You should have received a copy of the GNU General Public License
  *   along with DB-SVG.  If not, see <http://www.gnu.org/licenses/>.
- *
- *
+ *   
+ *   @author Derrick Bowen derrickbowen@dbsvg.com
  */
 package com.dbsvg.objects.model;
 
-/**
- *
- * @author Derrick Bowen <derrickbowen@gmail.com>
- */
 public interface PrimaryKey extends Column {
 
-   public boolean isAutoIncrement();
-   public void setAutoIncrement(boolean autoIncrement);
+	public boolean isAutoIncrement();
+
+	public void setAutoIncrement(boolean autoIncrement);
 }

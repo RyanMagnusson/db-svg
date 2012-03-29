@@ -1,5 +1,5 @@
 /*
- * DB-SVG Copyright 2009 Derrick Bowen
+ * DB-SVG Copyright 2012 Derrick Bowen
  *
  * This file is part of DB-SVG.
  *
@@ -15,25 +15,24 @@
  *
  *   You should have received a copy of the GNU General Public License
  *   along with DB-SVG.  If not, see <http://www.gnu.org/licenses/>.
- *
- *
+ *   
+ *   @author Derrick Bowen derrickbowen@dbsvg.com
  */
-
 package com.dbsvg.models;
 
-import java.sql.*;
-import java.util.*;
+import java.sql.Connection;
+import java.util.Map;
 
-import com.dbsvg.objects.model.*;
+import com.dbsvg.objects.model.Table;
 
 /**
  * Interface for the DAO that accesses the actual databases to be inspected.
  * 
- * @author derrick.bowen
  */
 public interface IMainDAO {
 
-     public Connection getDefaultConnection();
-     public Map<String, Table> getTables(Connection conn, String schemaName) throws Exception;
-     
+	public Connection getDefaultConnection();
+
+	public Map<String, Table> getTables(Connection conn, String schemaName) throws Exception;
+
 }

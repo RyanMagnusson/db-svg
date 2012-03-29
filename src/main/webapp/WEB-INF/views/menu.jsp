@@ -1,5 +1,5 @@
 <%--
- * DB-SVG Copyright 2009 Derrick Bowen
+ * DB-SVG Copyright 2012 Derrick Bowen
  *
  * This file is part of DB-SVG.
  *
@@ -15,11 +15,8 @@
  *
  *   You should have received a copy of the GNU General Public License
  *   along with DB-SVG.  If not, see <http://www.gnu.org/licenses/>.
- *
-
-    Document   : menu
-    Created on : Feb 8, 2010, 10:27:33 PM
-    Author     : Derrick Bowen
+ *   
+ *   @author Derrick Bowen derrickbowen@dbsvg.com
 --%><%@page contentType="text/html" pageEncoding="UTF-8"%><!DOCTYPE HTML>
 <html>
     <head>

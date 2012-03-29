@@ -1,3 +1,10 @@
+/*
+ * DB-SVG Copyright 2012 Derrick Bowen
+ * SVG based database visualization tool. http://dbsvg.com
+ * DB-SVG is licenced under the GNU General Public License as published by
+ *   the Free Software Foundation, version 3. see <http://www.gnu.org/licenses/>.
+ */
+
 $.extend({
 	getUrlVar : function(name, paramString) {
 		paramString = typeof paramString !== 'undefined' ? paramString

@@ -1,4 +1,24 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!--
+ * DB-SVG Copyright 2012 Derrick Bowen
+ *
+ * This file is part of DB-SVG.
+ *
+ *   DB-SVG is free software: you can redistribute it and/or modify
+ *   it under the terms of the GNU General Public License as published by
+ *   the Free Software Foundation, either version 3 of the License, or
+ *   (at your option) any later version.
+ *
+ *   DB-SVG is distributed in the hope that it will be useful,
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *   GNU General Public License for more details.
+ *
+ *   You should have received a copy of the GNU General Public License
+ *   along with DB-SVG.  If not, see <http://www.gnu.org/licenses/>.
+ *   
+ *   @author Derrick Bowen derrickbowen@dbsvg.com
+-->
 <web-app version="2.5" xmlns="http://java.sun.com/xml/ns/javaee"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd">
@@ -17,6 +37,7 @@
         <load-on-startup>1</load-on-startup>
     </servlet>        
  
+ 	<!-- Map urls -->
     <servlet-mapping>
 	    <servlet-name>default</servlet-name>
 	    <url-pattern>/css/*</url-pattern>
@@ -34,46 +55,15 @@
         <url-pattern>/</url-pattern>
     </servlet-mapping>
     
-   <!-- <servlet>
-        <servlet-name>MenuController</servlet-name>
-        <servlet-class>DBViewer.controllers.MenuViewController</servlet-class>
-    </servlet>
-    <servlet>
-        <servlet-name>SetupViewController</servlet-name>
-        <servlet-class>DBViewer.controllers.SetupViewController</servlet-class>
-    </servlet>
-    <servlet>
-        <servlet-name>DiagramViewController</servlet-name>
-        <servlet-class>DBViewer.controllers.DiagramViewController</servlet-class>
-    </servlet>
-    <servlet-mapping>
-        <servlet-name>DiagramViewController</servlet-name>
-        <url-pattern>/Diagram</url-pattern>
-        <url-pattern>/diagram</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>SetupViewController</servlet-name>
-        <url-pattern>/setup</url-pattern>
-        <url-pattern>/Setup</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>MenuController</servlet-name>
-        <url-pattern>/Menu</url-pattern>
-        <url-pattern>/menu</url-pattern>
-    </servlet-mapping> --> 
     <session-config>
         <session-timeout>
             30
         </session-timeout>
     </session-config>
+    
+    <!-- Should not be necessary -->
     <welcome-file-list>
         <welcome-file>index.jsp</welcome-file>
     </welcome-file-list>
    
-    <env-entry>
-        <description>Path to Location of SQLite App DB</description>
-        <env-entry-name>AppDBLocation</env-entry-name>
-        <env-entry-type>java.lang.String</env-entry-type>
-        <env-entry-value>DB-SVG.db</env-entry-value>
-    </env-entry>
 </web-app>
