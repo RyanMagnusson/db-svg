@@ -51,8 +51,7 @@ import com.dbsvg.objects.view.TableView;
 @Service
 public class SchemaService {
 
-	protected static final Logger LOG = LoggerFactory
-			.getLogger(SchemaService.class);
+	protected static final Logger LOG = LoggerFactory.getLogger(SchemaService.class);
 
 	@Autowired
 	IMainDAO dao;
@@ -66,7 +65,7 @@ public class SchemaService {
 	// So that the Databases can be given a default page to start out with.
 	// This page will be generated when no page is found, but the user can
 	// rename it to whatever they want.
-	public static final String DB_SVG_DEFAULT_NAMESPACE = "DBSVG_DEFAULT";
+	public static final String DB_SVG_DEFAULT_PAGE_NAME = "Default Page";
 
 	/**
 	 * Contains Logic for preparing a schema's tables. checks to see if it has
@@ -77,15 +76,13 @@ public class SchemaService {
 	 * @param session
 	 * @param dbi
 	 */
-	public SchemaPage prepareSchema(SortedSchema schema, String dbi,
-			String pageid) {
+	public SchemaPage prepareSchema(SortedSchema schema, String dbi, String pageid) {
 
 		if (schema == null) {
 			throw new IllegalArgumentException("Schema cannot be null");
 		}
 
-		LOG.debug("Preparing schema: {} with dbi {} and page: {}",
-				new Object[] { schema.getId(), dbi, pageid });
+		LOG.debug("Preparing schema: {} with dbi {} and page: {}", new Object[] { schema.getId(), dbi, pageid });
 		SchemaPage page;
 
 		// get the table sorting object
@@ -98,21 +95,12 @@ public class SchemaService {
 			}
 		}
 
-		if ((!StringUtils.isBlank(pageid) && !pageid.equals("null"))
-				&& schema.getPages().get(UUID.fromString(pageid)) != null) {
-			try {
-				UUID pid = UUID.fromString(pageid);
-				LOG.debug("Found Page with ID", pid);
-				page = schema.getPages().get(pid);
-				prepareTableViews(page, isNewTables);
-			} catch (Exception e) {
-				page = new SchemaPage();
-				LOG.error("Error with Page ID", e);
-			}
+		if ((!StringUtils.isBlank(pageid) && !pageid.equals("null")) && schema.getPage(pageid) != null) {
+			LOG.debug("Found Page with ID", pageid);
+			page = schema.getPage(pageid);
+			prepareTableViews(page, isNewTables);
 		} else {
-			LOG.info(
-					"Blank page ID received, trying to retrieve first page of {}",
-					schema.getPages().size());
+			LOG.info("Blank page ID received, trying to retrieve first page of {}", schema.getPages().size());
 			page = schema.getFirstPage();
 			prepareTableViews(page, isNewTables);
 		}
@@ -131,7 +119,7 @@ public class SchemaService {
 		if (schema.getNumTables() < 1) {
 			try {
 				conn = cw.connectToDB();
-				schema.setTables(dao.getTables(conn, cw.getTitle()));
+				schema.setTables(dao.getTables(conn, schema.getId()));
 				newTables = true;
 				readSchemaPages(schema);
 			} catch (Exception e) {
@@ -188,11 +176,11 @@ public class SchemaService {
 	 * @param isNewTables
 	 */
 	protected void prepareTableViews(SchemaPage page, boolean isNewTables) {
-		List<LinkLine> lines = page.getLines();
 		boolean needsReSort = needsResort(page.numDirtyTableViews());
 		if (needsReSort || isNewTables) {
-			tvSorter.SortPage(page, needsReSort);
+			tvSorter.sortPage(page, needsReSort);
 		} else {
+			List<LinkLine> lines = page.getLines();
 			List<TableView> tablesToClean = new ArrayList<TableView>();
 			for (LinkLine li : lines) {
 				tablesToClean.addAll(li.recalculateLine());
@@ -202,7 +190,7 @@ public class SchemaService {
 			}
 		}
 		tvSorter.calcLines(page);
-		page.calcDimensions();
+		page.calcDimensionsAndTranslatePageToOrigin();
 	}
 
 	private boolean needsResort(int numDirty) {
@@ -222,18 +210,17 @@ public class SchemaService {
 			if (pages.size() < 1) {
 				SchemaPage sp = new SchemaPage();
 				pages.put(sp.getId(), sp);
-				sp.setTitle(DB_SVG_DEFAULT_NAMESPACE);
+				sp.setTitle(DB_SVG_DEFAULT_PAGE_NAME);
 				sp.setOrderid(0);
 				sp.setSchema(schema);
-				makeViewsForAllTables = true;// TODO test this
+				makeViewsForAllTables = true;
 			}
 			for (SchemaPage page : pages.values()) {
 				int i = 0;
 				for (Table t : schema.getTables().values()) {
+					t.setViewId(i);
 					iDAO.makeTableSchema(t, conn);
-					TableView tv = iDAO.makeViewWCoordinates(t, page, schema.getTables().size(), conn, makeViewsForAllTables);
-					tv.setId(i);
-					page.getTableViews().add(tv);
+					iDAO.makeViewWCoordinates(t, page, schema.getTables().size(), conn, makeViewsForAllTables);
 					i++;
 				}
 			}
@@ -264,9 +251,9 @@ public class SchemaService {
 	 * @param resort
 	 */
 	public void resortTableViews(SchemaPage currentPage) {
-		tvSorter.SortPage(currentPage, true);
+		tvSorter.sortPage(currentPage, true);
 		tvSorter.calcLines(currentPage);
-		currentPage.calcDimensions();
+		currentPage.calcDimensionsAndTranslatePageToOrigin();
 	}
 
 	public void saveTableViews(SchemaPage currentPage) {

@@ -11,6 +11,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -108,7 +109,7 @@ public class ConnectionControllerTest {
 	}
 
 	@Test
-	public void addConnection() {
+	public void addConnection() throws SQLException {
 
 		final int expectedId = 10;
 
@@ -148,7 +149,7 @@ public class ConnectionControllerTest {
 	}
 
 	@Test
-	public void saveConnection() {
+	public void saveConnection() throws SQLException {
 
 		final int expectedId = 10;
 
@@ -264,7 +265,7 @@ public class ConnectionControllerTest {
 	}
 
 	@Test
-	public void removeConnection() {
+	public void removeConnection() throws SQLException {
 		String id = "10";
 
 		ModelAndView result = instance.removeConnection(id, model, response);
@@ -281,7 +282,7 @@ public class ConnectionControllerTest {
 	}
 
 	@Test
-	public void removeConnectionInvalidId() {
+	public void removeConnectionInvalidId() throws SQLException {
 		String id = "";
 
 		ModelAndView result = instance.removeConnection(id, model, response);

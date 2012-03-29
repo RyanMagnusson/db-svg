@@ -9,7 +9,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.dbsvg.common.StringUtils;
 import com.dbsvg.models.ConnectionWrapper;
 import com.dbsvg.models.InternalDataDAO;
 import com.dbsvg.objects.view.SchemaPage;
@@ -33,17 +32,11 @@ public abstract class AbstractDiagramInitializingController {
 	protected SchemaPage initialize(String dbi, String pageId, HttpServletRequest request) throws Exception {
 		initIDAO();
 
-		String sessionPageId = (String) request.getSession().getAttribute("pageid");
 		SortedSchema currentSchema = (SortedSchema) request.getSession().getAttribute("CurrentSchema");
 		ConnectionWrapper currentConn = (ConnectionWrapper) request.getSession().getAttribute("CurrentConn");
 		SchemaPage currentPage = (SchemaPage) request.getSession().getAttribute("CurrentPage");
 
 		if (dbi != null && !dbi.equals("")) {
-
-			if (StringUtils.isBlank(pageId)) {
-				pageId = sessionPageId;
-			}
-
 			currentConn = programCache.getConnection(dbi);
 			if (currentConn == null) {
 				LOG.warn("Retreived null connection wrapper for dbi {}", dbi);
@@ -57,13 +50,11 @@ public abstract class AbstractDiagramInitializingController {
 			}
 
 			// prepare the requested page of the schema for display.
-			currentPage = schemaService.prepareSchema(currentSchema, dbi,
-					pageId);
+			currentPage = schemaService.prepareSchema(currentSchema, dbi, pageId);
 
 			request.getSession().setAttribute("CurrentSchema", currentSchema);
 			request.getSession().setAttribute("CurrentConn", currentConn);
 			request.getSession().setAttribute("CurrentPage", currentPage);
-
 		}
 		return currentPage;
 	}

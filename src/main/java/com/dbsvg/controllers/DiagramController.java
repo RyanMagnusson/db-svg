@@ -29,9 +29,8 @@ public class DiagramController extends AbstractDiagramInitializingController {
 	protected static final Logger LOG = LoggerFactory.getLogger(DiagramController.class);
 
 	@RequestMapping(value = "/diagram")
-	public String showDiagram(@RequestParam("dbi") String dbi,
-			@RequestParam(value = "page", required = false) String page,
-			HttpServletRequest request) throws Exception {
+	public String showDiagram(@RequestParam("dbi") String dbi, @RequestParam(value = "page", required = false) String page, HttpServletRequest request)
+			throws Exception {
 
 		initialize(dbi, page, request);
 
@@ -39,8 +38,7 @@ public class DiagramController extends AbstractDiagramInitializingController {
 	}
 
 	@RequestMapping(value = "/diagram/download")
-	public String downloadDiagram(@RequestParam("dbi") String dbi,
-			@RequestParam(value = "page", required = false) String page,
+	public String downloadDiagram(@RequestParam("dbi") String dbi, @RequestParam(value = "page", required = false) String page,
 			HttpServletRequest request) throws Exception {
 
 		initialize(dbi, page, request);
@@ -49,10 +47,8 @@ public class DiagramController extends AbstractDiagramInitializingController {
 	}
 
 	@RequestMapping(value = "/diagram/refresh", method = RequestMethod.POST)
-	public ModelAndView refreshDiagram(@RequestParam("dbi") String dbi,
-			@RequestParam(value = "page", required = false) String page,
-			HttpServletRequest request, HttpServletResponse response,
-			Model model) throws Exception {
+	public ModelAndView refreshDiagram(@RequestParam("dbi") String dbi, @RequestParam(value = "page", required = false) String page,
+			HttpServletRequest request, HttpServletResponse response, Model model) throws Exception {
 
 		SchemaPage currentPage = initialize(dbi, page, request);
 		schemaService.resortTableViews(currentPage);
@@ -63,10 +59,8 @@ public class DiagramController extends AbstractDiagramInitializingController {
 	}
 
 	@RequestMapping(value = "/diagram/setTablePosition", method = RequestMethod.POST)
-	public ModelAndView setTablePosition(@RequestParam("tableid") int tableid,
-			@RequestParam("x") double x_pos, @RequestParam("y") double y_pos,
-			HttpServletRequest request, HttpServletResponse response,
-			Model model) throws Exception {
+	public ModelAndView setTablePosition(@RequestParam("tableid") int tableid, @RequestParam("x") double x_pos, @RequestParam("y") double y_pos,
+			HttpServletRequest request, HttpServletResponse response, Model model) throws Exception {
 
 		SchemaPage currentPage = (SchemaPage) request.getSession().getAttribute("CurrentPage");
 		currentPage.setTableViewPosition(tableid, x_pos, y_pos);
@@ -77,10 +71,8 @@ public class DiagramController extends AbstractDiagramInitializingController {
 	}
 
 	@RequestMapping(value = "/diagram/save", method = RequestMethod.POST)
-	public ModelAndView saveDiagram(@RequestParam("dbi") String dbi,
-			@RequestParam(value = "page", required = false) String page,
-			HttpServletRequest request, HttpServletResponse response,
-			Model model) throws Exception {
+	public ModelAndView saveDiagram(@RequestParam("dbi") String dbi, @RequestParam(value = "page", required = false) String page,
+			HttpServletRequest request, HttpServletResponse response, Model model) throws Exception {
 
 		SchemaPage currentPage = initialize(dbi, page, request);
 		schemaService.saveTablePositions(currentPage);

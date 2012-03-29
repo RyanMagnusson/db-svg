@@ -23,36 +23,49 @@ import com.dbsvg.objects.view.TableView;
 public interface InternalDataDAO extends Serializable {
 	public Connection getConnection() throws SQLException, ClassNotFoundException;
 
-	public void setUpInternalDB(Connection conn);
+	public void setUpInternalDB(Connection conn) throws SQLException;
 
-	public void saveConnectionWrapper(ConnectionWrapper c, Connection conn);
+	public void saveConnectionWrapper(ConnectionWrapper c, Connection conn) throws SQLException;
 
-	public void deleteConnectionWrapper(String id, Connection conn);
+	public void deleteConnectionWrapper(String id, Connection conn) throws SQLException;
 
-	public void saveConnectionWrapperNewID(ConnectionWrapper c, Connection conn);
+	public void saveConnectionWrapperNewID(ConnectionWrapper c, Connection conn) throws SQLException;
 
-	public void saveTable(Table t, Connection conn);
+	public void saveTable(Table t, Connection conn) throws SQLException;
 
-	public void saveSchemaPage(SchemaPage page, Connection conn);
+	public void saveSchemaPage(SchemaPage page, Connection conn) throws SQLException;
 
-	public void saveTablePosition(TableView tv, Connection conn);
+	public void saveTablePosition(TableView tv, Connection conn) throws SQLException;
 
-	public void verifySchema(String schema, Connection conn);
+	public void verifySchema(String schema, Connection conn) throws SQLException;
 
-	public ConnectionWrapper readConnectionWrapper(int id, Connection conn);
+	public ConnectionWrapper readConnectionWrapper(int id, Connection conn) throws SQLException;
 
-	public Map<String, ConnectionWrapper> readAllConnectionWrappers(Connection conn);
+	public Map<String, ConnectionWrapper> readAllConnectionWrappers(Connection conn) throws SQLException;
 
-	public void makeTableSchema(Table t, Connection conn);
+	public void makeTableSchema(Table t, Connection conn) throws SQLException;
 
-	public Map<String, Table> makeAllTablesForSchema(String SchemaName, Connection conn);
+	public void addViewsForAllTables(SchemaPage page, Connection conn) throws SQLException;
 
-	public TableView makeViewWCoordinates(Table t, SchemaPage page, int numTables, Connection conn, boolean makeViewsForAllTables);
+	public void removeViewsForAllTables(SchemaPage page, Connection conn) throws SQLException;
 
-	public Map<UUID, SchemaPage> readSchemaPages(SortedSchema schema, Connection conn);
+	/**
+	 * Creates a TableView with the given attributes if applicable and adds it
+	 * to the given page, otherwise adds nothing to the page.
+	 * 
+	 * @param t
+	 * @param page
+	 * @param numTables
+	 * @param conn
+	 * @param makeViewsForAllTables
+	 */
+	public void makeViewWCoordinates(Table t, SchemaPage page, int numTables, Connection conn, boolean makeViewsForAllTables)
+			throws SQLException;
 
-	public void deleteTablePosition(TableView tv, Connection conn);
+	public Map<UUID, SchemaPage> readSchemaPages(SortedSchema schema, Connection conn) throws SQLException;
 
-	public void deleteSchemaPage(SchemaPage page, Connection conn);
+	public void deleteTablePosition(TableView tv, Connection conn) throws SQLException;
+
+	public void deleteSchemaPage(SchemaPage page, Connection conn) throws SQLException;
 
 }

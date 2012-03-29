@@ -6,6 +6,8 @@
 package com.dbsvg.objects.view;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.mockito.Mockito.when;
 
 import java.util.HashMap;
@@ -34,10 +36,22 @@ public class LinkLineTest {
 	@Mock
 	TableView tv;
 
+	int t1_x = 10;
+	int t1_y = 20;
+	int t1_width = 30;
+	int t1_height = 40;
+	double t1_radius = 50.0;
+
 	@Mock
 	Table t_foreign;
 	@Mock
 	TableView tv_foreign;
+
+	int t2_x = 60;
+	int t2_y = 70;
+	int t2_width = 80;
+	int t2_height = 90;
+	double t2_radius = 100.0;
 
 	@Mock
 	ForeignKey fk;
@@ -46,6 +60,9 @@ public class LinkLineTest {
 	@Mock
 	SchemaPage page;
 	UUID pageId = UUID.randomUUID();
+
+	Map<UUID, TableView> tableViews = new HashMap<UUID, TableView>();
+	Map<UUID, TableView> foreignTableViews = new HashMap<UUID, TableView>();
 
 	@Before
 	public void setUp() {
@@ -56,13 +73,23 @@ public class LinkLineTest {
 		when(fk.getReference()).thenReturn(fkColumn);
 		when(fkColumn.getTable()).thenReturn(t_foreign);
 
-		Map<UUID, TableView> tableViews = new HashMap<UUID, TableView>();
 		tableViews.put(pageId, tv);
 		when(t.getTablePageViews()).thenReturn(tableViews);
 
-		Map<UUID, TableView> foreignTableViews = new HashMap<UUID, TableView>();
+		when(t.getHeight()).thenReturn(t1_height);
+		when(t.getWidth()).thenReturn(t1_width);
+		when(tv.getX()).thenReturn(t1_x);
+		when(tv.getY()).thenReturn(t1_y);
+		when(tv.getRadius()).thenReturn(t1_radius);
+
 		foreignTableViews.put(pageId, tv_foreign);
 		when(t_foreign.getTablePageViews()).thenReturn(foreignTableViews);
+
+		when(t_foreign.getHeight()).thenReturn(t2_height);
+		when(t_foreign.getWidth()).thenReturn(t2_width);
+		when(tv_foreign.getX()).thenReturn(t2_x);
+		when(tv_foreign.getY()).thenReturn(t2_y);
+		when(tv_foreign.getRadius()).thenReturn(t2_radius);
 
 		instance = new LinkLine(t, fk, page);
 	}
@@ -76,423 +103,81 @@ public class LinkLineTest {
 		assertEquals(page, result);
 	}
 
-	// /**
-	// * Test of recalculateLine method, of class LinkLine.
-	// */
-	// @Test
-	// public void testRecalculateLine() {
-	// LinkLine instance = null;
-	// List expResult = null;
-	// List result = instance.recalculateLine();
-	// assertEquals(expResult, result);
-	// // TODO review the generated test code and remove the default call to
-	// // fail.
-	// fail("The test case is a prototype.");
-	// }
+	@Test
+	public void getEndRadius_bothOnPage() {
+		Double result = instance.getEndRadius();
+		assertNotNull(result);
+		assertEquals(t2_radius, result, 0.0);
+	}
 
-	// /**
-	// * Test of getForeignkey method, of class LinkLine.
-	// */
-	// @Test
-	// public void testGetForeignkey() {
-	// LinkLine instance = null;
-	// ForeignKey expResult = null;
-	// ForeignKey result = instance.getForeignkey();
-	// assertEquals(expResult, result);
-	// // TODO review the generated test code and remove the default call to
-	// // fail.
-	// fail("The test case is a prototype.");
-	// }
-	//
-	// /**
-	// * Test of setForeignkey method, of class LinkLine.
-	// */
-	// @Test
-	// public void testSetForeignkey() {
-	// ForeignKey foreignkey = null;
-	// LinkLine instance = null;
-	// instance.setForeignkey(foreignkey);
-	// // TODO review the generated test code and remove the default call to
-	// // fail.
-	// fail("The test case is a prototype.");
-	// }
-	//
-	// /**
-	// * Test of getStartingTable method, of class LinkLine.
-	// */
-	// @Test
-	// public void testGetStartingTable() {
-	// LinkLine instance = null;
-	// Table expResult = null;
-	// Table result = instance.getStartingTable();
-	// assertEquals(expResult, result);
-	// // TODO review the generated test code and remove the default call to
-	// // fail.
-	// fail("The test case is a prototype.");
-	// }
-	//
-	// /**
-	// * Test of setStartingTable method, of class LinkLine.
-	// */
-	// @Test
-	// public void testSetStartingTable() {
-	// Table referencedTable = null;
-	// LinkLine instance = null;
-	// instance.setStartingTable(referencedTable);
-	// // TODO review the generated test code and remove the default call to
-	// // fail.
-	// fail("The test case is a prototype.");
-	// }
-	//
-	// /**
-	// * Test of getX1 method, of class LinkLine.
-	// */
-	// @Test
-	// public void testGetX1() {
-	// LinkLine instance = null;
-	// double expResult = 0.0;
-	// double result = instance.getX1();
-	// assertEquals(expResult, result, 0.0);
-	// // TODO review the generated test code and remove the default call to
-	// // fail.
-	// fail("The test case is a prototype.");
-	// }
-	//
-	// /**
-	// * Test of setX1 method, of class LinkLine.
-	// */
-	// @Test
-	// public void testSetX1() {
-	// double x1 = 0.0;
-	// LinkLine instance = null;
-	// instance.setX1(x1);
-	// // TODO review the generated test code and remove the default call to
-	// // fail.
-	// fail("The test case is a prototype.");
-	// }
-	//
-	// /**
-	// * Test of getX2 method, of class LinkLine.
-	// */
-	// @Test
-	// public void testGetX2() {
-	// LinkLine instance = null;
-	// double expResult = 0.0;
-	// double result = instance.getX2();
-	// assertEquals(expResult, result, 0.0);
-	// // TODO review the generated test code and remove the default call to
-	// // fail.
-	// fail("The test case is a prototype.");
-	// }
-	//
-	// /**
-	// * Test of setX2 method, of class LinkLine.
-	// */
-	// @Test
-	// public void testSetX2() {
-	// double x2 = 0.0;
-	// LinkLine instance = null;
-	// instance.setX2(x2);
-	// // TODO review the generated test code and remove the default call to
-	// // fail.
-	// fail("The test case is a prototype.");
-	// }
-	//
-	// /**
-	// * Test of getY1 method, of class LinkLine.
-	// */
-	// @Test
-	// public void testGetY1() {
-	// LinkLine instance = null;
-	// double expResult = 0.0;
-	// double result = instance.getY1();
-	// assertEquals(expResult, result, 0.0);
-	// // TODO review the generated test code and remove the default call to
-	// // fail.
-	// fail("The test case is a prototype.");
-	// }
-	//
-	// /**
-	// * Test of setY1 method, of class LinkLine.
-	// */
-	// @Test
-	// public void testSetY1() {
-	// double y1 = 0.0;
-	// LinkLine instance = null;
-	// instance.setY1(y1);
-	// // TODO review the generated test code and remove the default call to
-	// // fail.
-	// fail("The test case is a prototype.");
-	// }
-	//
-	// /**
-	// * Test of getY2 method, of class LinkLine.
-	// */
-	// @Test
-	// public void testGetY2() {
-	// LinkLine instance = null;
-	// double expResult = 0.0;
-	// double result = instance.getY2();
-	// assertEquals(expResult, result, 0.0);
-	// // TODO review the generated test code and remove the default call to
-	// // fail.
-	// fail("The test case is a prototype.");
-	// }
-	//
-	// /**
-	// * Test of setY2 method, of class LinkLine.
-	// */
-	// @Test
-	// public void testSetY2() {
-	// double y2 = 0.0;
-	// LinkLine instance = null;
-	// instance.setY2(y2);
-	// // TODO review the generated test code and remove the default call to
-	// // fail.
-	// fail("The test case is a prototype.");
-	// }
-	//
-	// /**
-	// * Test of getAngle method, of class LinkLine.
-	// */
-	// @Test
-	// public void testGetAngle() {
-	// LinkLine instance = null;
-	// double expResult = 0.0;
-	// double result = instance.getAngle();
-	// assertEquals(expResult, result, 0.0);
-	// // TODO review the generated test code and remove the default call to
-	// // fail.
-	// fail("The test case is a prototype.");
-	// }
-	//
-	// /**
-	// * Test of setAngle method, of class LinkLine.
-	// */
-	// @Test
-	// public void testSetAngle() {
-	// double angle = 0.0;
-	// LinkLine instance = null;
-	// instance.setAngle(angle);
-	// // TODO review the generated test code and remove the default call to
-	// // fail.
-	// fail("The test case is a prototype.");
-	// }
-	//
-	// /**
-	// * Test of getLength method, of class LinkLine.
-	// */
-	// @Test
-	// public void testGetLength() {
-	// LinkLine instance = null;
-	// double expResult = 0.0;
-	// double result = instance.getLength();
-	// assertEquals(expResult, result, 0.0);
-	// // TODO review the generated test code and remove the default call to
-	// // fail.
-	// fail("The test case is a prototype.");
-	// }
-	//
-	// /**
-	// * Test of setLength method, of class LinkLine.
-	// */
-	// @Test
-	// public void testSetLength() {
-	// double length = 0.0;
-	// LinkLine instance = null;
-	// instance.setLength(length);
-	// // TODO review the generated test code and remove the default call to
-	// // fail.
-	// fail("The test case is a prototype.");
-	// }
-	//
-	// /**
-	// * Test of getXa1 method, of class LinkLine.
-	// */
-	// @Test
-	// public void testGetXa1() {
-	// LinkLine instance = null;
-	// double expResult = 0.0;
-	// double result = instance.getXa1();
-	// assertEquals(expResult, result, 0.0);
-	// // TODO review the generated test code and remove the default call to
-	// // fail.
-	// fail("The test case is a prototype.");
-	// }
-	//
-	// /**
-	// * Test of setXa1 method, of class LinkLine.
-	// */
-	// @Test
-	// public void testSetXa1() {
-	// double xa1 = 0.0;
-	// LinkLine instance = null;
-	// instance.setXa1(xa1);
-	// // TODO review the generated test code and remove the default call to
-	// // fail.
-	// fail("The test case is a prototype.");
-	// }
-	//
-	// /**
-	// * Test of getXa2 method, of class LinkLine.
-	// */
-	// @Test
-	// public void testGetXa2() {
-	// LinkLine instance = null;
-	// double expResult = 0.0;
-	// double result = instance.getXa2();
-	// assertEquals(expResult, result, 0.0);
-	// // TODO review the generated test code and remove the default call to
-	// // fail.
-	// fail("The test case is a prototype.");
-	// }
-	//
-	// /**
-	// * Test of setXa2 method, of class LinkLine.
-	// */
-	// @Test
-	// public void testSetXa2() {
-	// double xa2 = 0.0;
-	// LinkLine instance = null;
-	// instance.setXa2(xa2);
-	// // TODO review the generated test code and remove the default call to
-	// // fail.
-	// fail("The test case is a prototype.");
-	// }
-	//
-	// /**
-	// * Test of getXa3 method, of class LinkLine.
-	// */
-	// @Test
-	// public void testGetXa3() {
-	// LinkLine instance = null;
-	// double expResult = 0.0;
-	// double result = instance.getXa3();
-	// assertEquals(expResult, result, 0.0);
-	// // TODO review the generated test code and remove the default call to
-	// // fail.
-	// fail("The test case is a prototype.");
-	// }
-	//
-	// /**
-	// * Test of setXa3 method, of class LinkLine.
-	// */
-	// @Test
-	// public void testSetXa3() {
-	// double xa3 = 0.0;
-	// LinkLine instance = null;
-	// instance.setXa3(xa3);
-	// // TODO review the generated test code and remove the default call to
-	// // fail.
-	// fail("The test case is a prototype.");
-	// }
-	//
-	// /**
-	// * Test of getYa1 method, of class LinkLine.
-	// */
-	// @Test
-	// public void testGetYa1() {
-	// LinkLine instance = null;
-	// double expResult = 0.0;
-	// double result = instance.getYa1();
-	// assertEquals(expResult, result, 0.0);
-	// // TODO review the generated test code and remove the default call to
-	// // fail.
-	// fail("The test case is a prototype.");
-	// }
-	//
-	// /**
-	// * Test of setYa1 method, of class LinkLine.
-	// */
-	// @Test
-	// public void testSetYa1() {
-	// double ya1 = 0.0;
-	// LinkLine instance = null;
-	// instance.setYa1(ya1);
-	// // TODO review the generated test code and remove the default call to
-	// // fail.
-	// fail("The test case is a prototype.");
-	// }
-	//
-	// /**
-	// * Test of getYa2 method, of class LinkLine.
-	// */
-	// @Test
-	// public void testGetYa2() {
-	// LinkLine instance = null;
-	// double expResult = 0.0;
-	// double result = instance.getYa2();
-	// assertEquals(expResult, result, 0.0);
-	// // TODO review the generated test code and remove the default call to
-	// // fail.
-	// fail("The test case is a prototype.");
-	// }
-	//
-	// /**
-	// * Test of setYa2 method, of class LinkLine.
-	// */
-	// @Test
-	// public void testSetYa2() {
-	// double ya2 = 0.0;
-	// LinkLine instance = null;
-	// instance.setYa2(ya2);
-	// // TODO review the generated test code and remove the default call to
-	// // fail.
-	// fail("The test case is a prototype.");
-	// }
-	//
-	// /**
-	// * Test of getYa3 method, of class LinkLine.
-	// */
-	// @Test
-	// public void testGetYa3() {
-	// LinkLine instance = null;
-	// double expResult = 0.0;
-	// double result = instance.getYa3();
-	// assertEquals(expResult, result, 0.0);
-	// // TODO review the generated test code and remove the default call to
-	// // fail.
-	// fail("The test case is a prototype.");
-	// }
-	//
-	// /**
-	// * Test of setYa3 method, of class LinkLine.
-	// */
-	// @Test
-	// public void testSetYa3() {
-	// double ya3 = 0.0;
-	// LinkLine instance = null;
-	// instance.setYa3(ya3);
-	// // TODO review the generated test code and remove the default call to
-	// // fail.
-	// fail("The test case is a prototype.");
-	// }
-	//
-	// /**
-	// * Test of getEndRadius method, of class LinkLine.
-	// */
-	// @Test
-	// public void testGetEndRadius() {
-	// LinkLine instance = null;
-	// double expResult = 0.0;
-	// double result = instance.getEndRadius();
-	// assertEquals(expResult, result, 0.0);
-	// // TODO review the generated test code and remove the default call to
-	// // fail.
-	// fail("The test case is a prototype.");
-	// }
+	@Test
+	public void getEndRadius_notOnPage() {
+		foreignTableViews.clear();
 
-	// /**
-	// * Test of setPage method, of class LinkLine.
-	// */
-	// @Test
-	// public void testSetPage() {
-	// SchemaPage page = null;
-	// LinkLine instance = null;
-	// instance.setPage(page);
-	// // TODO review the generated test code and remove the default call to
-	// // fail.
-	// fail("The test case is a prototype.");
-	// }
+		Double result = instance.getEndRadius();
+		assertNull(result);
+	}
+
+	@Test
+	public void calculateLine_bothOnPage() {
+
+		instance.calculateLine(t, fk);
+
+		assertEquals(t2_radius, instance.getEndRadius(), 0.0);
+		assertEquals(25, instance.getX1(), 0.0);
+		assertEquals(100, instance.getX2(), 0.0);
+		assertEquals(29, instance.getXa1(), 0.1);
+		assertEquals(23, instance.getXa2(), 0.1);
+		assertEquals(5, instance.getXa3(), 0.1);
+		assertEquals(40, instance.getY1(), 0.0);
+		assertEquals(115, instance.getY2(), 0.0);
+		assertEquals(44, instance.getYa1(), 0.1);
+		assertEquals(20, instance.getYa2(), 0.1);
+		assertEquals(38, instance.getYa3(), 0.1);
+
+	}
+
+	@Test
+	public void calculateLine_notOnPage() {
+		foreignTableViews.clear();
+
+		instance.calculateLine(t, fk);
+
+		assertEquals(0, instance.getX1(), 0.0);
+		assertEquals(0, instance.getXa1(), 0.1);
+		assertEquals(0, instance.getXa2(), 0.1);
+		assertEquals(0, instance.getXa3(), 0.1);
+		assertEquals(0, instance.getY1(), 0.0);
+		assertEquals(0, instance.getYa1(), 0.1);
+		assertEquals(0, instance.getYa2(), 0.1);
+		assertEquals(0, instance.getYa3(), 0.1);
+
+	}
+
+	@Test
+	public void calculateLine_triangleCorrect() {
+
+		when(t.getHeight()).thenReturn(75);
+		when(t.getWidth()).thenReturn(176);
+		when(tv.getX()).thenReturn(2164);
+		when(tv.getY()).thenReturn(-1430);
+		when(tv.getRadius()).thenReturn(191.314);
+
+		when(t_foreign.getHeight()).thenReturn(120);
+		when(t_foreign.getWidth()).thenReturn(211);
+		when(tv_foreign.getX()).thenReturn(2593);
+		when(tv_foreign.getY()).thenReturn(-1244);
+		when(tv_foreign.getRadius()).thenReturn(242.74);
+
+		instance.calculateLine(t, fk);
+
+		assertEquals(2478, instance.getXa1(), 0.1);
+		assertEquals(-1287, instance.getYa1(), 0.1);
+		assertEquals(2464, instance.getXa2(), 0.1);
+		assertEquals(-1307, instance.getYa2(), 0.1);
+		assertEquals(2454, instance.getXa3(), 0.1);
+		assertEquals(-1285, instance.getYa3(), 0.1);
+
+	}
 
 }

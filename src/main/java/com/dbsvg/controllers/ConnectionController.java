@@ -44,8 +44,7 @@ public class ConnectionController {
 	private static final Logger LOG = LoggerFactory.getLogger(ConnectionController.class);
 
 	@RequestMapping(value = "/connections/list", method = RequestMethod.GET)
-	public ModelAndView listConnections(Model model,
-			HttpServletResponse response) throws Exception {
+	public ModelAndView listConnections(Model model, HttpServletResponse response) throws Exception {
 
 		Connection conn = null;
 		try {

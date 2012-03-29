@@ -73,7 +73,7 @@ public class VertexSpringSorter {
 	public final static double ATTRACTION_CONSTANT = 0.015;
 	public final static double VELOCITY_DAMPENING = 0.85;
 
-	public void sort(List<? extends Vertex> vertices) {
+	public void sort(Collection<? extends Vertex> vertices) {
 		initialDistributionStrategy.distributeVertices(vertices);
 		List<VertexSet> sets = splitIntoContiguousSets(vertices);
 		for (VertexSet set : sets) {
@@ -108,7 +108,7 @@ public class VertexSpringSorter {
 	 * @return a list of VertexSets that each contain all of the nodes connected
 	 *         to each other
 	 */
-	protected List<VertexSet> splitIntoContiguousSets(List<? extends Vertex> vertices) {
+	protected List<VertexSet> splitIntoContiguousSets(Collection<? extends Vertex> vertices) {
 		List<VertexSet> sets = new ArrayList<VertexSet>();
 		Set<Vertex> allocatedToASet = new HashSet<Vertex>();
 		for (Vertex v : vertices) {

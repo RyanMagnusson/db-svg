@@ -21,18 +21,18 @@
 LinkLine l = (LinkLine)request.getSession().getAttribute("CurrentLine");
 
 // line main end points
-double x1 = l.getX2();
-double y1 = l.getY2();
-double x2 = l.getX1();
-double y2 = l.getY1();
+int x1 = l.getX2();
+int y1 = l.getY2();
+int x2 = l.getX1();
+int y2 = l.getY1();
 
 //arrow head end points
-double xa1 = l.getXa1();
-double ya1 = l.getYa1();
-double xa2 = l.getXa2();
-double ya2 = l.getYa2();
-double xa3 = l.getXa3();
-double ya3 = l.getYa3();
+int xa1 = l.getXa1();
+int ya1 = l.getYa1();
+int xa2 = l.getXa2();
+int ya2 = l.getYa2();
+int xa3 = l.getXa3();
+int ya3 = l.getYa3();
 
 %>
 <g

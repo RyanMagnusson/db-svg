@@ -9,6 +9,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.UUID;
 
 import javax.servlet.http.HttpServletRequest;
@@ -33,7 +34,8 @@ import com.dbsvg.services.IDBViewerCache;
 
 public class PageControllerTest {
 
-	private static final String VAL = ConnectionController.VAL;
+	private static final String VAL = PageController.VAL;
+	private static final String MESSAGE = PageController.MESSAGE;
 
 	PageController instance;
 
@@ -70,6 +72,8 @@ public class PageControllerTest {
 	@Mock
 	IDBViewerCache programCache;
 
+	int tv_id = 200;
+
 	@Before
 	public void setUp() throws Exception {
 		MockitoAnnotations.initMocks(this);
@@ -88,7 +92,7 @@ public class PageControllerTest {
 	}
 
 	@Test
-	public void addPage() {
+	public void addPage() throws SQLException {
 
 		String dbi = "10";
 		String title = "title";
@@ -108,7 +112,46 @@ public class PageControllerTest {
 	}
 
 	@Test
-	public void setPageForTable_checked() {
+	public void removePage() throws SQLException {
+
+		String dbi = "10";
+		String pageName = "4e801310-b40f-42e3-8569-30c25071041d";
+		when(currentSchema.getDbi()).thenReturn(dbi);
+		when(currentSchema.getPage(pageName)).thenReturn(schemaPage);
+		when(schemaPage.getId()).thenReturn(UUID.fromString(pageName));
+		when(currentSchema.getNumPages()).thenReturn(2);
+
+		ModelAndView result = instance.removePage(dbi, pageName, model, response, request);
+
+		verify(iDAO).deleteSchemaPage(schemaPage, iDAOconn);
+		verify(currentSchema).removePage(UUID.fromString(pageName));
+
+		verify(model).addAttribute(VAL, pageName);
+		assertNull(result);
+	}
+
+	@Test
+	public void removePage_lastpage() throws SQLException {
+
+		String dbi = "10";
+		String pageName = "4e801310-b40f-42e3-8569-30c25071041d";
+		when(currentSchema.getDbi()).thenReturn(dbi);
+		when(currentSchema.getPage(pageName)).thenReturn(schemaPage);
+		when(schemaPage.getId()).thenReturn(UUID.fromString(pageName));
+		when(currentSchema.getNumPages()).thenReturn(1);
+
+		ModelAndView result = instance.removePage(dbi, pageName, model, response, request);
+
+		verify(iDAO, times(0)).deleteSchemaPage(schemaPage, iDAOconn);
+		verify(currentSchema, times(0)).removePage(UUID.fromString(pageName));
+
+		verify(model).addAttribute(VAL, "0");
+		verify(model).addAttribute(MESSAGE, "Cannot remove last page");
+		assertNull(result);
+	}
+
+	@Test
+	public void setPageForTable_checked() throws SQLException {
 
 		String dbi = "10";
 		String pageName = "4e801310-b40f-42e3-8569-30c25071041d";
@@ -136,7 +179,7 @@ public class PageControllerTest {
 	}
 
 	@Test
-	public void setPageForTable_unchecked() {
+	public void setPageForTable_unchecked() throws SQLException {
 
 		String dbi = "10";
 		String pageName = "4e801310-b40f-42e3-8569-30c25071041d";
@@ -158,6 +201,65 @@ public class PageControllerTest {
 		verify(iDAO).deleteTablePosition(tableView, iDAOconn);
 
 		verify(model).addAttribute(VAL, UUID.fromString(pageName));
+		assertNull(result);
+
+	}
+
+	@Test
+	public void savePage() throws SQLException {
+
+		String dbi = "10";
+		String pageName = "4e801310-b40f-42e3-8569-30c25071041d";
+		String title = "TEST";
+
+		when(currentSchema.getDbi()).thenReturn(dbi);
+		when(currentSchema.getPage(pageName)).thenReturn(schemaPage);
+		when(currentSchema.getTable(title)).thenReturn(table);
+		when(schemaPage.getId()).thenReturn(UUID.fromString(pageName));
+
+		ModelAndView result = instance.savePage(dbi, pageName, title, model, response, request);
+
+		verify(currentSchema).getPage(pageName);
+		verify(schemaPage).setTitle(title);
+
+		verify(iDAO).saveSchemaPage(schemaPage, iDAOconn);
+
+		verify(model).addAttribute(VAL, UUID.fromString(pageName));
+		assertNull(result);
+
+	}
+
+	@Test
+	public void selectAll() throws SQLException {
+		String dbi = "10";
+		String pageName = "4e801310-b40f-42e3-8569-30c25071041d";
+		String title = "TEST";
+
+		when(currentSchema.getDbi()).thenReturn(dbi);
+		when(currentSchema.getPage(pageName)).thenReturn(schemaPage);
+		when(currentSchema.getTable(title)).thenReturn(table);
+		when(schemaPage.getId()).thenReturn(UUID.fromString(pageName));
+
+		ModelAndView result = instance.selectAll(dbi, pageName, model, response, request);
+
+		verify(iDAO).addViewsForAllTables(schemaPage, iDAOconn);
+		assertNull(result);
+	}
+
+	@Test
+	public void deselectAll() throws SQLException {
+		String dbi = "10";
+		String pageName = "4e801310-b40f-42e3-8569-30c25071041d";
+		String title = "TEST";
+
+		when(currentSchema.getDbi()).thenReturn(dbi);
+		when(currentSchema.getPage(pageName)).thenReturn(schemaPage);
+		when(currentSchema.getTable(title)).thenReturn(table);
+		when(schemaPage.getId()).thenReturn(UUID.fromString(pageName));
+
+		ModelAndView result = instance.deselectAll(dbi, pageName, model, response, request);
+
+		verify(iDAO).removeViewsForAllTables(schemaPage, iDAOconn);
 		assertNull(result);
 
 	}

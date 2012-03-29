@@ -1,7 +1,7 @@
 package com.dbsvg.services.sort;
 
+import java.util.Collection;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 import com.dbsvg.objects.view.Vertex;
@@ -25,7 +25,7 @@ public class LinkBasedInitialPositionStrategy implements InitialPositionDistribu
 	private static final int Y_START = 10;
 
 	@Override
-	public void distributeVertices(List<? extends Vertex> vertices) {
+	public void distributeVertices(Collection<? extends Vertex> vertices) {
 
 		Set<Vertex> distributedVertices = new HashSet<Vertex>();
 		Set<Vertex> remainingVertices = new HashSet<Vertex>();

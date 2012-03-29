@@ -30,7 +30,7 @@ String dbi = request.getParameter("dbi");
 
 if (dbi != null) {
     SchemaPage sPage = (SchemaPage)request.getSession().getAttribute("CurrentPage");
-    List<TableView> tableViews = sPage.getTableViews();
+    Collection<TableView> tableViews = sPage.getTableViews();
 %>
 <svg
    xmlns:dc="http://purl.org/dc/elements/1.1/"
@@ -43,7 +43,6 @@ if (dbi != null) {
    xmlns:xlink="http://www.w3.org/1999/xlink"
    width="<%= sPage.getWidth() %>"
    height="<%= sPage.getHeight() %>"
-   transform="translate(<%= sPage.getTransx() %>,<%= sPage.getTransy() %>)"
    id="canvas"
    sodipodi:version="0.32"
    inkscape:version="0.46"
@@ -55,8 +54,7 @@ if (dbi != null) {
 <jsp:include page="../../css/diagramstyle.css" ></jsp:include>
 ]]>
 </style>
-<svg:g id="<%= sPage.getId() %>"
-   transform="translate(<%= sPage.getTransx() %>,<%= sPage.getTransy() %>)">
+<svg:g id="<%= sPage.getId() %>">
 <%
 	List<LinkLine> lines = sPage.getLines();
     for (LinkLine l : lines) {

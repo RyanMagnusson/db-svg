@@ -50,8 +50,6 @@ $(function() {
 				}
 			},
 			Cancel : function() {
-				$(this).dialog('close');
-				resetFields();
 			}
 		}
 
@@ -112,8 +110,6 @@ $(function() {
 		});
 		return false;
 	});
-
-
 });
 
 // displays edit connection dialog
@@ -122,7 +118,7 @@ function showEditConn() {
 	return false;
 }
 
-//displays edit connection dialog
+// displays edit connection dialog
 function showAddPage() {
 	$("#addPageDialog").dialog("open");
 	return false;
@@ -136,34 +132,32 @@ function selectPageForTable(page, table, input) {
 		"checked" : input.checked
 	}, function(data) {
 		if (data.val == 0) {
-			alert(data.message)
+			alert(data.message);
 		}
 	}, "json");
 }
 
-
 function selectAllTablesForPage(page) {
-	$(".page"+page).attr("checked", "checked");
+	$(".page" + page).attr("checked", "checked");
 	$.post("pages/selectAll", {
 		"dbi" : dbi,
 		"page" : page
 	}, function(data) {
 		if (data.val == 0) {
-			alert(data.message)
-		}		
+			alert(data.message);
+		}
 	}, "json");
 }
 
-
 function deselectAllTablesForPage(page) {
-	$(".page"+page).attr("checked", "");
+	$(".page" + page).attr("checked", "");
 	$.post("pages/deselectAll", {
 		"dbi" : dbi,
 		"page" : page
 	}, function(data) {
 		if (data.val == 0) {
-			alert(data.message)
-		}		
+			alert(data.message);
+		}
 	}, "json");
 }
 
@@ -172,13 +166,49 @@ function deletePage(page) {
 		"dbi" : dbi,
 		"page" : page
 	}, function(data) {
-		if (data.val != 0){
+		if (data.val == 0) {
+			alert(data.message);
+		} else {
 			$.post("setup/pages", {
 				"dbi" : dbi
 			}, function(data) {
 				$('#changer').html(data);
 			});
 		}
-	});
+	}, "json");
 }
 
+function renameTable(page) {
+	var $inputlink = $("#ptitle-" + page);
+	var $parent = $inputlink.parent();
+	pageTitle = $inputlink.text();
+	$parent.empty();
+	$parent.append("<input id='pageTitleRenamer' value='" + pageTitle
+			+ "'></input>");
+	$("#pageTitleRenamer").blur(function() {
+		renameTableSubmit(page, $parent);
+	});
+	$('#pageTitleRenamer').keypress(function(e) {
+		if (e.which == 13) {
+			$(this).blur();
+		}
+	});
+	$("#pageTitleRenamer").focus();
+}
+
+function renameTableSubmit(page, $parent) {
+	var newTitle = $("#pageTitleRenamer").val();
+	$.post("pages/save", {
+		"dbi" : dbi,
+		"page" : page,
+		"title" : newTitle
+	}, function(data) {
+		if (data.val == 0) {
+			alert(data.message)
+		}
+	}, "json");
+	$parent.empty();
+	$parent.append('<a href="#" id="ptitle-' + page
+			+ '" title="click to Rename" onclick="renameTable(\'' + page
+			+ '\'); return false;">' + newTitle + '</a>');
+}

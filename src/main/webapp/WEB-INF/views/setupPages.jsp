@@ -47,7 +47,7 @@
     <thead>
         <tr>
             <th></th><% for (SchemaPage p : pages) { %>
-            <th><%= p.getTitle() %></th><% } %>
+            <th><a href="#" id="ptitle-<%= p.getId() %>" title="click to Rename" onclick="renameTable('<%= p.getId() %>'); return false;"><%= p.getTitle() %></a></th><% } %>
         </tr>
     </thead>
     <tbody><% for (Table t : tables) { %>

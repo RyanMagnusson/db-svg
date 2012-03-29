@@ -94,7 +94,7 @@ public class TableViewSpringSorterTest {
 	@Test
 	public void testSortPageResort() {
 		boolean resort = true;
-		instance.SortPage(page, resort);
+		instance.sortPage(page, resort);
 		verify(vertexSorter).sort(tableList);
 		verify(page).setSorted(true);
 	}
@@ -105,7 +105,7 @@ public class TableViewSpringSorterTest {
 	@Test
 	public void testSortPageResortFalse() {
 		boolean resort = false;
-		instance.SortPage(page, resort);
+		instance.sortPage(page, resort);
 		verify(vertexSorter, times(0)).sort(tableList);
 		verify(page, times(0)).setSorted(true);
 	}

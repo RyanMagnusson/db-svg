@@ -74,13 +74,6 @@ public class SortedSchema implements Serializable {
 		return null;
 	}
 
-	public List<TableView> getDefaultTableViews() {
-		SchemaPage page = getFirstPage();
-		if (page != null)
-			return page.getTableViews();
-		return new ArrayList<TableView>();
-	}
-
 	public int getTransx() {
 		return transx;
 	}
@@ -127,6 +120,40 @@ public class SortedSchema implements Serializable {
 		return pages;
 	}
 
+	public int getNumPages() {
+		return pages.size();
+	}
+
+	/**
+	 * convenience method
+	 * 
+	 * @param id
+	 * @return
+	 */
+	public SchemaPage getPage(String id) {
+		return pages.get(UUID.fromString(id));
+	}
+
+	/**
+	 * convenience method
+	 * 
+	 * @param id
+	 * @return
+	 */
+	public SchemaPage getPage(UUID id) {
+		return pages.get(id);
+	}
+
+	/**
+	 * convenience method
+	 * 
+	 * @param page
+	 * @return
+	 */
+	public void removePage(UUID pageId) {
+		pages.remove(pageId);
+	}
+
 	public void setPages(Map<UUID, SchemaPage> pages) {
 		this.pages = pages;
 	}
@@ -163,26 +190,6 @@ public class SortedSchema implements Serializable {
 	 */
 	public Table getTable(String tableName) {
 		return tables.get(tableName);
-	}
-
-	/**
-	 * convenience method
-	 * 
-	 * @param id
-	 * @return
-	 */
-	public SchemaPage getPage(String id) {
-		return pages.get(UUID.fromString(id));
-	}
-
-	/**
-	 * convenience method
-	 * 
-	 * @param page
-	 * @return
-	 */
-	public void removePage(UUID pageId) {
-		pages.remove(pageId);
 	}
 
 }

@@ -8,7 +8,10 @@ package com.dbsvg.objects.view;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Matchers.anyInt;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -19,6 +22,8 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+
+import com.dbsvg.objects.model.Table;
 
 /**
  * 
@@ -38,15 +43,22 @@ public class SchemaPageTest {
 
 	@Mock
 	TableView tableView;
+	@Mock
+	TableView tableView2;
+	@Mock
+	TableView tableView3;
+	@Mock
+	TableView tableView4;
+	@Mock
+	Table table;
+
+	List<TableView> tableViews;
 
 	@Before
 	public void setUp() throws Exception {
 		MockitoAnnotations.initMocks(this);
 		instance = new SchemaPage(pageId);
 		instance.setTitle("page");
-		List<TableView> tableViews = new ArrayList<TableView>();
-		tableViews.add(tableView);
-		instance.setTableViews(tableViews);
 
 		samePage = new SchemaPage(pageId);
 		samePage.setTitle("page");
@@ -64,6 +76,28 @@ public class SchemaPageTest {
 		differentPageOrderIdTrumpsPageName = new SchemaPage(pageId);
 		differentPageOrderIdTrumpsPageName.setTitle("apage");
 		differentPageOrderIdTrumpsPageName.setOrderid(10);
+
+		tableViews = new ArrayList<TableView>();
+		tableViews.add(tableView);
+		tableViews.add(tableView2);
+		tableViews.add(tableView3);
+		tableViews.add(tableView4);
+
+		when(tableView.getId()).thenReturn(0);
+		when(tableView.needsResort()).thenReturn(false);
+		when(tableView.getTable()).thenReturn(table);
+		when(tableView2.getId()).thenReturn(1);
+		when(tableView2.needsResort()).thenReturn(false);
+		when(tableView2.getTable()).thenReturn(table);
+		when(tableView3.getId()).thenReturn(2);
+		when(tableView3.needsResort()).thenReturn(false);
+		when(tableView3.getTable()).thenReturn(table);
+		when(tableView4.getId()).thenReturn(3);
+		when(tableView4.needsResort()).thenReturn(true);
+		when(tableView4.getTable()).thenReturn(table);
+		when(table.getWidth()).thenReturn(100);
+		when(table.getHeight()).thenReturn(50);
+		instance.setTableViews(tableViews);
 	}
 
 	/**
@@ -148,18 +182,113 @@ public class SchemaPageTest {
 		verify(tableView).setY(y_pos);
 		verify(tableView).setSorted();
 	}
+
 	/**
 	 * Test of calcDimensions method, of class SchemaPage.
 	 */
-	// @Test
-	// public void testCalcDimensions() {
-	// SchemaPage instance = new SchemaPage();
-	// instance.calcDimensions();
-	// // TODO review the generated test code and remove the default call to
-	// fail.
-	// fail("The test case is a prototype.");
-	// }
-	//
+	@Test
+	public void testCalcDimensions() {
+		when(tableView.getX()).thenReturn(10);
+		when(tableView.getY()).thenReturn(11);
+		when(tableView2.getX()).thenReturn(20);
+		when(tableView2.getY()).thenReturn(21);
+		when(tableView3.getX()).thenReturn(30);
+		when(tableView3.getY()).thenReturn(31);
+		when(tableView4.getX()).thenReturn(40);
+		when(tableView4.getY()).thenReturn(41);
+
+		instance.calcDimensionsAndTranslatePageToOrigin();
+		assertEquals(430, instance.getWidth());
+		assertEquals(580, instance.getHeight());
+	}
+
+	/**
+	 * Test of calcDimensions method, of class SchemaPage.
+	 */
+	@Test
+	public void testTranslatePageToOrigin() {
+		when(tableView.getX()).thenReturn(10010);
+		when(tableView.getY()).thenReturn(10011);
+		when(tableView2.getX()).thenReturn(10020);
+		when(tableView2.getY()).thenReturn(10021);
+		when(tableView3.getX()).thenReturn(10030);
+		when(tableView3.getY()).thenReturn(10031);
+		when(tableView4.getX()).thenReturn(10040);
+		when(tableView4.getY()).thenReturn(10041);
+
+		instance.calcDimensionsAndTranslatePageToOrigin();
+
+		verify(tableView).setX(25);
+		verify(tableView).setY(25);
+		verify(tableView).setNeedsSort(false);
+		verify(tableView2).setX(35);
+		verify(tableView2).setY(35);
+		verify(tableView2).setNeedsSort(false);
+		verify(tableView3).setX(45);
+		verify(tableView3).setY(45);
+		verify(tableView3).setNeedsSort(false);
+		verify(tableView4).setX(55);
+		verify(tableView4).setY(55);
+		verify(tableView4).setNeedsSort(true);
+	}
+
+	/**
+	 * Test of calcDimensions method, of class SchemaPage.
+	 */
+	@Test
+	public void testTranslatePageToOriginFromNegative() {
+		when(tableView.getX()).thenReturn(10);
+		when(tableView.getY()).thenReturn(11);
+		when(tableView2.getX()).thenReturn(-20);
+		when(tableView2.getY()).thenReturn(21);
+		when(tableView3.getX()).thenReturn(30);
+		when(tableView3.getY()).thenReturn(31);
+		when(tableView4.getX()).thenReturn(40);
+		when(tableView4.getY()).thenReturn(-41);
+
+		instance.calcDimensionsAndTranslatePageToOrigin();
+
+		verify(tableView).setX(55);
+		verify(tableView).setY(77);
+		verify(tableView).setNeedsSort(false);
+		verify(tableView2).setX(25);
+		verify(tableView2).setY(87);
+		verify(tableView2).setNeedsSort(false);
+		verify(tableView3).setX(75);
+		verify(tableView3).setY(97);
+		verify(tableView3).setNeedsSort(false);
+		verify(tableView4).setX(85);
+		verify(tableView4).setY(25);
+		verify(tableView4).setNeedsSort(true);
+	}
+
+	@Test
+	public void testNoTranslatePageToOrigin() {
+		when(tableView.getX()).thenReturn(25);
+		when(tableView.getY()).thenReturn(25);
+		when(tableView2.getX()).thenReturn(10020);
+		when(tableView2.getY()).thenReturn(10021);
+		when(tableView3.getX()).thenReturn(10030);
+		when(tableView3.getY()).thenReturn(10031);
+		when(tableView4.getX()).thenReturn(10040);
+		when(tableView4.getY()).thenReturn(10041);
+
+		instance.calcDimensionsAndTranslatePageToOrigin();
+
+		verify(tableView, times(0)).setX(anyInt());
+		verify(tableView, times(0)).setY(anyInt());
+		verify(tableView, times(0)).setNeedsSort(false);
+		verify(tableView2, times(0)).setX(anyInt());
+		verify(tableView2, times(0)).setY(anyInt());
+		verify(tableView2, times(0)).setNeedsSort(false);
+		verify(tableView3, times(0)).setX(anyInt());
+		verify(tableView3, times(0)).setY(anyInt());
+		verify(tableView3, times(0)).setNeedsSort(false);
+		verify(tableView4, times(0)).setX(anyInt());
+		verify(tableView4, times(0)).setY(anyInt());
+		verify(tableView4, times(0)).setNeedsSort(true);
+	}
+
 	//
 	// /**
 	// * Test of getTableViews method, of class SchemaPage.

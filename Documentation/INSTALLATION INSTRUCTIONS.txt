@@ -25,6 +25,8 @@
 2.  Restart Tomcat
 3.  Navigate to /DB-SVG and enter database connection values.
 
+OPTIONAL: if you need to override the location of the internal config database, set the command line argument -Dconfig.db.location=[path]
+
 -------------------------------------------------------------------
                Windows Installation Instructions:
 -------------------------------------------------------------------
@@ -34,7 +36,7 @@ This project is built with maven, so once you install maven you can easily tweak
 For example, if there are problems writing to the internal SQLite database, you can change
 the path in the src/main/webapp/WEB-INF/app-context.xml file and recompile the project with the command: "mvn clean install".
 
-To start the application using an embedded jetty web server, simply use the command: "mvn jetty:run"
+To start the application using an embedded jetty web server, simply use the command: "mvn jetty:run", then go to http://localhost:8080/DB-SVG
     
     
     

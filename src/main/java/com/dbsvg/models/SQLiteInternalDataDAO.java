@@ -52,6 +52,13 @@ public class SQLiteInternalDataDAO implements Serializable, InternalDataDAO {
 
 	protected static final Logger LOG = LoggerFactory.getLogger(SQLiteInternalDataDAO.class);
 
+	protected static final String SELECT_TV_SQL = "SELECT * FROM table_page_position WHERE pageid = ? AND tableid = ? LIMIT 1;";
+	protected static final String SELECT_T_SQL = "SELECT * FROM table_schema WHERE name = ? AND schema = ? LIMIT 1;";
+	protected static final String INSERT_CONNECTION_SQL = "INSERT OR REPLACE INTO connection (id, title, url, driver, username, password) VALUES (?,?,?,?,?,?);";
+	protected static final String INSERT_CONNECTION_NEW_ID_SQL = "INSERT OR REPLACE INTO connection (title, url, driver, username, password) VALUES (?,?,?,?,?);";
+	protected static final String DELETE_CONNECTION_SQL = "DELETE FROM connection WHERE id = ?;";
+	protected static final String LAST_ROW_ID_SQL = "select last_insert_rowid() as id";
+
 	private String url = "jdbc:sqlite:";
 	private String driver = "org.sqlite.JDBC";
 
@@ -84,24 +91,20 @@ public class SQLiteInternalDataDAO implements Serializable, InternalDataDAO {
 	 * 
 	 * @param conn
 	 */
-	public void setUpInternalDB(Connection conn) {
-		try {
-			Statement st = conn.createStatement();
-			st.executeUpdate(" CREATE TABLE IF NOT EXISTS schema (title PRIMARY KEY); ");
-			st.executeUpdate(" CREATE TABLE IF NOT EXISTS table_schema (id PRIMARY KEY, name, schema,"
-					+ " UNIQUE (name, schema), "
-					+ " FOREIGN KEY (schema) REFERENCES schema(title));");
-			st.executeUpdate(" CREATE TABLE IF NOT EXISTS schema_page (id PRIMARY KEY, orderid INTEGER, title, schema, "
-					+ " FOREIGN KEY (schema) REFERENCES schema(title)); ");
-			st.executeUpdate(" CREATE TABLE IF NOT EXISTS table_page_position (pageid, tableid, x_pos INTEGER, y_pos INTEGER,"
-					+ " UNIQUE (pageid, tableid), "
-					+ " FOREIGN KEY (pageid) REFERENCES schema_page(id), "
-					+ " FOREIGN KEY (tableid) REFERENCES table_schema(id) "
-					+ "); ");
-			st.executeUpdate(" CREATE TABLE IF NOT EXISTS connection (id INTEGER PRIMARY KEY, title, url, driver, username, password); ");
-		} catch (Exception e) {
-			LOG.error("Ignoring Table Creation Error:", e);
-		}
+	public void setUpInternalDB(Connection conn) throws SQLException {
+		Statement st = conn.createStatement();
+		st.executeUpdate(" CREATE TABLE IF NOT EXISTS schema (title PRIMARY KEY); ");
+		st.executeUpdate(" CREATE TABLE IF NOT EXISTS table_schema (id PRIMARY KEY, name, schema,"
+				+ " UNIQUE (name, schema), "
+				+ " FOREIGN KEY (schema) REFERENCES schema(title));");
+		st.executeUpdate(" CREATE TABLE IF NOT EXISTS schema_page (id PRIMARY KEY, orderid INTEGER, title, schema, "
+				+ " FOREIGN KEY (schema) REFERENCES schema(title)); ");
+		st.executeUpdate(" CREATE TABLE IF NOT EXISTS table_page_position (pageid, tableid, x_pos INTEGER, y_pos INTEGER,"
+				+ " UNIQUE (pageid, tableid), "
+				+ " FOREIGN KEY (pageid) REFERENCES schema_page(id), "
+				+ " FOREIGN KEY (tableid) REFERENCES table_schema(id) "
+				+ "); ");
+		st.executeUpdate(" CREATE TABLE IF NOT EXISTS connection (id INTEGER PRIMARY KEY, title, url, driver, username, password); ");
 	}
 
 	/**
@@ -110,42 +113,17 @@ public class SQLiteInternalDataDAO implements Serializable, InternalDataDAO {
 	 * @param c
 	 * @param conn
 	 */
-	public void saveConnectionWrapper(ConnectionWrapper c, Connection conn) {
-		String insertConnectionSQL = "INSERT OR REPLACE INTO connection (id, title, url, driver, username, password) VALUES (?,?,?,?,?,?);";
-		try {
-			PreparedStatement ps = conn.prepareStatement(insertConnectionSQL);
-			ps.setInt(1, c.getId());
-			ps.setString(2, c.getTitle());
-			ps.setString(3, c.getUrl());
-			ps.setString(4, c.getDriver());
-			ps.setString(5, c.getUsername());
-			ps.setString(6, c.getPassword());
-			ps.executeUpdate();
+	public void saveConnectionWrapper(ConnectionWrapper c, Connection conn) throws SQLException {
+		PreparedStatement ps = conn.prepareStatement(INSERT_CONNECTION_SQL);
+		ps.setInt(1, c.getId());
+		ps.setString(2, c.getTitle());
+		ps.setString(3, c.getUrl());
+		ps.setString(4, c.getDriver());
+		ps.setString(5, c.getUsername());
+		ps.setString(6, c.getPassword());
+		ps.executeUpdate();
 
-			ps.close();
-		} catch (Exception e) {
-			LOG.error("Ignoring Connection Insert or Replace Error:", e);
-		}
-	}
-
-	/**
-	 * I chose to delete becuase it's easy enough to put it in again, and maybe
-	 * they deleted it because the information was sensitive.
-	 * 
-	 * @param c
-	 * @param conn
-	 */
-	public void deleteConnectionWrapper(String id, Connection conn) {
-		String insertConnectionSQL = "DELETE FROM connection WHERE id = ?;";
-		try {
-			PreparedStatement ps = conn.prepareStatement(insertConnectionSQL);
-			ps.setString(1, id);
-			ps.executeUpdate();
-
-			ps.close();
-		} catch (Exception e) {
-			LOG.error("Ignoring Connection Delete Error:", e);
-		}
+		ps.close();
 	}
 
 	/**
@@ -155,34 +133,43 @@ public class SQLiteInternalDataDAO implements Serializable, InternalDataDAO {
 	 * @param c
 	 * @param conn
 	 */
-	public void saveConnectionWrapperNewID(ConnectionWrapper c, Connection conn) {
-		String insertConnectionSQL = "INSERT OR REPLACE INTO connection (title, url, driver, username, password) VALUES (?,?,?,?,?);";
-		try {
-			PreparedStatement ps = conn.prepareStatement(insertConnectionSQL);
-			ps.setString(1, c.getTitle());
-			ps.setString(2, c.getUrl());
-			ps.setString(3, c.getDriver());
-			ps.setString(4, c.getUsername());
-			ps.setString(5, c.getPassword());
-			ps.executeUpdate();
+	public void saveConnectionWrapperNewID(ConnectionWrapper c, Connection conn) throws SQLException {
+		PreparedStatement ps = conn.prepareStatement(INSERT_CONNECTION_NEW_ID_SQL);
+		ps.setString(1, c.getTitle());
+		ps.setString(2, c.getUrl());
+		ps.setString(3, c.getDriver());
+		ps.setString(4, c.getUsername());
+		ps.setString(5, c.getPassword());
+		ps.executeUpdate();
 
-			ps.close();
+		ps.close();
 
-			String lastrowidSQL = "select last_insert_rowid() as id";
-			PreparedStatement ps2 = conn.prepareStatement(lastrowidSQL);
+		PreparedStatement ps2 = conn.prepareStatement(LAST_ROW_ID_SQL);
 
-			ResultSet rs = ps2.executeQuery();
+		ResultSet rs = ps2.executeQuery();
 
-			if (rs.next()) {
-				c.setId(rs.getInt("id"));
-			}
-			ps2.close();
-			rs.close();
-			LOG.info("Saved Connection with id {}", c.getId());
-
-		} catch (Exception e) {
-			LOG.error("Ignoring Save Connection New ID Error:", e);
+		if (rs.next()) {
+			c.setId(rs.getInt("id"));
 		}
+		ps2.close();
+		rs.close();
+		LOG.info("Saved Connection with id {}", c.getId());
+
+	}
+
+	/**
+	 * I chose to delete becuase it's easy enough to put it in again, and maybe
+	 * they deleted it because the information was sensitive.
+	 * 
+	 * @param cw
+	 * @param conn
+	 */
+	public void deleteConnectionWrapper(String id, Connection conn) throws SQLException {
+		PreparedStatement ps = conn.prepareStatement(DELETE_CONNECTION_SQL);
+		ps.setString(1, id);
+		ps.executeUpdate();
+
+		ps.close();
 	}
 
 	/**
@@ -192,20 +179,16 @@ public class SQLiteInternalDataDAO implements Serializable, InternalDataDAO {
 	 * @param t
 	 * @param conn
 	 */
-	public void saveTable(Table t, Connection conn) {
+	public void saveTable(Table t, Connection conn) throws SQLException {
 		String insertTableSQL = "INSERT OR REPLACE INTO table_schema (id,name,schema) VALUES (?,?,?);";
-		try {
-			PreparedStatement ps = conn.prepareStatement(insertTableSQL);
-			ps.setString(1, t.getId().toString());
-			ps.setString(2, t.getName());
-			ps.setString(3, t.getSchemaId());
-			ps.executeUpdate();
-			ps.close();
+		PreparedStatement ps = conn.prepareStatement(insertTableSQL);
+		ps.setString(1, t.getId().toString());
+		ps.setString(2, t.getName());
+		ps.setString(3, t.getSchemaId());
+		ps.executeUpdate();
+		ps.close();
 
-			LOG.info("Saved Table {}", t);
-		} catch (Exception e) {
-			LOG.error("Ignoring Table Save Error:", e);
-		}
+		LOG.info("Saved Table {}", t);
 	}
 
 	/**
@@ -213,22 +196,19 @@ public class SQLiteInternalDataDAO implements Serializable, InternalDataDAO {
 	 * 
 	 * @param tv
 	 * @param conn
+	 * @throws SQLException
 	 */
-	public void saveTablePosition(TableView tv, Connection conn) {
+	public void saveTablePosition(TableView tv, Connection conn) throws SQLException {
 		String insertTableViewSQL = "INSERT OR REPLACE INTO table_page_position (pageid,tableid,x_pos,y_pos) VALUES (?,?,?,?);";
-		try {
-			PreparedStatement ps = conn.prepareStatement(insertTableViewSQL);
-			ps.setString(1, tv.getPage().getId().toString());
-			ps.setString(2, tv.getTable().getId().toString());
-			ps.setDouble(3, tv.getX());
-			ps.setDouble(4, tv.getY());
-			ps.executeUpdate();
-			ps.close();
+		PreparedStatement ps = conn.prepareStatement(insertTableViewSQL);
+		ps.setString(1, tv.getPage().getId().toString());
+		ps.setString(2, tv.getTable().getId().toString());
+		ps.setDouble(3, tv.getX());
+		ps.setDouble(4, tv.getY());
+		ps.executeUpdate();
+		ps.close();
 
-			LOG.info("Saved TableView {}", tv);
-		} catch (Exception e) {
-			LOG.error("Ignoring Table Position Save Error:", e);
-		}
+		LOG.info("Saved TableView {}", tv);
 	}
 
 	/**
@@ -237,19 +217,15 @@ public class SQLiteInternalDataDAO implements Serializable, InternalDataDAO {
 	 * @param tv
 	 * @param conn
 	 */
-	public void deleteTablePosition(TableView tv, Connection conn) {
+	public void deleteTablePosition(TableView tv, Connection conn) throws SQLException {
 		String insertTableViewSQL = "DELETE FROM table_page_position WHERE pageid=? AND tableid=?;";
-		try {
-			PreparedStatement ps = conn.prepareStatement(insertTableViewSQL);
-			ps.setString(1, tv.getPage().getId().toString());
-			ps.setString(2, tv.getTable().getId().toString());
-			ps.executeUpdate();
-			ps.close();
+		PreparedStatement ps = conn.prepareStatement(insertTableViewSQL);
+		ps.setString(1, tv.getPage().getId().toString());
+		ps.setString(2, tv.getTable().getId().toString());
+		ps.executeUpdate();
+		ps.close();
 
-			LOG.info("DELETED TableView {}", tv);
-		} catch (Exception e) {
-			LOG.error("Ignoring Table Position Delete Error:", e);
-		}
+		LOG.info("DELETED TableView {}", tv);
 	}
 
 	/**
@@ -258,20 +234,14 @@ public class SQLiteInternalDataDAO implements Serializable, InternalDataDAO {
 	 * @param page
 	 * @param conn
 	 */
-	public void saveSchemaPage(SchemaPage page, Connection conn) {
+	public void saveSchemaPage(SchemaPage page, Connection conn) throws SQLException {
 		String insertPageSQL = "INSERT OR REPLACE INTO schema_page (id, orderid, title, schema) VALUES (?,?,?,?);";
-		try {
-			PreparedStatement ps = conn.prepareStatement(insertPageSQL);
-			ps.setString(1, page.getId().toString());
-			ps.setInt(2, page.getOrderid());
-			ps.setString(3, page.getTitle());
-			ps.setString(4, page.getSchema().getId());
-			ps.executeUpdate();
-
-		} catch (Exception e) {
-			LOG.error("Ignoring SchemaPage Save Error:", e);
-		}
-
+		PreparedStatement ps = conn.prepareStatement(insertPageSQL);
+		ps.setString(1, page.getId().toString());
+		ps.setInt(2, page.getOrderid());
+		ps.setString(3, page.getTitle());
+		ps.setString(4, page.getSchema().getId());
+		ps.executeUpdate();
 	}
 
 	/**
@@ -280,17 +250,11 @@ public class SQLiteInternalDataDAO implements Serializable, InternalDataDAO {
 	 * @param page
 	 * @param conn
 	 */
-	public void deleteSchemaPage(SchemaPage page, Connection conn) {
+	public void deleteSchemaPage(SchemaPage page, Connection conn) throws SQLException {
 		String insertPageSQL = "DELETE FROM schema_page WHERE id=?;";
-		try {
-			PreparedStatement ps = conn.prepareStatement(insertPageSQL);
-			ps.setString(1, page.getId().toString());
-			ps.executeUpdate();
-
-		} catch (Exception e) {
-			LOG.error("Ignoring SchemaPage Delete Error:", e);
-		}
-
+		PreparedStatement ps = conn.prepareStatement(insertPageSQL);
+		ps.setString(1, page.getId().toString());
+		ps.executeUpdate();
 	}
 
 	/**
@@ -299,19 +263,15 @@ public class SQLiteInternalDataDAO implements Serializable, InternalDataDAO {
 	 * @param schema
 	 * @param conn
 	 */
-	public void verifySchema(String schema, Connection conn) {
+	public void verifySchema(String schema, Connection conn) throws SQLException {
 
 		String insertSQL = "INSERT OR REPLACE INTO schema VALUES (?);";
-		try {
-			PreparedStatement ps = conn.prepareStatement(insertSQL);
+		PreparedStatement ps = conn.prepareStatement(insertSQL);
 
-			ps.setString(1, schema);
+		ps.setString(1, schema);
 
-			ps.executeUpdate();
+		ps.executeUpdate();
 
-		} catch (Exception e) {
-			LOG.error("Ignoring Schema Verification Error:", e);
-		}
 	}
 
 	/**
@@ -321,26 +281,22 @@ public class SQLiteInternalDataDAO implements Serializable, InternalDataDAO {
 	 * @param conn
 	 * @return
 	 */
-	public ConnectionWrapper readConnectionWrapper(int id, Connection conn) {
+	public ConnectionWrapper readConnectionWrapper(int id, Connection conn) throws SQLException {
 		String selectAllSQL = "SELECT * FROM connection WHERE id = ?;";
 		ConnectionWrapper cw = new ConnectionWrapper();
-		try {
-			PreparedStatement ps = conn.prepareStatement(selectAllSQL);
+		PreparedStatement ps = conn.prepareStatement(selectAllSQL);
 
-			ps.setInt(1, id);
-			ResultSet rs = ps.executeQuery();
+		ps.setInt(1, id);
+		ResultSet rs = ps.executeQuery();
 
-			while (rs.next()) {// , title, url, driver, username, password)
-				cw.setTitle(rs.getString("title"));
-				cw.setUrl(rs.getString("url"));
-				cw.setDriver(rs.getString("driver"));
-				cw.setUsername(rs.getString("username"));
-				cw.setPassword(rs.getString("password"));
-			}
-			rs.close();
-		} catch (Exception e) {
-			LOG.error("Ignoring Connection Read Error:", e);
+		while (rs.next()) {// , title, url, driver, username, password)
+			cw.setTitle(rs.getString("title"));
+			cw.setUrl(rs.getString("url"));
+			cw.setDriver(rs.getString("driver"));
+			cw.setUsername(rs.getString("username"));
+			cw.setPassword(rs.getString("password"));
 		}
+		rs.close();
 		return cw;
 	}
 
@@ -350,28 +306,23 @@ public class SQLiteInternalDataDAO implements Serializable, InternalDataDAO {
 	 * @param conn
 	 * @return
 	 */
-	public Map<String, ConnectionWrapper> readAllConnectionWrappers(
-			Connection conn) {
+	public Map<String, ConnectionWrapper> readAllConnectionWrappers(Connection conn) throws SQLException {
 		Map<String, ConnectionWrapper> connections = new HashMap<String, ConnectionWrapper>();
 		String selectAllSQL = "SELECT * FROM connection ORDER BY id DESC;";
-		try {
-			PreparedStatement ps = conn.prepareStatement(selectAllSQL);
-			ResultSet rs = ps.executeQuery();
+		PreparedStatement ps = conn.prepareStatement(selectAllSQL);
+		ResultSet rs = ps.executeQuery();
 
-			while (rs.next()) {// , title, url, driver, username, password)
-				ConnectionWrapper cw = new ConnectionWrapper();
-				cw.setId(rs.getInt("id"));
-				connections.put(cw.getSchemaId(), cw);
-				cw.setTitle(rs.getString("title"));
-				cw.setUrl(rs.getString("url"));
-				cw.setDriver(rs.getString("driver"));
-				cw.setUsername(rs.getString("username"));
-				cw.setPassword(rs.getString("password"));
-			}
-			rs.close();
-		} catch (Exception e) {
-			LOG.error("Ignoring Read All Connections Error:", e);
+		while (rs.next()) {// , title, url, driver, username, password)
+			ConnectionWrapper cw = new ConnectionWrapper();
+			cw.setId(rs.getInt("id"));
+			connections.put(cw.getSchemaId(), cw);
+			cw.setTitle(rs.getString("title"));
+			cw.setUrl(rs.getString("url"));
+			cw.setDriver(rs.getString("driver"));
+			cw.setUsername(rs.getString("username"));
+			cw.setPassword(rs.getString("password"));
 		}
+		rs.close();
 		return connections;
 	}
 
@@ -381,97 +332,65 @@ public class SQLiteInternalDataDAO implements Serializable, InternalDataDAO {
 	 * @param schemaName
 	 * @param conn
 	 */
-	public void makeTableSchema(Table t, Connection conn) {
+	public void makeTableSchema(Table t, Connection conn) throws SQLException {
 
-		String selectTSQL = "SELECT * FROM table_schema WHERE name = ? AND schema = ? LIMIT 1;";
-		try {
-			PreparedStatement ps = conn.prepareStatement(selectTSQL);
+		PreparedStatement ps = conn.prepareStatement(SELECT_T_SQL);
 
-			ps.setString(1, t.getName());
-			ps.setString(2, t.getSchemaId());
+		ps.setString(1, t.getName());
+		ps.setString(2, t.getSchemaId());
 
-			ResultSet rs = ps.executeQuery();
+		ResultSet rs = ps.executeQuery();
 
-			if (rs.next()) {
-				t.setId(UUID.fromString(rs.getString("id")));
-			}
-			rs.close();
-		} catch (Exception e) {
-			LOG.error("Ignoring Make Table Schema SELECT Error:", e);
+		if (rs.next()) {
+			t.setId(UUID.fromString(rs.getString("id")));
+		}
+		rs.close();
+	}
+
+	@Override
+	public void addViewsForAllTables(SchemaPage page, Connection conn) throws SQLException {
+		int numTables = page.getSchema().getTables().size();
+		for (Table t : page.getSchema().getTables().values()) {
+			makeViewWCoordinates(t, page, numTables, conn, true);
 		}
 	}
 
-	/**
-	 * makes the tables from the internal database for a schema
-	 * 
-	 * @param t
-	 * @param schemaName
-	 * @param conn
-	 */
-	public Map<String, Table> makeAllTablesForSchema(String SchemaName,
-			Connection conn) {
+	@Override
+	public void removeViewsForAllTables(SchemaPage page, Connection conn) throws SQLException {
+		String insertTableViewSQL = "DELETE FROM table_page_position WHERE pageid=?;";
+		PreparedStatement ps = conn.prepareStatement(insertTableViewSQL);
+		ps.setString(1, page.getId().toString());
+		ps.executeUpdate();
+		ps.close();
 
-		Map<String, Table> tables = new HashMap<String, Table>();
-
-		String selectTSQL = "SELECT * FROM table_schema WHERE schema = ?;";
-		try {
-			PreparedStatement ps = conn.prepareStatement(selectTSQL);
-
-			ps.setString(1, SchemaName);
-
-			ResultSet rs = ps.executeQuery();
-
-			while (rs.next()) {
-				Table t = new Table();
-				t.setName(rs.getString("name"));
-				t.setId(UUID.fromString(rs.getString("id")));
-				t.setSchemaId(SchemaName);
-				tables.put(t.getName(), t);
-			}
-			rs.close();
-		} catch (Exception e) {
-			LOG.error("Ignoring Make all Tables for Schema Error:", e);
-		}
-		return tables;
+		page.getTableViews().clear();
+		LOG.info("DELETED All TableViews for page {}", page.getId());
 	}
 
-	/**
-	 * Checks to see if there are coordinates for the current table in the
-	 * internal DB. If not, it returns false.
-	 * 
-	 * @param page
-	 * @param conn
-	 * 
-	 * @return coordsFound
-	 */
-	public TableView makeViewWCoordinates(Table t, SchemaPage page, int numTables, Connection conn, boolean makeViewsForAllTables) {
-		TableView tv = page.makeViewForTable(t);
+	public void makeViewWCoordinates(Table t, SchemaPage page, int numTables, Connection conn, boolean makeViewsForAllTables)
+			throws SQLException {
 
-		String selectTVSQL = "SELECT * FROM table_page_position WHERE pageid = ? AND tableid = ? LIMIT 1;";
-		try {
-			PreparedStatement ps = conn.prepareStatement(selectTVSQL);
+		PreparedStatement ps = conn.prepareStatement(SELECT_TV_SQL);
 
-			ps.setString(1, page.getId().toString());
-			ps.setString(2, t.getId().toString());
+		ps.setString(1, page.getId().toString());
+		ps.setString(2, t.getId().toString());
 
-			ResultSet rs = ps.executeQuery();
+		ResultSet rs = ps.executeQuery();
 
-			if (rs.next()) {
-				tv.setX(rs.getDouble("x_pos"));
-				tv.setY(rs.getDouble("y_pos"));
-				LOG.debug("Populated Coordinates for: " + tv.getTable().getName() + "{" + tv.getX() + "," + tv.getY() + "}");
-				tv.calcLinksAndRadius();
-				tv.setSorted();
-				LOG.info("Read TableView from db {}", tv);
-			} else if (makeViewsForAllTables) {
-				tv.randomInitialize(numTables);
-				LOG.info("No TableView found for table. Created blank view for this page {}", tv);
-			}
-			rs.close();
-		} catch (Exception e) {
-			LOG.error("Ignoring Make TableView with Coordinates Error:", e);
+		if (rs.next()) {
+			TableView tv = page.makeViewForTable(t);
+			tv.setX(rs.getDouble("x_pos"));
+			tv.setY(rs.getDouble("y_pos"));
+			LOG.debug("Populated Coordinates for: " + tv.getTable().getName() + "{" + tv.getX() + "," + tv.getY() + "}");
+			tv.calcLinksAndRadius();
+			tv.setSorted();
+			LOG.info("Read TableView from db {}", tv);
+		} else if (makeViewsForAllTables) {
+			TableView tv = page.makeViewForTable(t);
+			tv.randomInitialize(numTables);
+			LOG.info("No TableView found for table. Created blank view for this page {}", tv);
 		}
-		return tv;
+		rs.close();
 	}
 
 	/**
@@ -481,28 +400,23 @@ public class SQLiteInternalDataDAO implements Serializable, InternalDataDAO {
 	 * @param conn
 	 * @return
 	 */
-	public Map<UUID, SchemaPage> readSchemaPages(SortedSchema schema,
-			Connection conn) {
+	public Map<UUID, SchemaPage> readSchemaPages(SortedSchema schema, Connection conn) throws SQLException {
 		String insertSQL = "SELECT * FROM schema_page sp WHERE schema = ? ORDER BY sp.orderid ASC;";
 		Map<UUID, SchemaPage> pages = new HashMap<UUID, SchemaPage>();
-		try {
-			PreparedStatement ps = conn.prepareStatement(insertSQL);
+		PreparedStatement ps = conn.prepareStatement(insertSQL);
 
-			ps.setString(1, schema.getId());
+		ps.setString(1, schema.getId());
 
-			ResultSet rs = ps.executeQuery();
+		ResultSet rs = ps.executeQuery();
 
-			while (rs.next()) {
-				SchemaPage p = new SchemaPage(rs.getString("id"));
-				pages.put(p.getId(), p);
-				p.setOrderid(rs.getInt("orderid"));
-				p.setTitle(rs.getString("title"));
-				p.setSchema(schema);
-			}
-			rs.close();
-		} catch (Exception e) {
-			LOG.error("Ignoring Read Schema Pages Error:", e);
+		while (rs.next()) {
+			SchemaPage p = new SchemaPage(rs.getString("id"));
+			pages.put(p.getId(), p);
+			p.setOrderid(rs.getInt("orderid"));
+			p.setTitle(rs.getString("title"));
+			p.setSchema(schema);
 		}
+		rs.close();
 		return pages;
 	}
 
@@ -513,4 +427,5 @@ public class SQLiteInternalDataDAO implements Serializable, InternalDataDAO {
 	public void setPath(String path) {
 		this.path = path;
 	}
+
 }

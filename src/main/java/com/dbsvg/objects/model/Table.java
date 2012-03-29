@@ -36,17 +36,18 @@ import com.dbsvg.objects.view.TableView;
 @SuppressWarnings("serial")
 public class Table implements Comparable<Table>, Serializable {
 
-	UUID id;
-	String name = "";
-	String schemaId = "";
-	Map<String, Column> columns = new LinkedHashMap<String, Column>();
-	Map<String, ForeignKey> foreignKeys = new LinkedHashMap<String, ForeignKey>();
-	Map<String, Table> referencingTables = new LinkedHashMap<String, Table>();
-	Map<String, PrimaryKey> primaryKeys = new LinkedHashMap<String, PrimaryKey>();
+	private UUID id;
+	private int viewId;
+	private String name = "";
+	private String schemaId = "";
+	private Map<String, Column> columns = new LinkedHashMap<String, Column>();
+	private Map<String, ForeignKey> foreignKeys = new LinkedHashMap<String, ForeignKey>();
+	private Map<String, Table> referencingTables = new LinkedHashMap<String, Table>();
+	private Map<String, PrimaryKey> primaryKeys = new LinkedHashMap<String, PrimaryKey>();
 	// by page id
-	Map<UUID, TableView> tablePageViews = new LinkedHashMap<UUID, TableView>();
-	int width = 0;
-	int height = 0;
+	private Map<UUID, TableView> tablePageViews = new LinkedHashMap<UUID, TableView>();
+	private int width = 0;
+	private int height = 0;
 
 	/**
     * 
@@ -66,6 +67,14 @@ public class Table implements Comparable<Table>, Serializable {
 
 	public void setId(UUID id) {
 		this.id = id;
+	}
+
+	public void setViewId(int viewId) {
+		this.viewId = viewId;
+	}
+
+	public int getViewId() {
+		return viewId;
 	}
 
 	public String getName() {

@@ -1,6 +1,6 @@
 package com.dbsvg.services.sort;
 
-import java.util.List;
+import java.util.Collection;
 
 import com.dbsvg.objects.view.Vertex;
 
@@ -14,7 +14,7 @@ import com.dbsvg.objects.view.Vertex;
 public class RandomInitialPositionStrategy implements InitialPositionDistributionStrategy {
 
 	@Override
-	public void distributeVertices(List<? extends Vertex> vertices) {
+	public void distributeVertices(Collection<? extends Vertex> vertices) {
 		for (Vertex v : vertices) {
 			randomizePosition(v, vertices.size());
 		}

@@ -71,11 +71,11 @@ public class TableTest {
 	 * Test of getSchemaName method, of class Table.
 	 */
 	@Test
-	public void testGetSchemaName() {
-		String schemaName = "SCH NAME";
-		instance.setSchemaId(schemaName);
+	public void testGetSchemaId() {
+		String schemaId = "SCH NAME";
+		instance.setSchemaId(schemaId);
 		String result = instance.getSchemaId();
-		assertEquals(schemaName, result);
+		assertEquals(schemaId, result);
 	}
 
 	/**

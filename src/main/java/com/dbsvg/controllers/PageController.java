@@ -30,7 +30,7 @@ import com.dbsvg.services.IDBViewerCache;
 public class PageController {
 
 	protected static final String VAL = "val";
-	protected static final String MESSAGE = "messag";
+	protected static final String MESSAGE = "message";
 
 	@Autowired
 	JsonView jsonView;
@@ -82,6 +82,8 @@ public class PageController {
 		} catch (Exception e) {
 			LOG.error("Unable to save page to Internal DAO", e);
 			model.addAttribute(VAL, "0");
+			model.addAttribute(MESSAGE, "Unable to save page to Internal DAO:" + e.getMessage());
+
 		} finally {
 			closeIDaoConnection(model, conn);
 		}
@@ -144,7 +146,7 @@ public class PageController {
 		} catch (Exception e) {
 			LOG.error("Unable to save to Internal DAO", e);
 			model.addAttribute(VAL, "0");
-			model.addAttribute(MESSAGE, "Unable to save to Internal DAO");
+			model.addAttribute(MESSAGE, "Unable to save to Internal DAO:" + e.getMessage());
 		} finally {
 			closeIDaoConnection(model, conn);
 		}
@@ -155,29 +157,134 @@ public class PageController {
 	@RequestMapping(value = "/pages/save", method = RequestMethod.POST)
 	public ModelAndView savePage(@RequestParam("dbi") String dbi, @RequestParam("page") String pageId, @RequestParam("title") String title,
 			Model model, HttpServletResponse response, HttpServletRequest request) {
-		LOG.debug("Saving page: {} {} ", new Object[] { pageId,
-				title });
-		// TODO
+		LOG.debug("Saving page: {} {} ", new Object[] { pageId, title });
+		if (StringUtils.isBlank(dbi) || StringUtils.isBlank(pageId) || StringUtils.isBlank(title)) {
+			LOG.warn("Invalid Parameters");
+			model.addAttribute(VAL, "0");
+			model.addAttribute(MESSAGE, "Invalid Parameters");
+			return jsonView.Render(model, response);
+		}
+
+		SortedSchema currentSchema = (SortedSchema) request.getSession().getAttribute("CurrentSchema");
+
+		if (currentSchema == null || !currentSchema.getDbi().equals(dbi)) {
+			LOG.warn("Schema {} not currently loaded.", dbi);
+			model.addAttribute(VAL, "0");
+			model.addAttribute(MESSAGE, "Schema " + dbi + " not currently loaded.");
+			return jsonView.Render(model, response);
+		}
+
+		SchemaPage page = currentSchema.getPage(pageId);
+		page.setTitle(title);
+
+		Connection conn = null;
+		try {
+			conn = iDAO.getConnection();
+
+			iDAO.saveSchemaPage(page, conn);
+
+			model.addAttribute(VAL, page.getId());
+			model.addAttribute(MESSAGE, "Success!");
+
+			currentSchema.getPages().put(page.getId(), page);
+			request.getSession().setAttribute("CurrentSchema", currentSchema);
+			request.getSession().setAttribute("CurrentPage", null);
+		} catch (Exception e) {
+			LOG.error("Unable to save to Internal DAO", e);
+			model.addAttribute(VAL, "0");
+			model.addAttribute(MESSAGE, "Unable to save to Internal DAO:" + e.getMessage());
+		} finally {
+			closeIDaoConnection(model, conn);
+		}
 
 		return jsonView.Render(model, response);
 	}
 
 	@RequestMapping(value = "/pages/selectAll", method = RequestMethod.POST)
-	public ModelAndView selectAll(@RequestParam("dbi") String dbi, @RequestParam("page") String pageId, @RequestParam("title") String title,
-			Model model, HttpServletResponse response, HttpServletRequest request) {
-		LOG.debug("Selecting all tables for page: {} {} ", new Object[] { pageId,
-				title });
-		// TODO
+	public ModelAndView selectAll(@RequestParam("dbi") String dbi, @RequestParam("page") String pageId, Model model, HttpServletResponse response,
+			HttpServletRequest request) {
+		LOG.debug("Selecting all tables for page: {} {} ", new Object[] { dbi, pageId });
+
+		if (StringUtils.isBlank(dbi) || StringUtils.isBlank(pageId)) {
+			LOG.warn("Invalid Parameters");
+			model.addAttribute(VAL, "0");
+			model.addAttribute(MESSAGE, "Invalid Parameters");
+			return jsonView.Render(model, response);
+		}
+
+		SortedSchema currentSchema = (SortedSchema) request.getSession().getAttribute("CurrentSchema");
+
+		if (currentSchema == null || !currentSchema.getDbi().equals(dbi)) {
+			LOG.warn("Schema {} not currently loaded.", dbi);
+			model.addAttribute(VAL, "0");
+			model.addAttribute(MESSAGE, "Schema " + dbi + " not currently loaded.");
+			return jsonView.Render(model, response);
+		}
+
+		SchemaPage page = currentSchema.getPage(pageId);
+		Connection conn = null;
+		try {
+			conn = iDAO.getConnection();
+
+			iDAO.addViewsForAllTables(page, conn);
+
+			model.addAttribute(VAL, page.getId());
+			model.addAttribute(MESSAGE, "Success!");
+
+			currentSchema.getPages().put(page.getId(), page);
+			request.getSession().setAttribute("CurrentSchema", currentSchema);
+			request.getSession().setAttribute("CurrentPage", null);
+		} catch (Exception e) {
+			LOG.error("Unable to save to Internal DAO", e);
+			model.addAttribute(VAL, "0");
+			model.addAttribute(MESSAGE, "Unable to save to Internal DAO:" + e.getMessage());
+		} finally {
+			closeIDaoConnection(model, conn);
+		}
 
 		return jsonView.Render(model, response);
 	}
 
 	@RequestMapping(value = "/pages/deselectAll", method = RequestMethod.POST)
-	public ModelAndView deselectAll(@RequestParam("dbi") String dbi, @RequestParam("page") String pageId, @RequestParam("title") String title,
-			Model model, HttpServletResponse response, HttpServletRequest request) {
-		LOG.debug("deselecting all tables for page: {} {}", new Object[] { pageId,
-				title });
-		// TODO
+	public ModelAndView deselectAll(@RequestParam("dbi") String dbi, @RequestParam("page") String pageId, Model model, HttpServletResponse response,
+			HttpServletRequest request) {
+		LOG.debug("deselecting all tables for page: {} {}", new Object[] { dbi, pageId });
+
+		if (StringUtils.isBlank(dbi) || StringUtils.isBlank(pageId)) {
+			LOG.warn("Invalid Parameters");
+			model.addAttribute(VAL, "0");
+			model.addAttribute(MESSAGE, "Invalid Parameters");
+			return jsonView.Render(model, response);
+		}
+
+		SortedSchema currentSchema = (SortedSchema) request.getSession().getAttribute("CurrentSchema");
+
+		if (currentSchema == null || !currentSchema.getDbi().equals(dbi)) {
+			LOG.warn("Schema {} not currently loaded.", dbi);
+			model.addAttribute(VAL, "0");
+			model.addAttribute(MESSAGE, "Schema " + dbi + " not currently loaded.");
+			return jsonView.Render(model, response);
+		}
+		SchemaPage page = currentSchema.getPage(pageId);
+		Connection conn = null;
+		try {
+			conn = iDAO.getConnection();
+
+			iDAO.removeViewsForAllTables(page, conn);
+
+			model.addAttribute(VAL, page.getId());
+			model.addAttribute(MESSAGE, "Success!");
+
+			currentSchema.getPages().put(page.getId(), page);
+			request.getSession().setAttribute("CurrentSchema", currentSchema);
+			request.getSession().setAttribute("CurrentPage", null);
+		} catch (Exception e) {
+			LOG.error("Unable to save to Internal DAO", e);
+			model.addAttribute(VAL, "0");
+			model.addAttribute(MESSAGE, "Unable to save to Internal DAO:" + e.getMessage());
+		} finally {
+			closeIDaoConnection(model, conn);
+		}
 
 		return jsonView.Render(model, response);
 	}
@@ -204,6 +311,13 @@ public class PageController {
 			return jsonView.Render(model, response);
 		}
 
+		if (currentSchema.getNumPages() <= 1) {
+			LOG.warn("Cannot remove last page");
+			model.addAttribute(VAL, "0");
+			model.addAttribute(MESSAGE, "Cannot remove last page");
+			return jsonView.Render(model, response);
+		}
+
 		SchemaPage page = currentSchema.getPage(pageId);
 
 		Connection conn = null;
@@ -220,6 +334,7 @@ public class PageController {
 		} catch (Exception e) {
 			LOG.error("Unable to remove page from Internal DAO", e);
 			model.addAttribute(VAL, "0");
+			model.addAttribute(MESSAGE, "Unable to remove page from Internal DAO:" + e.getMessage());
 		} finally {
 			closeIDaoConnection(model, conn);
 		}
@@ -234,6 +349,7 @@ public class PageController {
 			// trace it anyway
 			LOG.error("Unable to close connection to Internal DAO", ex);
 			model.addAttribute(VAL, "0");
+			model.addAttribute(MESSAGE, "Unable to close connection to Internal DAO:" + ex.getMessage());
 		}
 	}
 

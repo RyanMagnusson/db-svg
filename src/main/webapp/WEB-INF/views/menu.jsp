@@ -28,7 +28,7 @@
         <link rel="stylesheet" type="text/css" media="screen" href="css/style.css" />
         <link rel="stylesheet" type="text/css" media="screen" href="css/jq-ui.css" />
         <link rel="shortcut icon" href="images/favicon.ico" type="image/x-icon" />
-        <script type="text/javascript" src="js/jquery.js"></script>
+        <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
         <script type="text/javascript" src="js/jquery-ui.min.js"></script>
         <script type="text/javascript" src="js/common.js"></script>
         <script type="text/javascript" src="js/menu.js"></script>

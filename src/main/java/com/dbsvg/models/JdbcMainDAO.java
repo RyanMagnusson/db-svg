@@ -46,11 +46,10 @@ import com.dbsvg.objects.model.Table;
 @Service
 public class JdbcMainDAO implements Serializable, IMainDAO {
 
-	protected static final Logger LOG = LoggerFactory
-			.getLogger(JdbcMainDAO.class);
+	protected static final Logger LOG = LoggerFactory.getLogger(JdbcMainDAO.class);
 
 	public static final int CHAR_WIDTH = 7;
-	public static final int PAD_WIDTH = 15;
+	public static final int PAD_WIDTH = 25;
 	public static final int CHAR_HEIGHT = 15;
 	public static final int PAD_HEIGHT = 45;
 
@@ -74,7 +73,7 @@ public class JdbcMainDAO implements Serializable, IMainDAO {
 	 * @return
 	 * @throws java.lang.Exception
 	 */
-	public Map<String, Table> getTables(Connection conn, String schemaName)
+	public Map<String, Table> getTables(Connection conn, String schemaId)
 			throws Exception {
 		Map<String, Table> tableMap = new HashMap<String, Table>();
 		if (conn == null) {
@@ -90,7 +89,7 @@ public class JdbcMainDAO implements Serializable, IMainDAO {
 			String tableOrViewName = rs.getString("TABLE_NAME");
 			Table t = new Table(tableOrViewName);
 			tableMap.put(tableOrViewName, t);
-			t.setSchemaId(schemaName);
+			t.setSchemaId(schemaId);
 			populateTable(t, conn);
 		}
 
@@ -100,7 +99,7 @@ public class JdbcMainDAO implements Serializable, IMainDAO {
 			i++;
 			LOG.debug("Checking " + i + " of " + tableMap.size() + "("
 					+ t.getName() + ")");
-			checkForForeignKeys2(t, meta, conn, tableMap);
+			checkForForeignKeys(t, meta, conn, tableMap);
 			// for (Table fTable: tableMap.values()) {
 			// checkForForeignKeys(t, fTable, meta);
 			// }
@@ -187,49 +186,7 @@ public class JdbcMainDAO implements Serializable, IMainDAO {
 	 * @param meta
 	 * @throws java.lang.Exception
 	 */
-	// private void checkForForeignKeys(Table t, Table fTable, DatabaseMetaData
-	// meta) throws Exception {
-	// ResultSet rs = meta.getCrossReference(null, null, t.getName(), null,
-	// null, fTable.getName());
-	//
-	// while (rs.next()) {
-	// String parentColumn = rs.getString("PKCOLUMN_NAME");
-	// String foreignColumn = rs.getString("FKCOLUMN_NAME");
-	//
-	// ForeignKey fk = fTable.getColumns().get(foreignColumn).transformToFK();
-	// fTable.getColumns().put(foreignColumn, fk);
-	// fTable.getForeignKeys().put(foreignColumn, fk);
-	// // increase the width of the table so that FK->table.column will fit
-	// // also
-	// int newWidth = CHAR_WIDTH * parentColumn.length() + CHAR_WIDTH *
-	// t.getName().length() + PAD_WIDTH + 6 * CHAR_WIDTH + CHAR_WIDTH
-	// * foreignColumn.length();
-	// if (newWidth > fTable.getWidth())
-	// fTable.setWidth(newWidth);
-	// t.getReferencingTables().put(fTable.getName(), fTable);
-	// fk.setReferencedColumn(parentColumn);
-	// fk.setReferencedTable(t.getName());
-	// fk.setUpdateRule(rs.getString("UPDATE_RULE"));
-	// fk.setDeleteRule(rs.getString("DELETE_RULE"));
-	// try {
-	// fk.setReference(t.getColumns().get(parentColumn));
-	// } catch (Exception e) {
-	// e.printStackTrace();
-	// }
-	// }
-	// }
-
-	/**
-	 * This method should be run after all the tables are created. It cross
-	 * references two tables to see if there is a foreign key between them. If
-	 * so, it transforms the parent column into a foreign key.
-	 * 
-	 * @param t
-	 * @param fTable
-	 * @param meta
-	 * @throws java.lang.Exception
-	 */
-	private void checkForForeignKeys2(Table t, DatabaseMetaData meta,
+	private void checkForForeignKeys(Table t, DatabaseMetaData meta,
 			Connection conn, Map<String, Table> tablemap) throws Exception {
 		ResultSet rs = meta.getExportedKeys(conn.getCatalog(), null,
 				t.getName());
@@ -239,15 +196,13 @@ public class JdbcMainDAO implements Serializable, IMainDAO {
 			String foreignColumn = rs.getString("FKCOLUMN_NAME");
 			Table fTable = tablemap.get(fkTableName);
 
-			ForeignKey fk = fTable.getColumns().get(foreignColumn)
-					.transformToFK();
+			ForeignKey fk = fTable.getColumns().get(foreignColumn).transformToFK();
 			fTable.getColumns().put(foreignColumn, fk);
 			fTable.getForeignKeys().put(foreignColumn, fk);
 			// increase the width of the table so that FK->table.column will fit
 			// also
-			int newWidth = CHAR_WIDTH * parentColumn.length() + CHAR_WIDTH
-					* t.getName().length() + PAD_WIDTH + 6 * CHAR_WIDTH
-					+ CHAR_WIDTH * foreignColumn.length();
+			int newWidth = CHAR_WIDTH * parentColumn.length() + CHAR_WIDTH * t.getName().length() + PAD_WIDTH + 8 * CHAR_WIDTH + CHAR_WIDTH
+					* foreignColumn.length();
 			if (newWidth > fTable.getWidth())
 				fTable.setWidth(newWidth);
 			t.getReferencingTables().put(fTable.getName(), fTable);

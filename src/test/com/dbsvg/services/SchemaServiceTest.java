@@ -86,6 +86,8 @@ public class SchemaServiceTest {
 	LinkLine line;
 	@Captor
 	ArgumentCaptor<Map<String, Table>> tableMapCaptor;
+	@Captor
+	ArgumentCaptor<SchemaPage> pageCaptor;
 
 	String dbi = "10";
 
@@ -95,6 +97,8 @@ public class SchemaServiceTest {
 	List<LinkLine> lines;
 
 	String connectionTitle = "CW Title";
+
+	UUID pageId = UUID.randomUUID();
 
 	@Before
 	public void setUp() throws Exception {
@@ -127,6 +131,8 @@ public class SchemaServiceTest {
 		when(schema.getFirstPage()).thenReturn(page);
 		when(schema.getNumTables()).thenReturn(0);
 		when(page.getSchema()).thenReturn(schema);
+		when(page.getId()).thenReturn(pageId);
+
 		when(schema.getId()).thenReturn(connectionTitle);
 
 	}
@@ -135,15 +141,26 @@ public class SchemaServiceTest {
 	public void testPrepareSchema() {
 		SchemaPage result = instance.prepareSchema(schema, dbi, null);
 		assertEquals(page, result);
+		verify(page).calcDimensionsAndTranslatePageToOrigin();
 	}
 
 	@Test
-	public void testPrepareSchemaNullFirstPage() {
+	public void testPrepareSchemaWithPageId() {
+		String expectedPageId = "20";
+		when(schema.getPage(expectedPageId)).thenReturn(page);
+		SchemaPage result = instance.prepareSchema(schema, dbi, expectedPageId);
+		assertEquals(page, result);
+		verify(page).calcDimensionsAndTranslatePageToOrigin();
+	}
+
+	@Test
+	public void testPrepareSchemaNullFirstPage() throws SQLException {
 		Map<UUID, SchemaPage> pages = new HashMap<UUID, SchemaPage>();
 		when(iDAO.readSchemaPages(schema, mainDbConn)).thenReturn(pages);
 
 		SchemaPage result = instance.prepareSchema(schema, dbi, null);
 		assertEquals(page, result);
+		verify(page).calcDimensionsAndTranslatePageToOrigin();
 	}
 
 	@Test
@@ -185,17 +202,59 @@ public class SchemaServiceTest {
 	@Test
 	public void testResortTableViews() {
 		instance.resortTableViews(page);
-		verify(tvSorter).SortPage(page, true);
+		verify(tvSorter).sortPage(page, true);
 		verify(tvSorter).calcLines(page);
-		verify(page).calcDimensions();
+		verify(page).calcDimensionsAndTranslatePageToOrigin();
 
 	}
 
 	@Test
-	public void testSaveTableViews() {
+	public void testSaveTableViews() throws SQLException {
 		instance.saveTableViews(page);
 		verify(iDAO).saveSchemaPage(page, iDAOconn);
 		verify(iDAO).saveTablePosition(tableView, iDAOconn);
 	}
 
+	@Test
+	public void readSchemaPages_noPrevPages() throws Exception {
+
+		Map<UUID, SchemaPage> pages = new HashMap<UUID, SchemaPage>();
+
+		when(iDAO.readSchemaPages(schema, iDAOconn)).thenReturn(pages);
+		when(schema.getTables()).thenReturn(tableMap);
+
+		instance.readSchemaPages(schema);
+
+		verify(iDAO).makeViewWCoordinates(eq(table), pageCaptor.capture(), eq(tableMap.size()), eq(iDAOconn), eq(true));
+
+		SchemaPage resultPage = pageCaptor.getValue();
+		assertEquals(1, pages.size());
+		assertTrue(pages.containsValue(resultPage));
+		assertEquals(SchemaService.DB_SVG_DEFAULT_PAGE_NAME, resultPage.getTitle());
+
+		verify(schema).setPages(pages);
+		verify(iDAOconn).close();
+	}
+
+	@Test
+	public void readSchemaPages_withPrevPages() throws Exception {
+
+		Map<UUID, SchemaPage> pages = new HashMap<UUID, SchemaPage>();
+		pages.put(pageId, page);
+
+		when(iDAO.readSchemaPages(schema, iDAOconn)).thenReturn(pages);
+		when(schema.getTables()).thenReturn(tableMap);
+
+		instance.readSchemaPages(schema);
+
+		verify(iDAO).makeViewWCoordinates(eq(table), pageCaptor.capture(), eq(tableMap.size()), eq(iDAOconn), eq(false));
+		SchemaPage resultPage = pageCaptor.getValue();
+
+		assertEquals(1, pages.size());
+		assertTrue(pages.containsValue(resultPage));
+		assertEquals(page, resultPage);
+
+		verify(schema).setPages(pages);
+		verify(iDAOconn).close();
+	}
 }

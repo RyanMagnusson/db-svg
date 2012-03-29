@@ -51,6 +51,7 @@ public class TableView extends Vertex implements Serializable {
 	public TableView(Table t, SchemaPage p) {
 		table = t;
 		page = p;
+		setId(t.getViewId());
 	}
 
 	/**

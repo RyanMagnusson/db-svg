@@ -32,25 +32,26 @@ import com.dbsvg.objects.model.Table;
  */
 @SuppressWarnings("serial")
 public class LinkLine implements Serializable {
-	double x1;
-	double y1;
-	double x2;
-	double y2;
+	int x1;
+	int y1;
+	int x2;
+	int y2;
 
-	double xa1;
-	double ya1;
-	double xa2;
-	double ya2;
-	double xa3;
-	double ya3;
+	int xa1;
+	int ya1;
+	int xa2;
+	int ya2;
+	int xa3;
+	int ya3;
+	boolean visible;
 
 	ForeignKey foreignkey;
 	Table startingTable;
 	double angle = 0.0;
 	double length = 0.0;
 
-	protected static int arrowLength = 25;
-	protected static double arrowAngle = 0.52;
+	protected static final int ARROW_LENGTH = 25;
+	protected static final double ARROW_ANGLE = 0.52;
 
 	SchemaPage page;
 
@@ -65,27 +66,34 @@ public class LinkLine implements Serializable {
 	 * @param t
 	 * @param fk
 	 */
-	private void calculateLine(Table t, ForeignKey fk) {
+	protected void calculateLine(Table t, ForeignKey fk) {
 		this.startingTable = t;
 		this.foreignkey = fk;
 
 		// line main end points
-		if (t.getTablePageViews().get(page.getId()) != null
-				&& fk.getReference().getTable().getTablePageViews()
-						.get(page.getId()) != null) {
-			this.x1 = t.getTablePageViews().get(page.getId()).getX()
-					+ t.getWidth() / 2;
-			this.y1 = t.getTablePageViews().get(page.getId()).getY()
-					+ t.getHeight() / 2;
-			this.x2 = fk.getReference().getTable().getTablePageViews()
-					.get(page.getId()).getX()
-					+ fk.getReference().getTable().getWidth() / 2;
-			this.y2 = fk.getReference().getTable().getTablePageViews()
-					.get(page.getId()).getY()
-					+ fk.getReference().getTable().getHeight() / 2;
+		if (t.getTablePageViews().get(page.getId()) != null && fk.getReference().getTable().getTablePageViews().get(page.getId()) != null) {
+			this.x1 = t.getTablePageViews().get(page.getId()).getX() + t.getWidth() / 2;
+			this.y1 = t.getTablePageViews().get(page.getId()).getY() + t.getHeight() / 2;
+			this.x2 = fk.getReference().getTable().getTablePageViews().get(page.getId()).getX() + fk.getReference().getTable().getWidth() / 2;
+			this.y2 = fk.getReference().getTable().getTablePageViews().get(page.getId()).getY() + fk.getReference().getTable().getHeight() / 2;
+			visible = true;
+		} else {
+			// do not create a line if both tables are not on this page.
+			this.x1 = 0;
+			this.x2 = 0;
+			this.xa1 = 0;
+			this.xa2 = 0;
+			this.xa3 = 0;
+			this.y1 = 0;
+			this.y2 = 0;
+			this.ya1 = 0;
+			this.ya2 = 0;
+			this.ya3 = 0;
+			visible = false;
+			return;
 		}
 		if ((x1 - x2) != 0) {
-			this.angle = Math.atan((y1 - y2) / (x1 - x2));
+			this.angle = Math.atan((double) (y1 - y2) / (x1 - x2));
 		} else {
 			this.angle = 0;
 		}
@@ -96,18 +104,13 @@ public class LinkLine implements Serializable {
 		double radius = this.getEndRadius();
 
 		// arrow head end points
-		this.xa1 = x1 + (((length - radius) / length) * (x2 - x1));
-		this.ya1 = y1 + (((length - radius) / length) * (y2 - y1));// + (radius
-		// *
-		// Math.sin(angle));
-		this.xa2 = xa1 + (rtl ? -1 : 1)
-				* (arrowLength * Math.cos(angle + arrowAngle));
-		this.ya2 = ya1 + (rtl ? -1 : 1)
-				* (arrowLength * Math.sin(angle + arrowAngle));
-		this.xa3 = xa1 + (rtl ? -1 : 1)
-				* (arrowLength * Math.cos(angle - arrowAngle));
-		this.ya3 = ya1 + (rtl ? -1 : 1)
-				* (arrowLength * Math.sin(angle - arrowAngle));
+		this.xa1 = (int) (x1 + (((length - radius) / length) * (x2 - x1)));
+		this.ya1 = (int) (y1 + (((length - radius) / length) * (y2 - y1)));
+
+		this.xa2 = xa1 + (int) ((rtl ? -1 : 1) * (ARROW_LENGTH * Math.cos(angle + ARROW_ANGLE)));
+		this.ya2 = ya1 + (int) ((rtl ? -1 : 1) * (ARROW_LENGTH * Math.sin(angle + ARROW_ANGLE)));
+		this.xa3 = xa1 + (int) ((rtl ? -1 : 1) * (ARROW_LENGTH * Math.cos(angle - ARROW_ANGLE)));
+		this.ya3 = ya1 + (int) ((rtl ? -1 : 1) * (ARROW_LENGTH * Math.sin(angle - ARROW_ANGLE)));
 	}
 
 	/**
@@ -119,25 +122,20 @@ public class LinkLine implements Serializable {
 		List<TableView> returner = new ArrayList<TableView>();
 		if (pageIdIsNotNull() && eitherEndOftheLineIsDirty()) {
 			calculateLine(this.startingTable, this.foreignkey);
-			returner.add(this.startingTable.getTablePageViews().get(
-						page.getId()));
-			returner.add(this.foreignkey.getReference().getTable()
-						.getTablePageViews().get(page.getId()));
+			returner.add(this.startingTable.getTablePageViews().get(page.getId()));
+			returner.add(this.foreignkey.getReference().getTable().getTablePageViews().get(page.getId()));
 		}
 		return returner;
 	}
 
 	private boolean eitherEndOftheLineIsDirty() {
-		return this.startingTable.getTablePageViews().get(page.getId())
-				.needsResort()
-				|| this.foreignkey.getReference().getTable()
-						.getTablePageViews().get(page.getId()).needsResort();
+		return this.startingTable.getTablePageViews().get(page.getId()).needsResort()
+				|| this.foreignkey.getReference().getTable().getTablePageViews().get(page.getId()).needsResort();
 	}
 
 	private boolean pageIdIsNotNull() {
 		return this.startingTable.getTablePageViews().get(page.getId()) != null
-				&& this.foreignkey.getReference().getTable()
-						.getTablePageViews().get(page.getId()) != null;
+				&& this.foreignkey.getReference().getTable().getTablePageViews().get(page.getId()) != null;
 	}
 
 	public ForeignKey getForeignkey() {
@@ -156,35 +154,35 @@ public class LinkLine implements Serializable {
 		this.startingTable = referencedTable;
 	}
 
-	public double getX1() {
+	public int getX1() {
 		return x1;
 	}
 
-	public void setX1(double x1) {
+	public void setX1(int x1) {
 		this.x1 = x1;
 	}
 
-	public double getX2() {
+	public int getX2() {
 		return x2;
 	}
 
-	public void setX2(double x2) {
+	public void setX2(int x2) {
 		this.x2 = x2;
 	}
 
-	public double getY1() {
+	public int getY1() {
 		return y1;
 	}
 
-	public void setY1(double y1) {
+	public void setY1(int y1) {
 		this.y1 = y1;
 	}
 
-	public double getY2() {
+	public int getY2() {
 		return y2;
 	}
 
-	public void setY2(double y2) {
+	public void setY2(int y2) {
 		this.y2 = y2;
 	}
 
@@ -204,57 +202,64 @@ public class LinkLine implements Serializable {
 		this.length = length;
 	}
 
-	public double getXa1() {
+	public int getXa1() {
 		return xa1;
 	}
 
-	public void setXa1(double xa1) {
+	public void setXa1(int xa1) {
 		this.xa1 = xa1;
 	}
 
-	public double getXa2() {
+	public int getXa2() {
 		return xa2;
 	}
 
-	public void setXa2(double xa2) {
+	public void setXa2(int xa2) {
 		this.xa2 = xa2;
 	}
 
-	public double getXa3() {
+	public int getXa3() {
 		return xa3;
 	}
 
-	public void setXa3(double xa3) {
+	public void setXa3(int xa3) {
 		this.xa3 = xa3;
 	}
 
-	public double getYa1() {
+	public int getYa1() {
 		return ya1;
 	}
 
-	public void setYa1(double ya1) {
+	public void setYa1(int ya1) {
 		this.ya1 = ya1;
 	}
 
-	public double getYa2() {
+	public int getYa2() {
 		return ya2;
 	}
 
-	public void setYa2(double ya2) {
+	public void setYa2(int ya2) {
 		this.ya2 = ya2;
 	}
 
-	public double getYa3() {
+	public int getYa3() {
 		return ya3;
 	}
 
-	public void setYa3(double ya3) {
+	public void setYa3(int ya3) {
 		this.ya3 = ya3;
 	}
 
-	public double getEndRadius() {
-		return this.foreignkey.getReference().getTable().getTablePageViews()
-				.get(page.getId()).getRadius();
+	public boolean isVisible() {
+		return visible;
+	}
+
+	public Double getEndRadius() {
+		if (this.foreignkey.getReference().getTable().getTablePageViews().get(page.getId()) != null) {
+			return this.foreignkey.getReference().getTable().getTablePageViews().get(page.getId()).getRadius();
+		} else {
+			return (Double) null;
+		}
 	}
 
 	public SchemaPage getPage() {

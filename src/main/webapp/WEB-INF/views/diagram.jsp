@@ -34,7 +34,7 @@
         <link rel="stylesheet" type="text/css" media="screen" href="css/jquery.svg.css" />
         <link rel="stylesheet" type="text/css" media="screen" href="css/jq-ui.css" />
         <link rel="shortcut icon" href="images/favicon.ico" type="image/x-icon" /> 
-        <script type="text/javascript" src="js/jquery.js"></script>
+        <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
         <script type="text/javascript" src="js/jquery-ui.min.js"></script>
         <script type="text/javascript" src="js/jquery.svg.js"></script>
         <script type="text/javascript" src="js/jquery.svganim.js"></script>
@@ -55,20 +55,23 @@ var currentDragy;
     if (pageid==null) {
         pageid = (String)request.getSession().getAttribute("pageid");
     }
-    
-    String schemaUrlData = "?dbi="+dbi;
-    if (pageid !=null){
-        schemaUrlData = "?dbi="+dbi+"&pageid="+pageid;
-    }
-    
+        
     SortedSchema currentSchema = (SortedSchema)request.getSession().getAttribute("CurrentSchema");
     SchemaPage sPage = (SchemaPage)request.getSession().getAttribute("CurrentPage");
     
+    if (sPage != null){
+    	pageid = sPage.getId().toString();
+    }
+    
+    String schemaUrlData = "?dbi="+dbi;
+    if (pageid !=null){
+        schemaUrlData = "?dbi="+dbi+"&page="+pageid;
+    }
 %>
   var dbi = <%=dbi%>;
-  var pageid = <%=pageid%>;
-  var transx = (-1*<%= sPage.getTransx() %>)-30;
-  var transy = (-1*<%= sPage.getTransy() %>)-100;
+  var pageid = '<%=pageid%>';
+  var transx = -10-30;
+  var transy = -10-100;
 
 $(function() {
 
@@ -95,7 +98,7 @@ svg = $('#svgwindow').svg({loadURL: 'diagram/download<%=schemaUrlData%>'});
 			showLoading();
 			$.post("diagram/save", {
 				"dbi" : dbi,
-				"pageid" : pageid
+				"page" : pageid
 			}, function(data) {
 				hideLoading();
 				showSave(data.message);
@@ -107,7 +110,7 @@ svg = $('#svgwindow').svg({loadURL: 'diagram/download<%=schemaUrlData%>'});
 			showLoading();
 			$.post("diagram/refresh", {
 				"dbi" : dbi,
-				"pageid" : pageid
+				"page" : pageid
 			}, function(data) {
 				location.reload(true);
 			}, "json");
@@ -147,7 +150,7 @@ svg = $('#svgwindow').svg({loadURL: 'diagram/download<%=schemaUrlData%>'});
     </div>
     <div id="content" class="modelContentBox"><% if (currentSchema.getPages().size()>1) { %>
         <div class="tablayer"><% for (SchemaPage p :currentSchema.getPages().values()) { %>
-<a href="#"><span class="tab"><%= p.getTitle() %></span></a><% } %>
+<a href="diagram?dbi=<%= dbi %>&page=<%= p.getId() %>"><span class="tab<%=(p.getId().toString().equals(pageid) ? " tab-active" : "") %>"><%= p.getTitle() %></span></a><% } %>
         </div><% } %>
         <div class="menu">
             <a href="menu">Back to Menu</a><a href="setup?dbi=<%= dbi %>">Setup</a><a id="sorter" href="#diagram/refresh">Re-sort</a><a id="saver" href="#diagram/save">Save</a><a href="diagram/download<%=schemaUrlData%>" target="_blank">Download</a><span class="coord" id="coord" style="display:none">x,y</span>
